@@ -1,0 +1,278 @@
+{
+  "a3f_corridor_1": {
+    "name": "3階 A棟 廊下 西端",
+    "sub": "Floor 3A · West End",
+    "image": "corridor1.jpg",
+    "initYaw": 0,
+    "mmX": 10,
+    "mmY": 40,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_2", "pos": [12, 0, 0], "label": "廊下を東へ", "hint": "Corridor East" },
+      { "targetId": "a3f_room_301", "pos": [2, 0, -8], "label": "301号室に入る", "hint": "Enter 301" },
+      { "targetId": "a3f_tri_1a", "pos": [4, 0, -4], "label": "斜め前へ", "hint": "Loop 1A" }
+    ]
+  },
+  "a3f_corridor_2": {
+    "name": "3階 A棟 廊下 中西",
+    "sub": "Floor 3A · Mid West",
+    "image": "corridor2.jpg",
+    "initYaw": 0,
+    "mmX": 35,
+    "mmY": 40,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_1", "pos": [-12, 0, 0], "label": "廊下を西へ", "hint": "Corridor West" },
+      { "targetId": "a3f_corridor_3", "pos": [12, 0, 0], "label": "廊下を東へ", "hint": "Corridor East" },
+      { "targetId": "a3f_stairs_west_land", "pos": [0, 0, -4], "label": "西階段へ", "hint": "West Stairs" }
+    ]
+  },
+  "a3f_corridor_3": {
+    "name": "3階 A棟 廊下 中央",
+    "sub": "Floor 3A · Center",
+    "image": "corridor3.jpg",
+    "initYaw": 0,
+    "mmX": 65,
+    "mmY": 40,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_2", "pos": [-12, 0, 0], "label": "廊下を西へ", "hint": "Corridor West" },
+      { "targetId": "a3f_corridor_4", "pos": [12, 0, 0], "label": "廊下を東へ", "hint": "Corridor East" },
+      { "targetId": "a3f_room_302", "pos": [-3, 0, -8], "label": "302号室に入る", "hint": "Enter 302" },
+      { "targetId": "a3f_tri_2a", "pos": [3, 0, -4], "label": "斜め前へ", "hint": "Loop 2A" }
+    ]
+  },
+  "a3f_corridor_4": {
+    "name": "3階 A棟 廊下 中東",
+    "sub": "Floor 3A · Mid East",
+    "image": "corridor4.jpg",
+    "initYaw": 0,
+    "mmX": 95,
+    "mmY": 40,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_3", "pos": [-12, 0, 0], "label": "廊下を西へ", "hint": "Corridor West" },
+      { "targetId": "a3f_corridor_5", "pos": [10, 0, 0], "label": "廊下を東へ", "hint": "Corridor East" },
+      { "targetId": "a3f_room_303", "pos": [-2, 0, -8], "label": "303号室に入る", "hint": "Enter 303" }
+    ]
+  },
+  "a3f_corridor_5": {
+    "name": "3階 A棟 廊下 東端",
+    "sub": "Floor 3A · East End",
+    "image": "corridor5.jpg",
+    "initYaw": 0,
+    "mmX": 120,
+    "mmY": 40,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_4", "pos": [-10, 0, 0], "label": "廊下を西へ", "hint": "Corridor West" },
+      { "targetId": "a3f_room_304", "pos": [-4, 0, -8], "label": "304号室に入る", "hint": "Enter 304" },
+      { "targetId": "a3f_stairs_east_land", "pos": [-2, 0, -4], "label": "東階段へ", "hint": "East Stairs" },
+      { "targetId": "a3f_bridge_zone", "pos": [6, 0, 0], "label": "B棟連絡通路へ", "hint": "To B-Building" }
+    ]
+  },
+  "a3f_room_301": {
+    "name": "301号室",
+    "sub": "Room 301 (West)",
+    "image": "room301.jpg",
+    "initYaw": 1.57,
+    "mmX": 20,
+    "mmY": 75,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_1", "pos": [-2, 0, 8], "label": "廊下に出る", "hint": "Exit to Corridor" }
+    ]
+  },
+  "a3f_room_302": {
+    "name": "302号室",
+    "sub": "Room 302 (Center)",
+    "image": "room302.jpg",
+    "initYaw": 1.57,
+    "mmX": 55,
+    "mmY": 75,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_3", "pos": [3, 0, 8], "label": "廊下に出る", "hint": "Exit to Corridor" }
+    ]
+  },
+  "a3f_room_303": {
+    "name": "303号室",
+    "sub": "Room 303 (East)",
+    "image": "room303.jpg",
+    "initYaw": 1.57,
+    "mmX": 85,
+    "mmY": 75,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_4", "pos": [2, 0, 8], "label": "廊下に出る", "hint": "Exit to Corridor" }
+    ]
+  },
+  "a3f_room_304": {
+    "name": "304号室",
+    "sub": "Room 304 (FarEast)",
+    "image": "room304.jpg",
+    "initYaw": 1.57,
+    "mmX": 110,
+    "mmY": 75,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_5", "pos": [4, 0, 8], "label": "廊下に出る", "hint": "Exit to Corridor" }
+    ]
+  },
+  "a3f_tri_1a": {
+    "name": "西閉路 頂点A",
+    "sub": "West Loop A",
+    "image": "tri1a.jpg",
+    "initYaw": 0,
+    "mmX": 15,
+    "mmY": 55,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_tri_1b", "pos": [5, 0, 4], "label": "横へ移動", "hint": "Loop 1B" }
+    ]
+  },
+  "a3f_tri_1b": {
+    "name": "西閉路 頂点B",
+    "sub": "West Loop B",
+    "image": "tri1b.jpg",
+    "initYaw": 0,
+    "mmX": 25,
+    "mmY": 55,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_1", "pos": [-4, 0, 0], "label": "廊下へ戻る", "hint": "Return" }
+    ]
+  },
+  "a3f_tri_2a": {
+    "name": "中閉路 頂点A",
+    "sub": "Mid Loop A",
+    "image": "tri2a.jpg",
+    "initYaw": 0,
+    "mmX": 45,
+    "mmY": 55,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_tri_2b", "pos": [6, 0, 4], "label": "横へ移動", "hint": "Loop 2B" }
+    ]
+  },
+  "a3f_tri_2b": {
+    "name": "中閉路 頂点B",
+    "sub": "Mid Loop B",
+    "image": "tri2b.jpg",
+    "initYaw": 0,
+    "mmX": 60,
+    "mmY": 55,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_3", "pos": [-4, 0, 0], "label": "廊下へ戻る", "hint": "Return" }
+    ]
+  },
+  "a3f_stairs_west_land": {
+    "name": "西階段 踊り場",
+    "sub": "West Stairs Landing",
+    "image": "stairs_w_land.jpg",
+    "initYaw": 0,
+    "mmX": 30,
+    "mmY": 50,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_2", "pos": [0, 0, 4], "label": "廊下へ戻る", "hint": "Return" },
+      { "targetId": "a3f_stairs_west_up", "pos": [0, 4, -5], "label": "階段を上る", "hint": "Go Upstairs" },
+      { "targetId": "a3f_stairs_west_down", "pos": [0, -4, -5], "label": "階段を下りる", "hint": "Go Downstairs" }
+    ]
+  },
+  "a3f_stairs_west_up": {
+    "name": "西階段 上り段",
+    "sub": "West Stairs Up (To 4F)",
+    "image": "stairs_w_up.jpg",
+    "initYaw": 0,
+    "mmX": 30,
+    "mmY": 65,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_stairs_west_land", "pos": [0, -4, 5], "label": "踊り場へ戻る", "hint": "Return" }
+    ]
+  },
+  "a3f_stairs_west_down": {
+    "name": "西階段 下り段",
+    "sub": "West Stairs Down (To 2F)",
+    "image": "stairs_w_down.jpg",
+    "initYaw": 0,
+    "mmX": 30,
+    "mmY": 80,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_stairs_west_land", "pos": [0, 4, 5], "label": "踊り場へ戻る", "hint": "Return" }
+    ]
+  },
+  "a3f_stairs_east_land": {
+    "name": "東階段 踊り場",
+    "sub": "East Stairs Landing",
+    "image": "stairs_e_land.jpg",
+    "initYaw": 0,
+    "mmX": 115,
+    "mmY": 50,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_5", "pos": [2, 0, 4], "label": "廊下へ戻る", "hint": "Return" },
+      { "targetId": "a3f_stairs_east_up", "pos": [0, 4, -5], "label": "階段を上る", "hint": "Go Upstairs" },
+      { "targetId": "a3f_stairs_east_down", "pos": [0, -4, -5], "label": "階段を下りる", "hint": "Go Downstairs" }
+    ]
+  },
+  "a3f_stairs_east_up": {
+    "name": "東階段 上り段",
+    "sub": "East Stairs Up (To 4F)",
+    "image": "stairs_e_up.jpg",
+    "initYaw": 0,
+    "mmX": 115,
+    "mmY": 65,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_stairs_east_land", "pos": [0, -4, 5], "label": "踊り場へ戻る", "hint": "Return" }
+    ]
+  },
+  "a3f_stairs_east_down": {
+    "name": "東階段 下り段",
+    "sub": "East Stairs Down (To 2F)",
+    "image": "stairs_e_down.jpg",
+    "initYaw": 0,
+    "mmX": 115,
+    "mmY": 80,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_stairs_east_land", "pos": [0, 4, 5], "label": "踊り場へ戻る", "hint": "Return" }
+    ]
+  },
+  "a3f_bridge_zone": {
+    "name": "B棟連絡通路口",
+    "sub": "Bridge Zone to B-Bldg",
+    "image": "bridge_zone.jpg",
+    "initYaw": 0,
+    "mmX": 132,
+    "mmY": 40,
+    "floor": 3,
+    "building": "A",
+    "links": [
+      { "targetId": "a3f_corridor_5", "pos": [-6, 0, 0], "label": "A棟へ戻る", "hint": "Return to A-Bldg" }
+    ]
+  }
+}
