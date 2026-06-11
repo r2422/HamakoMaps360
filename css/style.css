@@ -1,95 +1,197 @@
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap');
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;overflow:hidden;font-family:'Noto Sans JP',sans-serif;color:#fff;width:100vw;height:100vh}
-#sv-canvas{display:block;width:100vw;height:100vh;cursor:grab}
-#sv-canvas:active{cursor:grabbing}
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
-#crosshair{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:22px;height:22px;pointer-events:none;z-index:20;opacity:0.35}
-#crosshair::before,#crosshair::after{content:'';position:absolute;background:rgba(255,255,255,0.9)}
-#crosshair::before{width:1.5px;height:100%;top:0;left:50%;transform:translateX(-50%)}
-#crosshair::after{width:100%;height:1.5px;left:0;top:50%;transform:translateY(-50%)}
+/* --- 基本リセット --- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-/* location badge */
-#hud-location{position:fixed;top:24px;left:24px;z-index:30;pointer-events:none;transition:opacity 0.2s}
-#loc-badge{display:inline-block;background:rgba(0,0,0,0.45);
-  border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);border-radius:10px;padding:10px 18px}
-#loc-name{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:600;
-  letter-spacing:0.06em;color:#fff;line-height:1.1}
-#loc-sub{font-size:10px;font-weight:300;letter-spacing:0.18em;text-transform:uppercase;
-  color:rgba(255,255,255,0.45);margin-top:2px}
+body {
+  background: #020410;
+  overflow: hidden;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: #fff;
+  width: 100vw;
+  height: 100vh;
+}
 
-/* compass */
-#hud-compass{position:fixed;top:20px;right:24px;width:72px;height:72px;z-index:30;pointer-events:none;transition:opacity 0.2s}
+/* --- メインキャンバス --- */
+#sv-canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  cursor: grab;
+}
+#sv-canvas:active {
+  cursor: grabbing;
+}
 
-/* speed indicator – shows during walk */
-#hud-speed{position:fixed;top:24px;left:50%;transform:translateX(-50%);
-  z-index:30;pointer-events:none;opacity:0;transition:opacity 0.2s}
-#speed-inner{background:rgba(0,0,0,0.55);border:1px solid rgba(90,127,255,0.4);
-  backdrop-filter:blur(10px);border-radius:20px;padding:6px 20px;
-  font-family:'Rajdhani',sans-serif;font-size:13px;letter-spacing:0.1em;
-  color:rgba(150,180,255,0.9)}
+/* --- 照準 (Crosshair) --- */
+#crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0.35;
+}
+#crosshair::before, #crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+}
+#crosshair::before {
+  width: 1.5px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+#crosshair::after {
+  width: 100%;
+  height: 1.5px;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
-/* bottom controls */
-#hud-controls{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:30}
-#ctrl-panel{display:flex;align-items:center;gap:8px;
-  background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.12);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-radius:40px;padding:8px 16px}
-.hud-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);
-  color:#fff;width:38px;height:38px;border-radius:50%;font-size:16px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:background 0.2s,border-color 0.2s,transform 0.1s;
-  font-family:'Rajdhani',sans-serif;user-select:none}
-.hud-btn:hover{background:rgba(90,127,255,0.35);border-color:rgba(90,127,255,0.6)}
-.hud-btn:active{transform:scale(0.9)}
-.hud-btn.active{background:rgba(90,127,255,0.5);border-color:rgba(90,127,255,0.8)}
-#fov-readout{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;
-  letter-spacing:0.05em;color:rgba(255,255,255,0.55);min-width:38px;text-align:center}
-.divider{width:1px;height:22px;background:rgba(255,255,255,0.12);margin:0 4px}
+/* --- HUD共通レイアウト (ポインターイベント制御) --- */
+.hud-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+.interactive {
+  pointer-events: auto;
+}
 
-/* minimap */
-#hud-minimap{position:fixed;bottom:22px;right:24px;z-index:30;pointer-events:none;transition:opacity 0.2s}
+/* --- 左上：位置情報バッジ --- */
+#hud-location {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 30;
+  transition: opacity 0.2s;
+}
+#loc-badge {
+  display: inline-block;
+  background: rgba(6, 12, 32, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+#loc-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+  line-height: 1.1;
+}
+#loc-sub {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(163, 184, 204, 0.6);
+  margin-top: 4px;
+  font-family: monospace;
+}
 
-/* load bar */
-#load-bar{position:fixed;top:0;left:0;height:2px;width:0%;
-  background:linear-gradient(90deg,#5a7fff,#c084fc);
-  transition:width 0.4s ease;z-index:60;border-radius:0 1px 1px 0}
+/* --- 上部中央：ワープ・移動インジケータ --- */
+#hud-speed {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+#speed-inner {
+  background: rgba(6, 12, 32, 0.65);
+  border: 1px solid rgba(90, 127, 255, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 6px 20px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: rgba(150, 180, 255, 0.95);
+  box-shadow: 0 4px 16px rgba(90, 127, 255, 0.2);
+}
 
-/* tooltip */
-#tooltip{position:fixed;background:rgba(6,10,35,0.9);
-  border:1px solid rgba(90,127,255,0.45);backdrop-filter:blur(8px);
-  color:#d8e4ff;font-size:12px;letter-spacing:0.06em;
-  padding:5px 14px;border-radius:20px;pointer-events:none;opacity:0;
-  transition:opacity 0.2s;transform:translate(-50%,-160%);z-index:40;white-space:nowrap}
+/* --- 右上：コンパス & コントロール配置 --- */
+.top-right-box {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  z-index: 30;
+}
+#hud-compass {
+  width: 72px;
+  height: 72px;
+  transition: opacity 0.2s;
+}
 
-/* fov slider */
-#fov-slider{-webkit-appearance:none;width:80px;height:3px;
-  background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer}
-#fov-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
-  border-radius:50%;background:#5a7fff;border:2px solid rgba(255,255,255,0.8);
-  cursor:pointer;transition:transform 0.1s}
-#fov-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+/* 設定⚙ボタン */
+#btn-settings {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(6, 12, 32, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+#btn-settings:hover {
+  background: rgba(90, 127, 255, 0.35);
+  border-color: rgba(90, 127, 255, 0.6);
+}
+#btn-settings:active {
+  transform: scale(0.9);
+}
 
-/* step flash overlay */
-#step-flash{position:fixed;inset:0;pointer-events:none;z-index:9;
-  background:rgba(255,255,255,0);transition:background 0.05s}
-
-/* TPS Debug Monitor Container */
+/* --- 右上2段目：TPS デバッグモニター --- */
 #debug-container {
   position: fixed;
-  top: 104px;
+  top: 164px;
   right: 24px;
   width: 220px;
   height: 160px;
-  background: rgba(10, 16, 42, 0.75);
+  background: rgba(6, 12, 32, 0.65);
   border: 1px solid rgba(90, 127, 255, 0.4);
-  border-radius: 8px;
+  border-radius: 12px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 30;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   transition: opacity 0.2s;
 }
 #debug-title {
@@ -98,52 +200,279 @@ body{background:#000;overflow:hidden;font-family:'Noto Sans JP',sans-serif;color
   font-weight: 600;
   letter-spacing: 0.1em;
   color: #5a7fff;
-  padding: 4px 8px;
+  padding: 6px 10px;
   background: rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 #debug-canvas {
   width: 100%;
-  height: calc(100% - 22px);
+  height: calc(100% - 25px);
   display: block;
 }
 
-/* Modal Styling */
-#settings-modal {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+/* --- 右下：インタラクティブ ミニマップ --- */
+#hud-minimap {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 30;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  transition: opacity 0.2s;
 }
-#settings-modal.open { opacity: 1; pointer-events: auto; }
+
+/* --- 下部中央：コントロールパネル --- */
+#hud-controls {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+#ctrl-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(6, 12, 32, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 40px;
+  padding: 8px 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.hud-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  font-family: 'Rajdhani', sans-serif;
+  user-select: none;
+}
+.hud-btn:hover {
+  background: rgba(90, 127, 255, 0.35);
+  border-color: rgba(90, 127, 255, 0.6);
+}
+.hud-btn:active {
+  transform: scale(0.9);
+}
+.hud-btn.active {
+  background: rgba(90, 127, 255, 0.5);
+  border-color: rgba(90, 127, 255, 0.8);
+}
+#fov-readout {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 38px;
+  text-align: center;
+}
+.divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 4px;
+}
+
+/* --- FOV スライダー --- */
+#fov-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 80px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+#fov-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #5a7fff;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+#fov-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* --- トップライン ロードバー --- */
+#load-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 60;
+  background: rgba(255, 255, 255, 0.02);
+}
+#load-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #5a7fff, #c084fc);
+  transition: width 0.4s ease;
+  border-radius: 0 1px 1px 0;
+  box-shadow: 0 0 8px rgba(90, 127, 255, 0.6);
+}
+
+/* --- トゥールチップ --- */
+#tooltip {
+  position: fixed;
+  background: rgba(6, 10, 35, 0.9);
+  border: 1px solid rgba(90, 127, 255, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #d8e4ff;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 5px 14px;
+  border-radius: 20px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  transform: translate(-50%, -160%);
+  z-index: 40;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* --- フラッシュオーバーレイ --- */
+#step-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.05s;
+}
+
+/* ============================================================
+   設定モーダル (SYSTEM CONFIG 改良版)
+============================================================ */
+#settings-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 4, 16, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+#settings-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
 #modal-content {
-  background: rgba(13, 19, 46, 0.85); border: 1px solid rgba(90, 127, 255, 0.35);
-  border-radius: 16px; width: 340px; padding: 24px;
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  background: rgba(10, 16, 42, 0.88);
+  border: 1px solid rgba(90, 127, 255, 0.35);
+  border-radius: 16px;
+  width: 340px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
 }
 #modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
 }
-#modal-title { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 600; color: #5a7fff; letter-spacing: 0.05em; }
-#btn-close-modal { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 20px; cursor: pointer; }
-#btn-close-modal:hover { color: #fff; }
+#modal-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #5a7fff;
+  letter-spacing: 0.08em;
+}
+#btn-close-modal {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+#btn-close-modal:hover {
+  color: #fff;
+}
 
-.setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-.setting-label { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 400; }
-.setting-sub { font-size: 10px; color: rgba(255,255,255,0.4); display: block; margin-top: 1px; }
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.setting-row:last-child {
+  margin-bottom: 0;
+}
+.setting-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+.setting-sub {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  display: block;
+  margin-top: 2px;
+}
 
-/* Custom Toggle Switch */
-.switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-.switch input { opacity: 0; width: 0; height: 0; }
+/* カスタムトグルスイッチ */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 .slider {
-  position: absolute; cursor: pointer; inset: 0; background-color: rgba(255,255,255,0.15);
-  transition: .2s; border-radius: 22px; border: 1px solid rgba(255,255,255,0.1);
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.12);
+  transition: .2s;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 .slider:before {
-  position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
-  background-color: #fff; transition: .2s; border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: .2s;
+  border-radius: 50%;
 }
-input:checked + .slider { background-color: rgba(90, 127, 255, 0.6); border-color: rgba(90,127,255,0.8); }
-input:checked + .slider:before { transform: translateX(18px); background-color: #d8e4ff; }
+input:checked + .slider {
+  background-color: rgba(90, 127, 255, 0.6);
+  border-color: rgba(90, 127, 255, 0.8);
+}
+input:checked + .slider:before {
+  transform: translateX(18px);
+  background-color: #d8e4ff;
+}

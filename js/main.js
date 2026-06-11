@@ -77,7 +77,7 @@ const mouse2    = new THREE.Vector2();
 /* ---- TPS DEBUG MONITOR ---- */
 const debugCanvas = document.getElementById('debug-canvas');
 const debugRenderer = new THREE.WebGLRenderer({canvas: debugCanvas, antialias: true});
-debugRenderer.setSize(220, 138);
+debugRenderer.setSize(220, 135); // タイトルバー(25px)を除いたエリアにアジャスト
 
 const debugCamera = new THREE.OrthographicCamera(-70, 70, 44, -44, 1, 1000);
 debugCamera.position.set(0, 120, 0);
@@ -90,7 +90,6 @@ cameraHelper.material.depthWrite = false;
 scene.add(cameraHelper);
 
 /* ---- state ---- */
-// 💡 初期ノードIDの整合性を合わせる
 let currentId   = '13_corridor_0020,0020';
 let nextId      = null;
 let yaw=0, pitch=0, tYaw=0, tPitch=0;
@@ -106,6 +105,14 @@ let lastTS      = 0;
 let hotspotTime = 0;
 let mmPulseT    = 0;
 
+/* --- ミニマップ操作用の内部変数 --- */
+let mmPanX = 0;      
+let mmPanY = 0;      
+let mmScale = 1.0;   
+let isMMDragging = false;
+let mmStartX = 0;
+let mmStartY = 0;
+
 /* ---- UI Visibility Config ---- */
 const uiConfig = {
   edges: true,
@@ -113,7 +120,7 @@ const uiConfig = {
   routes: true
 };
 
-/* ---- helpers ---- */
+/* ---- 短縮ヘルパー関数 ---- */
 const $ = id => document.getElementById(id);
 function setLoadBar(p){ $('load-bar').style.width = p+'%'; }
 
@@ -172,7 +179,7 @@ function makeHotspotCanvas(label, t){
   ctx.moveTo(cx-14+sh,cy-10); ctx.lineTo(cx+18+sh,cy); ctx.lineTo(cx-14+sh,cy+10);
   ctx.closePath(); ctx.fill();
 
-  ctx.font='bold 18px "Rajdhani",sans-serif';
+  ctx.font='bold 18px sans-serif';
   const tw=Math.max(ctx.measureText(label).width+32,80);
   const bx=cx-tw/2, by=cy+70, bh=30;
   ctx.beginPath(); ctx.roundRect(bx,by,tw,bh,15);
@@ -220,7 +227,7 @@ function startWalk(targetNodeId, hotspotPos){
     tex.wrapS=THREE.RepeatWrapping; tex.wrapT=THREE.RepeatWrapping;
     tex.minFilter=THREE.LinearMipMapLinearFilter; tex.generateMipmaps=true;
     
-    // 💡 前後逆（180度反転）にするために、テクスチャの開始位置を半分ずらす
+    // 360度カメラの180度反転撮影を相殺
     tex.offset.x = 0.5; 
 
     sphereB.material.map=tex; sphereB.material.needsUpdate=true;
@@ -267,8 +274,8 @@ function finishWalk(){
   $('loc-name').textContent=node.name;
   $('loc-sub').textContent=node.sub;
   
-  // 💡 ミニマップ更新関数を呼び出し
   updateMinimap();
+  focusCurrentNodeOnMinimap();
 
   yaw = tYaw; pitch = tPitch;
 
@@ -285,12 +292,14 @@ function loadInitial(nodeId){
   currentId=nodeId;
   
   updateMinimap();
+  focusCurrentNodeOnMinimap();
+  
   setLoadBar(20);
   tLoader.load(node.asset.url, tex=>{
     tex.wrapS=THREE.RepeatWrapping; tex.wrapT=THREE.RepeatWrapping;
     tex.minFilter=THREE.LinearMipMapLinearFilter; tex.generateMipmaps=true;
     
-    // 💡 同じように左右反転と180度オフセットを適用
+    // 360度カメラの180度反転撮影を相殺
     tex.offset.x = 0.5; 
 
     sphereA.material.map=tex; sphereA.material.needsUpdate=true;
@@ -315,7 +324,6 @@ function updateCompass(angle){
   $('compass-needle').setAttribute('transform',`rotate(${deg},36,36)`);
 }
 
-/* 💡 修正: 起動時に全ノードのドットに加え、ノード間の「辺（ライン）」も動的に生成する */
 function initMinimapLayout() {
   const nodesGroup = $('mm-nodes-group');
   const edgesGroup = $('mm-edges-group');
@@ -324,16 +332,15 @@ function initMinimapLayout() {
   nodesGroup.innerHTML = ''; 
   edgesGroup.innerHTML = ''; 
 
-  const drawnEdges = new Set(); // 重複描画を防ぐためのセット
+  const drawnEdges = new Set(); 
 
   for (let id in NODES) {
     const node = NODES[id];
 
-    // --- 1. 辺（リンクライン）の生成 ---
+    // --- 1. 辺（リンク）の動的生成 ---
     node.links.forEach(lk => {
       const targetNode = NODES[lk.targetId];
       if (targetNode) {
-        // 二国間（A->B と B->A）の重複描画を避けるためIDをソートしてキーにする
         const edgeKey = [node.id, targetNode.id].sort().join('-');
         if (!drawnEdges.has(edgeKey)) {
           const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -341,8 +348,8 @@ function initMinimapLayout() {
           line.setAttribute('y1', node.mmY);
           line.setAttribute('x2', targetNode.mmX);
           line.setAttribute('y2', targetNode.mmY);
-          line.setAttribute('stroke', 'rgba(255, 255, 255, 0.12)');
-          line.setAttribute('stroke-width', '2');
+          line.setAttribute('stroke', 'rgba(255, 255, 255, 0.22)');
+          line.setAttribute('stroke-width', '1.8');
           line.setAttribute('stroke-linecap', 'round');
           edgesGroup.appendChild(line);
           drawnEdges.add(edgeKey);
@@ -350,31 +357,30 @@ function initMinimapLayout() {
       }
     });
 
-    // --- 2. 点（ノードドット）の生成 ---
+    // --- 2. 点（ノード）の動的生成 ---
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('id', `mm-dot-${node.id}`);
     circle.setAttribute('cx', node.mmX);
     circle.setAttribute('cy', node.mmY);
-    circle.setAttribute('r', '4'); // マップ拡大に合わせて少し大きく調整
+    circle.setAttribute('r', '3.5'); 
     circle.setAttribute('fill', '#a78bfa');
-    circle.setAttribute('opacity', '0.55');
+    circle.setAttribute('opacity', '0.65');
     nodesGroup.appendChild(circle);
   }
 }
 
-/* 💡 修正: マップ拡大に合わせて現在地ピンと視線矢印のサイズを微調整 */
 function updateMinimap(){
   for (let id in NODES) {
     const dot = $(`mm-dot-${id}`);
     if (dot) {
       if (id === currentId) {
         dot.setAttribute('fill', '#fff');
-        dot.setAttribute('r', '5.5');
+        dot.setAttribute('r', '5.0');
         dot.setAttribute('opacity', '1');
       } else {
         dot.setAttribute('fill', '#a78bfa');
-        dot.setAttribute('r', '4');
-        dot.setAttribute('opacity', '0.55');
+        dot.setAttribute('r', '3.5');
+        dot.setAttribute('opacity', '0.65');
       }
     }
   }
@@ -384,13 +390,27 @@ function updateMinimap(){
     const ax = currentNode.mmX;
     const ay = currentNode.mmY;
     
-    // パルスエフェクトの追従
     $('mm-pulse').setAttribute('cx', ax);
     $('mm-pulse').setAttribute('cy', ay);
-    
-    // プレイヤー視線用矢印ポリゴンの頂点座標を現在地基準にリセット
-    $('mm-arrow').setAttribute('points', `${ax},${ay-9} ${ax+3.5},${ay-3} ${ax-3.5},${ay-3}`);
+    $('mm-arrow').setAttribute('points', `${ax},${ay-8} ${ax+3.0},${ay-2} ${ax-3.0},${ay-2}`);
   }
+}
+
+/* --- スクロール・ズーム行列をSVGのコンテナグループに反映 --- */
+function applyMinimapTransform() {
+  const group = $('mm-transform-group');
+  if (group) {
+    group.setAttribute('transform', `translate(${mmPanX}, ${mmPanY}) scale(${mmScale})`);
+  }
+}
+
+/* --- 現在地ノードがミニマップの枠内中央（130, 80）に来るように位置を補正 --- */
+function focusCurrentNodeOnMinimap() {
+  const currentNode = NODES[currentId];
+  if (!currentNode) return;
+  mmPanX = 130 - currentNode.mmX * mmScale;
+  mmPanY = 80 - currentNode.mmY * mmScale;
+  applyMinimapTransform();
 }
 
 /* ---- events ---- */
@@ -448,7 +468,61 @@ let lastPinch=0;
 canvas.addEventListener('touchstart',e=>{ if(e.touches.length===2) lastPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); });
 canvas.addEventListener('touchmove',e=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); tFov=Math.max(30,Math.min(110,tFov-(d-lastPinch)*0.3)); lastPinch=d; } },{passive:true});
 
-$('fov-slider').addEventListener('input',e=>{ tFov=+e.target.value; });
+/* --- ミニマップ内でのドラッグスクロールイベント --- */
+const mmMask = $('mm-drag-mask');
+mmMask.addEventListener('pointerdown', e => {
+  isMMDragging = true;
+  mmStartX = e.clientX - mmPanX;
+  mmStartY = e.clientY - mmPanY;
+  mmMask.setPointerCapture(e.pointerId);
+  mmMask.style.cursor = 'grabbing';
+  e.stopPropagation(); 
+});
+mmMask.addEventListener('pointermove', e => {
+  if (!isMMDragging) return;
+  mmPanX = e.clientX - mmStartX;
+  mmPanY = e.clientY - mmStartY;
+  applyMinimapTransform();
+  e.stopPropagation();
+});
+mmMask.addEventListener('pointerup', e => {
+  isMMDragging = false;
+  mmMask.style.cursor = 'grab';
+  e.stopPropagation();
+});
+
+/* --- ミニマップ内でのホイールズームイベント --- */
+$('hud-minimap').addEventListener('wheel', e => {
+  e.preventDefault();
+  e.stopPropagation(); 
+
+  const zoomFactor = 1.1;
+  const oldScale = mmScale;
+  
+  if (e.deltaY < 0) {
+    mmScale = Math.min(6.0, mmScale * zoomFactor);
+  } else {
+    mmScale = Math.max(0.5, mmScale / zoomFactor);
+  }
+
+  const rect = $('hud-minimap').getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+
+  mmPanX = mouseX - (mouseX - mmPanX) * (mmScale / oldScale);
+  mmPanY = mouseY - (mouseY - mmPanY) * (mmScale / oldScale);
+
+  applyMinimapTransform();
+}, { passive: false });
+
+/* --- REC（現在地復帰）ボタンイベント --- */
+$('mm-btn-rec').addEventListener('click', e => {
+  e.stopPropagation();
+  mmScale = 1.0; 
+  focusCurrentNodeOnMinimap();
+});
+
+$('fov-slider').addEventListener('input', e=>{ tFov=+e.target.value; });
 $('btn-zm').onclick=()=>{ tFov=Math.max(30,tFov-10); };
 $('btn-zp').onclick=()=>{ tFov=Math.min(110,tFov+10); };
 $('btn-reset').onclick=()=>{ const n=NODES[currentId]; tYaw=n.initYaw; tPitch=0; tFov=75; };
@@ -493,7 +567,7 @@ function animate(now){
   const dt=Math.min((now-lastTS)/1000,0.1);
   lastTS=now; hotspotTime+=dt; mmPulseT+=dt;
 
-  if(walkPhase==='walk'){
+  if(walkPhase=='walk'){
     walkT=Math.min(walkT+dt/WALK_DUR,1);
 
     yaw = tYaw;
@@ -597,7 +671,7 @@ function animate(now){
   sphereB.material.wireframe = false;
 }
 
-// 💡 初期セットアップの順序を整理
+// 初期セットアップの順序整理
 initMinimapLayout();
 loadInitial('13_corridor_0020,0020');
 requestAnimationFrame(animate);

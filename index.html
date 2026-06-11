@@ -1,146 +1,157 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>360° ストリートビュー</title>
-<link rel="stylesheet" href="./css/style.css">
+  <meta charset="UTF-8">
+  <title>3D Walkthrough System with Minimap</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-<div id="load-bar"></div>
-<canvas id="sv-canvas"></canvas>
-<div id="step-flash"></div>
-<div id="crosshair"></div>
-<div id="tooltip"></div>
+  <canvas id="sv-canvas"></canvas>
 
-<div id="debug-container">
-  <div id="debug-title">DEBUG: TPS VIEW (TOP-DOWN)</div>
-  <canvas id="debug-canvas"></canvas>
-</div>
+  <div id="crosshair"></div>
 
-<div id="hud-location">
-  <div id="loc-badge">
-    <div id="loc-name">読み込み中...</div>
-    <div id="loc-sub">360° panorama</div>
-  </div>
-</div>
+  <div id="step-flash"></div>
 
-<div id="hud-speed"><div id="speed-inner">▶ 移動中...</div></div>
+  <div class="hud-layer">
+    <div id="load-container"><div id="load-bar"></div></div>
 
-<svg id="hud-compass" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="cglow"><feGaussianBlur stdDeviation="2" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <circle cx="36" cy="36" r="34" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-  <line x1="36" y1="4"  x2="36" y2="10" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
-  <line x1="36" y1="62" x2="36" y2="68" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
-  <line x1="4"  y1="36" x2="10" y2="36" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
-  <line x1="62" y1="36" x2="68" y2="36" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
-  <text x="36" y="18" text-anchor="middle" font-size="10" font-family="Rajdhani,sans-serif" font-weight="600" fill="#ff5555" filter="url(#cglow)">N</text>
-  <text x="36" y="58" text-anchor="middle" font-size="9" font-family="Rajdhani,sans-serif" fill="rgba(255,255,255,0.38)">S</text>
-  <text x="14" y="40" text-anchor="middle" font-size="9" font-family="Rajdhani,sans-serif" fill="rgba(255,255,255,0.38)">W</text>
-  <text x="58" y="40" text-anchor="middle" font-size="9" font-family="Rajdhani,sans-serif" fill="rgba(255,255,255,0.38)">E</text>
-  <g id="compass-needle">
-    <polygon points="36,20 38.5,36 36,33 33.5,36" fill="#ff5555" opacity="0.9"/>
-    <polygon points="36,52 38.5,36 36,39 33.5,36" fill="rgba(255,255,255,0.38)"/>
-  </g>
-  <circle cx="36" cy="36" r="3" fill="rgba(255,255,255,0.6)"/>
-</svg>
-
-<div id="hud-controls">
-  <div id="ctrl-panel">
-    <button class="hud-btn" id="btn-zm" title="ズームイン">＋</button>
-    <input type="range" id="fov-slider" min="30" max="110" value="75" step="1">
-    <button class="hud-btn" id="btn-zp" title="ズームアウト">－</button>
-    <div class="divider"></div>
-    <span id="fov-readout">75°</span>
-    <div class="divider"></div>
-    <button class="hud-btn" id="btn-reset" title="リセット">↺</button>
-    <button class="hud-btn" id="btn-auto" title="オートローテーション">▶</button>
-    <button class="hud-btn" id="btn-settings" title="詳細設定">⚙</button>
-  </div>
-</div>
-
-<svg id="hud-minimap" viewBox="0 0 260 160" width="260" height="160" xmlns="http://www.w3.org/2000/svg">
-  <rect width="260" height="160" rx="12" fill="rgba(0,0,0,0.62)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-  <text x="130" y="16" text-anchor="middle" font-size="8" font-family="Rajdhani,sans-serif" letter-spacing="0.12em" fill="rgba(255,255,255,0.28)">FLOOR MAP (3F)</text>
-  
-  <g id="mm-edges-group"></g>
-  <g id="mm-nodes-group"></g>
-  
-  <circle id="mm-pulse" cx="0" cy="0" r="12" fill="none" stroke="#5a7fff" stroke-width="1.5" opacity="0.4"/>
-  <polygon id="mm-arrow" points="0,0 0,0 0,0" fill="#fff" opacity="0.85"/>
-</svg>
-
-<div id="settings-modal">
-  <div id="modal-content">
-    <div id="modal-header">
-      <div id="modal-title">HUD & GRID SETTINGS</div>
-      <button id="btn-close-modal">&times;</button>
-    </div>
-    
-    <div class="setting-row">
-      <div>
-        <span class="setting-label">空間グリッド（辺）</span>
-        <span class="setting-sub">天球パノラマのワイヤーフレーム線</span>
+    <div id="hud-location">
+      <div id="loc-badge">
+        <h1 id="loc-name">Loading...</h1>
+        <p id="loc-sub">SYSTEM INITIALIZING</p>
       </div>
-      <label class="switch"><input type="checkbox" id="tg-grid-edges"><span class="slider"></span></label>
     </div>
 
-    <div class="setting-row">
-      <div>
-        <span class="setting-label">空間グリッド（頂点）</span>
-        <span class="setting-sub">天球パノラマを構成する交点ドット</span>
-      </div>
-      <label class="switch"><input type="checkbox" id="tg-grid-points"><span class="slider"></span></label>
+    <div id="hud-speed">
+      <div id="speed-inner">WARPING</div>
     </div>
 
-    <div class="setting-row">
-      <div>
-        <span class="setting-label">進路の可視化ガイド</span>
-        <span class="setting-sub">FPS視点でのノード間の接続経路</span>
-      </div>
-      <label class="switch"><input type="checkbox" id="tg-grid-routes" checked><span class="slider"></span></label>
+    <div class="top-right-box interactive">
+      <svg id="hud-compass" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r="33" fill="rgba(6, 12, 32, 0.55)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+        <text x="36" y="16" text-anchor="middle" font-size="8" fill="#ef4444" font-weight="bold" font-family="'Rajdhani', sans-serif">N</text>
+        <text x="36" y="64" text-anchor="middle" font-size="8" fill="#64748b" font-weight="bold" font-family="'Rajdhani', sans-serif">S</text>
+        <g id="compass-needle">
+          <polygon points="36,18 41,36 36,32" fill="#ef4444"/>
+          <polygon points="36,54 41,36 36,32" fill="#cbd5e1"/>
+          <polygon points="36,18 31,36 36,32" fill="#ea580c"/>
+          <polygon points="36,54 31,36 36,32" fill="#94a3b8"/>
+        </g>
+        <circle cx="36" cy="36" r="2.5" fill="#0f172a" stroke="#fff" stroke-width="1"/>
+      </svg>
+      <button id="btn-settings" title="Open Settings">⚙</button>
     </div>
 
-    <div class="setting-row">
-      <div>
-        <span class="setting-label">ロケーションバッジ</span>
-        <span class="setting-sub">左上の部屋名・階層表示</span>
-      </div>
-      <label class="switch"><input type="checkbox" id="tg-hud-loc" checked><span class="slider"></span></label>
+    <div id="debug-container">
+      <div id="debug-title">ORBITAL MONITOR (TPS)</div>
+      <canvas id="debug-canvas"></canvas>
     </div>
 
-    <div class="setting-row">
-      <div>
-        <span class="setting-label">コンパス UI</span>
-        <span class="setting-sub">右上の方位磁針サークル</span>
-      </div>
-      <label class="switch"><input type="checkbox" id="tg-hud-compass" checked><span class="slider"></span></label>
-    </div>
+    <svg id="hud-minimap" class="interactive" viewBox="0 0 260 160" width="260" height="160" xmlns="http://www.w3.org/2000/svg" style="user-select: none; touch-action: none;">
+      <rect width="260" height="160" rx="12" fill="rgba(6, 12, 32, 0.75)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+      <rect id="mm-drag-mask" width="260" height="160" fill="transparent" style="cursor: grab;"/>
+      
+      <g id="mm-transform-group">
+        <g id="mm-edges-group"></g>
+        <g id="mm-nodes-group"></g>
+        <circle id="mm-pulse" cx="0" cy="0" r="12" fill="none" stroke="#5a7fff" stroke-width="1.5" opacity="0.4"/>
+        <polygon id="mm-arrow" points="0,0 0,0 0,0" fill="#fff" opacity="0.85"/>
+      </g>
+      
+      <text x="130" y="22" text-anchor="middle" font-size="9" font-family="'Rajdhani', sans-serif" font-weight="600" letter-spacing="0.15em" fill="rgba(255,255,255,0.45)" pointer-events="none">FLOOR MAP (3F)</text>
+      
+      <g id="mm-btn-rec" style="cursor: pointer;">
+        <rect x="214" y="126" width="34" height="22" rx="6" fill="rgba(20, 30, 65, 0.85)" stroke="rgba(90, 130, 255, 0.6)" stroke-width="1"/>
+        <circle cx="223" cy="137" r="3.5" fill="#ef4444"/>
+        <text x="233" y="140" font-size="8" font-family="'Rajdhani', sans-serif" font-weight="bold" fill="#ccd8ff">REC</text>
+      </g>
+    </svg>
 
-    <div class="setting-row">
-      <div>
-        <span class="setting-label">フロアマップ</span>
-        <span class="setting-sub">右下のミニマップ回路</span>
+    <div id="hud-controls" class="interactive">
+      <div id="ctrl-panel">
+        <button id="btn-zm" class="hud-btn" title="Zoom In">+</button>
+        <input type="range" id="fov-slider" min="30" max="110" value="75">
+        <button id="btn-zp" class="hud-btn" title="Zoom Out">-</button>
+        <span id="fov-readout">75°</span>
+        <div class="divider"></div>
+        <button id="btn-reset" class="hud-btn" title="Reset Camera">R</button>
+        <button id="btn-auto" class="hud-btn" title="Auto Rotate">▶</button>
       </div>
-      <label class="switch"><input type="checkbox" id="tg-hud-map" checked><span class="slider"></span></label>
-    </div>
-
-    <div class="setting-row">
-      <div>
-        <span class="setting-label">TPS デバッグモニター</span>
-        <span class="setting-sub">俯瞰視点の開発デバッグ画面</span>
-      </div>
-      <label class="switch"><input type="checkbox" id="tg-hud-debug" checked><span class="slider"></span></label>
     </div>
   </div>
-</div>
 
-<script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
-<script src="./js/mapData.js"></script>
-<script src="./js/main.js"></script>
+  <div id="tooltip">Tooltip</div>
+
+  <div id="settings-modal">
+    <div id="modal-content">
+      <div id="modal-header">
+        <h2 id="modal-title">SYSTEM CONFIG</h2>
+        <button id="btn-close-modal">✕</button>
+      </div>
+      
+      <div class="setting-row">
+        <div>
+          <span class="setting-label">Location Title HUD</span>
+          <span class="setting-sub">位置情報の表示・非表示</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="tg-hud-loc" checked><span class="slider"></span></label>
+      </div>
+      
+      <div class="setting-row">
+        <div>
+          <span class="setting-label">Digital Compass</span>
+          <span class="setting-sub">コンパスの表示・非表示</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="tg-hud-compass" checked><span class="slider"></span></label>
+      </div>
+      
+      <div class="setting-row">
+        <div>
+          <span class="setting-label">Navigation Minimap</span>
+          <span class="setting-sub">ミニマップの表示・非表示</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="tg-hud-map" checked><span class="slider"></span></label>
+      </div>
+      
+      <div class="setting-row">
+        <div>
+          <span class="setting-label">Orbital Debug Monitor</span>
+          <span class="setting-sub">TPSデバッグモニターの切り替え</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="tg-hud-debug" checked><span class="slider"></span></label>
+      </div>
+      
+      <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:14px 0;">
+      
+      <div class="setting-row">
+        <div>
+          <span class="setting-label">Show Sphere Wireframe</span>
+          <span class="setting-sub">全球ワイヤーフレームの描画</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="tg-grid-edges" checked><span class="slider"></span></label>
+      </div>
+      
+      <div class="setting-row">
+        <div>
+          <span class="setting-label">Show Vertex Points</span>
+          <span class="setting-sub">全球頂点粒子の描画</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="tg-grid-points" checked><span class="slider"></span></label>
+      </div>
+      
+      <div class="setting-row">
+        <div>
+          <span class="setting-label">Show Route Lines</span>
+          <span class="setting-sub">空間内の移動経路ガイドの描画</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="tg-grid-routes" checked><span class="slider"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/mapData.js"></script>
+  <script src="./js/main.js"></script>
 </body>
 </html>
