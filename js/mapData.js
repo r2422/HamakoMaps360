@@ -88,7 +88,7 @@ const Y_BASE_4 = 120;
 ------------------------------------------------------------ */
 
 // --- 廊下ノード ---
-mapGraph.addNode(new MapNode('13_corridor_0020,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0020,0020.jpg', Math.PI / 2, 0, [ 20, Y_BASE_3,  20], 3, 'North'));
+mapGraph.addNode(new MapNode('13_corridor_0000,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0000,0020.jpg', Math.PI / 2, 0, [ 0, Y_BASE_3,  20], 3, 'North'));
 mapGraph.addNode(new MapNode('13_corridor_0120,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0120,0020.jpg', 0, 0, [120, Y_BASE_3,  20], 3, 'North'));
 mapGraph.addNode(new MapNode('13_corridor_0220,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0220,0020.jpg', 0, 0, [220, Y_BASE_3,  20], 3, 'North'));
 mapGraph.addNode(new MapNode('13_corridor_0330,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0330,0020.jpg', 0, 0, [330, Y_BASE_3,  20], 3, 'North'));
@@ -114,8 +114,8 @@ mapGraph.addNode(new MapNode('13_stairs_1000,0140', '北館 3-2階 階段', 'Nor
 ------------------------------------------------------------ */
 
 // 隣接リンク 廊下
-mapGraph.getNode('13_corridor_0020,0020').addLink('13_corridor_0120,0020', '廊下を東へ', 'East');
-mapGraph.getNode('13_corridor_0120,0020').addLink('13_corridor_0020,0020', '廊下を西へ', 'West');
+mapGraph.getNode('13_corridor_0000,0020').addLink('13_corridor_0120,0020', '廊下を東へ', 'East');
+mapGraph.getNode('13_corridor_0120,0020').addLink('13_corridor_0000,0020', '廊下を西へ', 'West');
 mapGraph.getNode('13_corridor_0120,0020').addLink('13_corridor_0220,0020', '廊下を東へ', 'East');
 mapGraph.getNode('13_corridor_0220,0020').addLink('13_corridor_0120,0020', '廊下を西へ', 'West');
 mapGraph.getNode('13_corridor_0220,0020').addLink('13_corridor_0330,0020', '廊下を東へ', 'East');
@@ -134,8 +134,8 @@ mapGraph.getNode('13_corridor_0870,0020').addLink('13_corridor_1000,0020', '物�
 mapGraph.getNode('13_corridor_1000,0020').addLink('13_corridor_0870,0020', '廊下を西へ', 'West');
 
 // 隣接リンク 教室
-mapGraph.getNode('13_corridor_0020,0020').addLink('13_classroom_0060,0100_131', '入る', 'Enter 131room');
-mapGraph.getNode('13_classroom_0060,0100_131').addLink('13_corridor_0020,0020', '出る', 'Exit');
+mapGraph.getNode('13_corridor_0000,0020').addLink('13_classroom_0060,0100_131', '入る', 'Enter 131room');
+mapGraph.getNode('13_classroom_0060,0100_131').addLink('13_corridor_0000,0020', '出る', 'Exit');
 mapGraph.getNode('13_corridor_0120,0020').addLink('13_classroom_0060,0100_131', '入る', 'Enter 131room');
 mapGraph.getNode('13_classroom_0060,0100_131').addLink('13_corridor_0120,0020', '出る', 'Exit');
 

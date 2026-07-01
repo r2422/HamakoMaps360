@@ -90,7 +90,7 @@ cameraHelper.material.depthWrite = false;
 scene.add(cameraHelper);
 
 /* ---- state ---- */
-let currentId   = '13_corridor_0020,0020';
+let currentId   = '13_corridor_0000,0020';
 let nextId      = null;
 let yaw=0, pitch=0, tYaw=0, tPitch=0;
 let fov=75, tFov=75;
@@ -118,26 +118,35 @@ let lastFloorNumber = null;
 const uiConfig = {
   edges: true,
   points: true,
-  routes: true
+  routes: true,
+  textSizeMode: 'constant' // 💡 追加：'constant'（一定）または 'distance'（距離依存）
 };
 
 /* ---- 短縮ヘルパー関数 ---- */
 const $ = id => document.getElementById(id);
 function setLoadBar(p){ $('load-bar').style.width = p+'%'; }
 
-/* ---- 進路ガイドライン(道)の最前面表示・ストリートビュー風メッシュ生成関数 ---- */
+/* ---- 進路パス(ストリートビュー風)・先端テキスト・ピンの生成関数 ---- */
 function buildRouteLines(node) {
-  // 古いルートメッシュをクリア
-  while(routeLinesGroup.children.length) routeLinesGroup.remove(routeLinesGroup.children[0]);
+  // 古いオブジェクトをクリア
+  while(routeLinesGroup.children.length) {
+    const child = routeLinesGroup.children[0];
+    if (child.geometry) child.geometry.dispose();
+    if (child.material) {
+      if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+      else child.material.dispose();
+    }
+    routeLinesGroup.remove(child);
+  }
   
   if(!uiConfig.routes) return;
 
-  const yOffset = -3.8; // 足元（床面）の高さに合わせる調整値
+  const yOffset = -3.8; // 床面の高さ
 
   node.links.forEach(lk => {
     if (!lk.pos) return;
 
-    // 地図座標（4px = 1m）から実寸メートル換算に開眼（4で割る）
+    // 地図座標（1m = 4px）から実寸メートル換算（4で割る）
     const targetX = lk.pos[0] / 4;
     const targetY = lk.pos[1] / 4;
     const targetZ = lk.pos[2] / 4;
@@ -145,33 +154,93 @@ function buildRouteLines(node) {
     const startPoint = new THREE.Vector3(0, yOffset, 0);
     const endPoint = new THREE.Vector3(targetX, yOffset, targetZ); 
 
-    // 二点間の距離と方向（角度）を計算
     const distance = startPoint.distanceTo(endPoint);
     const direction = new THREE.Vector3().subVectors(endPoint, startPoint).normalize();
 
-    // ストリートビュー風の「太い帯」を表現する平面ジオメトリ（幅0.8m）
+    // ----------------------------------------------------
+    // A. 太い進路パス（道路の青い帯）
+    // ----------------------------------------------------
     const geo = new THREE.PlaneGeometry(0.8, distance);
-    
     const mat = new THREE.MeshBasicMaterial({
       color: 0x5a7fff,
       transparent: true,
       opacity: 0.6,
       side: THREE.DoubleSide,
-      // 💡 深度テストを無効化し、描画の書き込みもオフにすることで天球を貫通させる
       depthTest: false,
       depthWrite: false
     });
-
     const mesh = new THREE.Mesh(geo, mat);
-
-    // 平面を床（水平）に寝かせて、ターゲットの方向へ回転させる処理
     mesh.position.copy(startPoint).add(direction.clone().multiplyScalar(distance / 2));
     mesh.lookAt(endPoint);
-    mesh.rotateX(Math.PI / 2); // 床面に水平にする
+    mesh.rotateX(Math.PI / 2);
+    mesh.renderOrder = 20;
 
-    // 💡 天球(renderOrder=1, 2)やホットスポットよりも確実に前面に描画されるよう大きな数値を設定
-    mesh.renderOrder = 20; 
+    // Raycastクリック判定用データ保持
+    mesh.userData = { isRoute: true, link: lk };
     routeLinesGroup.add(mesh);
+
+    // ----------------------------------------------------
+    // B. 先端の移動先テキスト（Canvasスプライト）
+    // ----------------------------------------------------
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;  // 解像度を上げて文字ボケを防止
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 512, 128);
+    
+    ctx.font = 'Bold 54px sans-serif';
+    ctx.fillStyle = '#55ff7f'; 
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // addLinkの第2引数の文字列（lk.label）を表示。空ならhintやIDをフォールバック
+    const textTarget = lk.label || lk.hint || lk.targetId || "NEXT";
+    ctx.fillText(textTarget, 256, 64);
+
+    const txtTex = new THREE.CanvasTexture(canvas);
+    const spriteMat = new THREE.SpriteMaterial({
+      map: txtTex,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false
+    });
+    const textSprite = new THREE.Sprite(spriteMat);
+    
+    // 💡 ▼との被りを防ぐため、位置を床から2.0m（以前より高く）に変更
+    textSprite.position.set(targetX, yOffset + 2.0, targetZ);
+    textSprite.renderOrder = 22;
+    textSprite.scale.set(4, 1, 1);
+    
+    textSprite.userData = { isRoute: true, link: lk, isText: true };
+    routeLinesGroup.add(textSprite);
+
+    // ----------------------------------------------------
+    // C. 先端の下向き三角形ピン（理想.jpgの▼マーク）
+    // ----------------------------------------------------
+    const shape = new THREE.Shape();
+    // 下向きの三角形の頂点を定義
+    shape.moveTo(-0.2, 0.3);
+    shape.lineTo(0.2, 0.3);
+    shape.lineTo(0, 0);
+    shape.lineTo(-0.2, 0.3);
+
+    const pinGeo = new THREE.ShapeGeometry(shape);
+    const pinMat = new THREE.MeshBasicMaterial({
+      color: 0x55ff7f,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.9,
+      depthTest: false,
+      depthWrite: false
+    });
+    const pinMesh = new THREE.Mesh(pinGeo, pinMat);
+    
+    // 文字のすぐ下の位置（床から0.1m）に配置
+    pinMesh.position.set(targetX, yOffset + 0.1, targetZ);
+    pinMesh.renderOrder = 22; 
+    
+    pinMesh.userData = { isRoute: true, link: lk, isPin: true };
+    routeLinesGroup.add(pinMesh);
   });
 }
 
@@ -634,8 +703,44 @@ setupToggle('tg-grid-routes', null, (visible) => {
   buildRouteLines(NODES[currentId]);
 });
 
+// マウスクリック、またはタップイベント内に組み込む処理の例
+function onWorkspaceClick(event) {
+  // 標準のイベント座標変換（Three.jsのRaycaster用）
+  const rect = renderer.domElement.getBoundingClientRect();
+  const mouse = new THREE.Vector2(
+    ((event.clientX - rect.left) / rect.width) * 2 - 1,
+    -((event.clientY - rect.top) / rect.height) * 2 + 1
+  );
 
-/* ---- animation loop ---- */
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+
+  // routeLinesGroup の中身を対象に衝突判定
+  const intersects = raycaster.intersectObjects(routeLinesGroup.children);
+
+  if (intersects.length > 0) {
+    // 最も手前にある衝突オブジェクトを取得
+    const hitObj = intersects[0].object;
+
+    // もしルート要素（パス、テキスト、ピン）であれば
+    if (hitObj.userData && hitObj.userData.isRoute && hitObj.userData.link) {
+      const targetLink = hitObj.userData.link;
+
+      // 💡 既存の「移動処理（ワープ開始関数）」を呼び出す
+      // ※関数の名称が `startWalk` や `onHotspotClick` など、現在のプログラムの設計に合わせて呼び出してください
+      console.log("ルート要素がクリックされました。移動先:", targetLink);
+      
+      // 例: 現在のホットスポットクリック時と同じ関数を呼び出す場合
+      // walkToNode(targetLink); 
+      return; // 遷移を開始したため処理を抜ける
+    }
+  }
+}
+
+// 既存のイベントリスナー登録箇所に追加
+renderer.domElement.addEventListener('click', onWorkspaceClick);
+
+
 /* ---- animation loop ---- */
 function animate(now){
   requestAnimationFrame(animate);
@@ -669,8 +774,6 @@ function animate(now){
     sphereB.matrixAutoUpdate = false;
     sphereB.matrix.copy(flipMatrix);
 
-    // メッシュ化したルートグループに行列変形をそのまま掛けると破綻するため、
-    // ここでは位置とスケールの自然な連動のみに留めます
     routeLinesGroup.matrixAutoUpdate = true;
     routeLinesGroup.scale.set(s, 1, s); 
 
@@ -683,9 +786,8 @@ function animate(now){
       gridEdgesB.material.opacity = 0;
       gridPointsB.material.opacity = 0;
       
-      // メッシュ要素のフェードアウト
       routeLinesGroup.children.forEach(l => {
-        l.material.opacity = uiConfig.routes ? 0.6 * (1.0 - walkT) : 0;
+        if(l.material) l.material.opacity = uiConfig.routes ? 0.6 * (1.0 - walkT) : 0;
       });
     } else {
       const fadeProgress = (walkT - 0.9) / 0.1; 
@@ -697,7 +799,7 @@ function animate(now){
       gridEdgesB.material.opacity = uiConfig.edges ? 0.15 * fadeProgress : 0;
       gridPointsB.material.opacity = uiConfig.points ? 0.25 * fadeProgress : 0;
       
-      routeLinesGroup.children.forEach(l => { l.material.opacity = 0; });
+      routeLinesGroup.children.forEach(l => { if(l.material) l.material.opacity = 0; });
     }
 
     camera.fov=fov;
@@ -726,9 +828,42 @@ function animate(now){
       gridPointsA.material.opacity = uiConfig.points ? 0.25 : 0;
     }
 
-    // 平面メッシュの透明度制御
+    // 通常フレーム時のルート要素全体のトランスフォーム制御
     routeLinesGroup.children.forEach(l => {
-      l.material.opacity = uiConfig.routes ? 0.6 : 0;
+      // 基本的な表示ON/OFFと不透明度の初期化
+      if (l.material) {
+        l.material.opacity = uiConfig.routes ? (l.userData.isPin ? 0.9 : 0.6) : 0;
+      }
+      
+      // 先端テキストおよびピン（▼マーク）のサイズ・回転個別処理
+      if (l.userData && l.userData.isRoute) {
+        if (l.userData.isText || l.userData.isPin) {
+          // カメラから対象オブジェクト（先端座標）までの3D空間上の現在の距離を測定
+          const distToCamera = camera.position.distanceTo(l.position);
+          
+          // 💡 サイズモード（一定化：constant / 距離依存：distance）による計算
+          let scaleFactor = 1.0;
+          if (uiConfig.textSizeMode === 'constant') {
+            // 一定化モード：カメラからの距離に比例してメッシュサイズを拡張し、画面上での見た目を同一にする
+            scaleFactor = distToCamera * 0.12; 
+          } else {
+            // 距離依存モード：3Dパースの通りに、遠くのものは小さく表示する
+            scaleFactor = 1.0;
+          }
+
+          // テキストスプライトのサイズ更新（幅4:高さ1）
+          if (l.userData.isText) {
+            l.scale.set(4 * scaleFactor, 1 * scaleFactor, 1);
+          }
+          
+          // 下向き三角形ピン（平面メッシュ）のサイズと向き（ビルボード化）の更新
+          if (l.userData.isPin) {
+            l.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            // ピンを完全にカメラの回転（向き）に正対させる
+            l.quaternion.copy(camera.quaternion);
+          }
+        }
+      }
     });
   }
 
@@ -758,5 +893,5 @@ function animate(now){
 
 // 初期セットアップ
 initMinimapLayout();
-loadInitial('13_corridor_0020,0020');
+loadInitial('13_corridor_0000,0020');
 requestAnimationFrame(animate);
