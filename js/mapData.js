@@ -115,10 +115,10 @@ mapGraph.addNode(new MapNode('13_corridor_0870,0020', '北館 3階 廊下 物理
 mapGraph.addNode(new MapNode('13_corridor_1000,0020', '北館 3階 廊下 物理室内', 'North building - Floor 3', '北館3F/13_corridor_1000,0020.jpg', 0, 0, [1000, Y_BASE_3,  20]));
 
 // --- 教室ノード ---
-mapGraph.addNode(new MapNode('13_classroom_0060,00100_131', '北館 3階 131教室', 'North building - Floor 3 131-classroom', '北館3F/13_classroom_0060,0100_131re.jpg', 0, 0, [ 60, Y_BASE_3,  100]));
-mapGraph.addNode(new MapNode('13_classroom_0180,00100_132', '北館 3階 132教室', 'North building - Floor 3 132-classroom', '北館3F/13_classroom_0180,00100_132.jpg', 0, 0, [180, Y_BASE_3,  100]));
-mapGraph.addNode(new MapNode('13_classroom_0450,00100_理数工学室', '北館 3階 理数工学室', 'North building - Floor 3 理数工学室', '北館3F/13_classroom_0450,00100_理数工学室.jpg', 0, 0, [450, Y_BASE_3,  100]));
-mapGraph.addNode(new MapNode('13_classroom_0870,00100_物理室', '北館 3階 物理室', 'North building - Floor 3 物理室', '北館3F/13_classroom_0870,00100_物理室re.jpg', 0, 0, [870, Y_BASE_3,  100]));
+mapGraph.addNode(new MapNode('13_classroom_0060,0100_131', '北館 3階 131教室', 'North building - Floor 3 131-classroom', '北館3F/13_classroom_0060,0100_131re.jpg', 0, 0, [ 60, Y_BASE_3,  100]));
+mapGraph.addNode(new MapNode('13_classroom_0180,0100_132', '北館 3階 132教室', 'North building - Floor 3 132-classroom', '北館3F/13_classroom_0180,0100_132.jpg', 0, 0, [180, Y_BASE_3,  100]));
+mapGraph.addNode(new MapNode('13_classroom_0450,0100_理数工学室', '北館 3階 理数工学室', 'North building - Floor 3 理数工学室', '北館3F/13_classroom_0450,0100_理数工学室.jpg', 0, 0, [450, Y_BASE_3,  100]));
+mapGraph.addNode(new MapNode('13_classroom_0870,0100_物理室', '北館 3階 物理室', 'North building - Floor 3 物理室', '北館3F/13_classroom_0870,0100_物理室re.jpg', 0, 0, [870, Y_BASE_3,  100]));
 
 // --- 階段ノード ---
 mapGraph.addNode(new MapNode('13_stairs_0330,0140', '北館 3-2階 階段', 'North building - Floor 3', '北館3F/13_stairs_0330,0140.jpg', 0, 0, [330, Y_BASE_3 - 20,  140]));
@@ -149,23 +149,23 @@ mapGraph.getNode('13_corridor_0870,0020').addLink('13_corridor_1000,0020', '物�
 mapGraph.getNode('13_corridor_1000,0020').addLink('13_corridor_0870,0020', '廊下を西へ', 'West');
 
 // 隣接リンク 教室
-mapGraph.getNode('13_corridor_0020,0020').addLink('13_classroom_0060,00100_131', '入る', 'Enter 131room');
-mapGraph.getNode('13_classroom_0060,00100_131').addLink('13_corridor_0020,0020', '出る', 'Exit');
-mapGraph.getNode('13_corridor_0120,0020').addLink('13_classroom_0060,00100_131', '入る', 'Enter 131room');
-mapGraph.getNode('13_classroom_0060,00100_131').addLink('13_corridor_0120,0020', '出る', 'Exit');
+mapGraph.getNode('13_corridor_0020,0020').addLink('13_classroom_0060,0100_131', '入る', 'Enter 131room');
+mapGraph.getNode('13_classroom_0060,0100_131').addLink('13_corridor_0020,0020', '出る', 'Exit');
+mapGraph.getNode('13_corridor_0120,0020').addLink('13_classroom_0060,0100_131', '入る', 'Enter 131room');
+mapGraph.getNode('13_classroom_0060,0100_131').addLink('13_corridor_0120,0020', '出る', 'Exit');
 
-mapGraph.getNode('13_corridor_0120,0020').addLink('13_classroom_0180,00100_132', '入る', 'Enter 132room');
-mapGraph.getNode('13_classroom_0180,00100_132').addLink('13_corridor_0120,0020', '出る', 'Exit');
-mapGraph.getNode('13_corridor_0220,0020').addLink('13_classroom_0180,00100_132', '入る', 'Enter 132room');
-mapGraph.getNode('13_classroom_0180,00100_132').addLink('13_corridor_0220,0020', '出る', 'Exit');
+mapGraph.getNode('13_corridor_0120,0020').addLink('13_classroom_0180,0100_132', '入る', 'Enter 132room');
+mapGraph.getNode('13_classroom_0180,0100_132').addLink('13_corridor_0120,0020', '出る', 'Exit');
+mapGraph.getNode('13_corridor_0220,0020').addLink('13_classroom_0180,0100_132', '入る', 'Enter 132room');
+mapGraph.getNode('13_classroom_0180,0100_132').addLink('13_corridor_0220,0020', '出る', 'Exit');
 
-mapGraph.getNode('13_corridor_0380,0020').addLink('13_classroom_0450,00100_理数工学室', '入る', 'Enter 理数工学室');
-mapGraph.getNode('13_classroom_0450,00100_理数工学室').addLink('13_corridor_0380,0020', '出る', 'Exit');
-mapGraph.getNode('13_corridor_0520,0020').addLink('13_classroom_0450,00100_理数工学室', '入る', 'Enter 理数工学室');
-mapGraph.getNode('13_classroom_0450,00100_理数工学室').addLink('13_corridor_0520,0020', '出る', 'Exit');
+mapGraph.getNode('13_corridor_0380,0020').addLink('13_classroom_0450,0100_理数工学室', '入る', 'Enter 理数工学室');
+mapGraph.getNode('13_classroom_0450,0100_理数工学室').addLink('13_corridor_0380,0020', '出る', 'Exit');
+mapGraph.getNode('13_corridor_0520,0020').addLink('13_classroom_0450,0100_理数工学室', '入る', 'Enter 理数工学室');
+mapGraph.getNode('13_classroom_0450,0100_理数工学室').addLink('13_corridor_0520,0020', '出る', 'Exit');
 
-mapGraph.getNode('13_corridor_0870,0020').addLink('13_classroom_0870,00100_物理室', '入る', 'Enter 物理室');
-mapGraph.getNode('13_classroom_0870,00100_物理室').addLink('13_corridor_0870,0020', '出る', 'Exit');
+mapGraph.getNode('13_corridor_0870,0020').addLink('13_classroom_0870,0100_物理室', '入る', 'Enter 物理室');
+mapGraph.getNode('13_classroom_0870,0100_物理室').addLink('13_corridor_0870,0020', '出る', 'Exit');
 
 // 隣接リンク 階段
 mapGraph.getNode('13_corridor_0330,0020').addLink('13_stairs_0330,0140', '入る', 'Enter Stairs');
