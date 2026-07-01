@@ -733,7 +733,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // マウスクリック、またはタップイベント内に組み込む処理の例
 function onWorkspaceClick(event) {
-  // 標準のイベント座標変換（Three.jsのRaycaster用）
   const rect = renderer.domElement.getBoundingClientRect();
   const mouse = new THREE.Vector2(
     ((event.clientX - rect.left) / rect.width) * 2 - 1,
@@ -742,25 +741,26 @@ function onWorkspaceClick(event) {
 
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(mouse, camera);
-
-  // routeLinesGroup の中身を対象に衝突判定
   const intersects = raycaster.intersectObjects(routeLinesGroup.children);
 
   if (intersects.length > 0) {
-    // 最も手前にある衝突オブジェクトを取得
     const hitObj = intersects[0].object;
 
-    // もしルート要素（パス、テキスト、ピン）であれば
     if (hitObj.userData && hitObj.userData.isRoute && hitObj.userData.link) {
       const targetLink = hitObj.userData.link;
 
-      // 💡 既存の「移動処理（ワープ開始関数）」を呼び出す
-      // ※関数の名称が `startWalk` や `onHotspotClick` など、現在のプログラムの設計に合わせて呼び出してください
-      console.log("ルート要素がクリックされました。移動先:", targetLink);
+      // 💡 カメラを次の場所の方向に向ける計算
+      const targetX = targetLink.pos[0] / 4;
+      const targetZ = targetLink.pos[2] / 4;
       
-      // 例: 現在のホットスポットクリック時と同じ関数を呼び出す場合
-      // walkToNode(targetLink); 
-      return; // 遷移を開始したため処理を抜ける
+      // 現在のカメラ位置(0,0,0)から標的への水平角度(yaw)を計算
+      tYaw = Math.atan2(targetX, -targetZ); 
+      tPitch = 0; // 垂直方向は水平（正面）にリセット
+
+      // 💡 既存の移動開始関数を呼び出す（環境に合わせて名称を調整してください）
+      // 例: walkToNode(targetLink);
+      console.log("ルートクリックによるカメラ旋回＆移動開始:", targetLink);
+      return;
     }
   }
 }
@@ -802,8 +802,9 @@ function animate(now){
     sphereB.matrixAutoUpdate = false;
     sphereB.matrix.copy(flipMatrix);
 
+    // 💡 移動中にルート線の形状・太さを細く変形させないよう、スケールは (1, 1, 1) を維持します
     routeLinesGroup.matrixAutoUpdate = true;
-    routeLinesGroup.scale.set(s, 1, s); 
+    routeLinesGroup.scale.set(1, 1, 1); 
 
     if (walkT < 0.9) {
       sphereA.material.opacity = 1.0;
@@ -874,14 +875,11 @@ function animate(now){
             scaleFactor = 1.0;
           }
 
-          // 💡 テキストスプライトの処理
           if (l.userData.isText) {
             l.scale.set(4 * scaleFactor, 1 * scaleFactor, 1);
-            // 💡 スケールの拡大に合わせて、文字のボトムが三角（0.8m分）の上に常に留まるようY座標を動的追従
             l.position.y = (yOffset + 0.5) + (1.0 * scaleFactor) + 0.1;
           }
           
-          // 三角形ピンの処理
           if (l.userData.isPin) {
             l.scale.set(scaleFactor, scaleFactor, scaleFactor);
             l.quaternion.copy(camera.quaternion);
