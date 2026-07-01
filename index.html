@@ -74,13 +74,6 @@
         <h2 id="modal-title">SYSTEM CONFIG</h2>
         <button id="btn-close-modal">✕</button>
       </div>
-
-      <div class="ui-row" style="margin-top: 8px; display: flex; align-items: center; justify-content: space-between;">
-        <span style="color: #fff; font-size: 13px; font-family: sans-serif;">Route Text Size</span>
-        <button id="btn-text-size-mode" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #55ff7f; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 90px; transition: all 0.2s;">
-          Constant
-        </button>
-      </div>
       
       <div class="setting-row">
         <div>
@@ -138,6 +131,16 @@
           <span class="setting-sub">空間内の移動経路ガイドの描画</span>
         </div>
         <label class="switch"><input type="checkbox" id="tg-grid-routes" checked><span class="slider"></span></label>
+      </div>
+
+      <div class="setting-row ui-row">
+        <div>
+          <span class="setting-label">Route Text Size Mode</span>
+          <span class="setting-sub">案内文字の大きさを設定（一定 / 距離依存）</span>
+        </div>
+        <button id="btn-text-size-mode" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #55ff7f; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 95px; transition: all 0.2s; font-family: sans-serif;">
+          Constant
+        </button>
       </div>
     </div>
   </div>

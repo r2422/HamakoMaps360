@@ -175,7 +175,6 @@ function buildRouteLines(node) {
     mesh.rotateX(Math.PI / 2);
     mesh.renderOrder = 20;
 
-    // Raycastクリック判定用データ保持
     mesh.userData = { isRoute: true, link: lk };
     routeLinesGroup.add(mesh);
 
@@ -183,7 +182,7 @@ function buildRouteLines(node) {
     // B. 先端の移動先テキスト（Canvasスプライト）
     // ----------------------------------------------------
     const canvas = document.createElement('canvas');
-    canvas.width = 512;  // 解像度を上げて文字ボケを防止
+    canvas.width = 512;  
     canvas.height = 128;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, 512, 128);
@@ -193,7 +192,6 @@ function buildRouteLines(node) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // addLinkの第2引数の文字列（lk.label）を表示。空ならhintやIDをフォールバック
     const textTarget = lk.label || lk.hint || lk.targetId || "NEXT";
     ctx.fillText(textTarget, 256, 64);
 
@@ -204,25 +202,28 @@ function buildRouteLines(node) {
       depthTest: false,
       depthWrite: false
     });
+    
+    // アンカーポイントを下端中央に設定
+    spriteMat.center = new THREE.Vector2(0.5, 0.0);
+
     const textSprite = new THREE.Sprite(spriteMat);
     
-    // 💡 ▼との被りを防ぐため、位置を床から2.0m（以前より高く）に変更
-    textSprite.position.set(targetX, yOffset + 2.0, targetZ);
+    // ベースの位置を設定（高さはanimate内でサイズに応じてリアルタイムに上書きされます）
+    textSprite.position.set(targetX, yOffset + 1.0, targetZ);
     textSprite.renderOrder = 22;
     textSprite.scale.set(4, 1, 1);
     
-    textSprite.userData = { isRoute: true, link: lk, isText: true };
+    textSprite.userData = { isRoute: true, link: lk, isText: true, targetX: targetX, targetZ: targetZ };
     routeLinesGroup.add(textSprite);
 
     // ----------------------------------------------------
-    // C. 先端の下向き三角形ピン（理想.jpgの▼マーク）
+    // C. 先端の下向き三角形ピン（ご提示の仕様通りに完全復元）
     // ----------------------------------------------------
     const shape = new THREE.Shape();
-    // 下向きの三角形の頂点を定義
     shape.moveTo(-0.2, 0.3);
-    shape.lineTo(0.2, 0.3);
+    shape.lineTo(0.1, 0.3);
     shape.lineTo(0, 0);
-    shape.lineTo(-0.2, 0.3);
+    shape.lineTo(-0.1, 0.3);
 
     const pinGeo = new THREE.ShapeGeometry(shape);
     const pinMat = new THREE.MeshBasicMaterial({
@@ -235,8 +236,7 @@ function buildRouteLines(node) {
     });
     const pinMesh = new THREE.Mesh(pinGeo, pinMat);
     
-    // 文字のすぐ下の位置（床から0.1m）に配置
-    pinMesh.position.set(targetX, yOffset + 0.1, targetZ);
+    pinMesh.position.set(targetX, yOffset + 1.0, targetZ);
     pinMesh.renderOrder = 22; 
     
     pinMesh.userData = { isRoute: true, link: lk, isPin: true };
@@ -703,6 +703,34 @@ setupToggle('tg-grid-routes', null, (visible) => {
   buildRouteLines(NODES[currentId]);
 });
 
+/* ---- HUD: 文字サイズモード(Constant / Distance) 切り替えイベント ---- */
+document.addEventListener('DOMContentLoaded', () => {
+  const textSizeBtn = document.getElementById('btn-text-size-mode');
+  if (textSizeBtn) {
+    // 💡 初期状態の表示を設定オブジェクトと同期
+    if (uiConfig.textSizeMode === 'distance') {
+      textSizeBtn.textContent = 'Distance';
+      textSizeBtn.style.color = '#ccc';
+    } else {
+      textSizeBtn.textContent = 'Constant';
+      textSizeBtn.style.color = '#55ff7f';
+    }
+
+    // クリック時の切り替えイベント
+    textSizeBtn.addEventListener('click', () => {
+      if (uiConfig.textSizeMode === 'constant') {
+        uiConfig.textSizeMode = 'distance';
+        textSizeBtn.textContent = 'Distance';
+        textSizeBtn.style.color = '#ccc'; // 距離依存時は通常のグレー文字に
+      } else {
+        uiConfig.textSizeMode = 'constant';
+        textSizeBtn.textContent = 'Constant';
+        textSizeBtn.style.color = '#55ff7f'; // 一定化時は目立つネオンカラーに
+      }
+    });
+  }
+});
+
 // マウスクリック、またはタップイベント内に組み込む処理の例
 function onWorkspaceClick(event) {
   // 標準のイベント座標変換（Three.jsのRaycaster用）
@@ -828,38 +856,34 @@ function animate(now){
       gridPointsA.material.opacity = uiConfig.points ? 0.25 : 0;
     }
 
-    // 通常フレーム時のルート要素全体のトランスフォーム制御
+    const yOffset = -3.8;
+
     routeLinesGroup.children.forEach(l => {
-      // 基本的な表示ON/OFFと不透明度の初期化
       if (l.material) {
         l.material.opacity = uiConfig.routes ? (l.userData.isPin ? 0.9 : 0.6) : 0;
       }
       
-      // 先端テキストおよびピン（▼マーク）のサイズ・回転個別処理
       if (l.userData && l.userData.isRoute) {
         if (l.userData.isText || l.userData.isPin) {
-          // カメラから対象オブジェクト（先端座標）までの3D空間上の現在の距離を測定
           const distToCamera = camera.position.distanceTo(l.position);
           
-          // 💡 サイズモード（一定化：constant / 距離依存：distance）による計算
           let scaleFactor = 1.0;
           if (uiConfig.textSizeMode === 'constant') {
-            // 一定化モード：カメラからの距離に比例してメッシュサイズを拡張し、画面上での見た目を同一にする
             scaleFactor = distToCamera * 0.12; 
           } else {
-            // 距離依存モード：3Dパースの通りに、遠くのものは小さく表示する
             scaleFactor = 1.0;
           }
 
-          // テキストスプライトのサイズ更新（幅4:高さ1）
+          // 💡 テキストスプライトの処理
           if (l.userData.isText) {
             l.scale.set(4 * scaleFactor, 1 * scaleFactor, 1);
+            // 💡 スケールの拡大に合わせて、文字のボトムが三角（0.8m分）の上に常に留まるようY座標を動的追従
+            l.position.y = (yOffset + 0.5) + (1.0 * scaleFactor) + 0.1;
           }
           
-          // 下向き三角形ピン（平面メッシュ）のサイズと向き（ビルボード化）の更新
+          // 三角形ピンの処理
           if (l.userData.isPin) {
             l.scale.set(scaleFactor, scaleFactor, scaleFactor);
-            // ピンを完全にカメラの回転（向き）に正対させる
             l.quaternion.copy(camera.quaternion);
           }
         }
@@ -876,15 +900,12 @@ function animate(now){
     pulseEl.setAttribute('opacity',(0.45-0.28*Math.abs(Math.sin(mmPulseT*2.3))).toFixed(2));
   }
 
-  // メインの3Dパノラマ空間レンダリング
   renderer.render(scene, camera);
 
-  // ワイヤーフレームによる上空天球デバッグモニターの更新
   sphereA.material.wireframe = true;
   sphereB.material.wireframe = true;
   cameraHelper.update();
   
-  // デバッグモニター用平行投影カメラでのレンダリング
   debugRenderer.render(scene, debugCamera);
   
   sphereA.material.wireframe = false;
