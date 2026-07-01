@@ -125,31 +125,53 @@ const uiConfig = {
 const $ = id => document.getElementById(id);
 function setLoadBar(p){ $('load-bar').style.width = p+'%'; }
 
-/* ---- 進路ガイドライン(道)の生成関数 ---- */
+/* ---- 進路ガイドライン(道)の最前面表示・ストリートビュー風メッシュ生成関数 ---- */
 function buildRouteLines(node) {
+  // 古いルートメッシュをクリア
   while(routeLinesGroup.children.length) routeLinesGroup.remove(routeLinesGroup.children[0]);
   
   if(!uiConfig.routes) return;
 
+  const yOffset = -3.8; // 足元（床面）の高さに合わせる調整値
+
   node.links.forEach(lk => {
     if (!lk.pos) return;
-    const points = [];
-    points.push(new THREE.Vector3(0, -4, 0)); 
-    points.push(new THREE.Vector3(lk.pos[0], lk.pos[1], lk.pos[2]));
 
-    const geo = new THREE.BufferGeometry().setFromPoints(points);
-    const mat = new THREE.LineBasicMaterial({
+    // 地図座標（4px = 1m）から実寸メートル換算に開眼（4で割る）
+    const targetX = lk.pos[0] / 4;
+    const targetY = lk.pos[1] / 4;
+    const targetZ = lk.pos[2] / 4;
+
+    const startPoint = new THREE.Vector3(0, yOffset, 0);
+    const endPoint = new THREE.Vector3(targetX, yOffset, targetZ); 
+
+    // 二点間の距離と方向（角度）を計算
+    const distance = startPoint.distanceTo(endPoint);
+    const direction = new THREE.Vector3().subVectors(endPoint, startPoint).normalize();
+
+    // ストリートビュー風の「太い帯」を表現する平面ジオメトリ（幅0.8m）
+    const geo = new THREE.PlaneGeometry(0.8, distance);
+    
+    const mat = new THREE.MeshBasicMaterial({
       color: 0x5a7fff,
       transparent: true,
-      opacity: 0.45,
-      linewidth: 2,
+      opacity: 0.6,
+      side: THREE.DoubleSide,
+      // 💡 深度テストを無効化し、描画の書き込みもオフにすることで天球を貫通させる
       depthTest: false,
       depthWrite: false
     });
-    
-    const line = new THREE.Line(geo, mat);
-    line.renderOrder = 5;
-    routeLinesGroup.add(line);
+
+    const mesh = new THREE.Mesh(geo, mat);
+
+    // 平面を床（水平）に寝かせて、ターゲットの方向へ回転させる処理
+    mesh.position.copy(startPoint).add(direction.clone().multiplyScalar(distance / 2));
+    mesh.lookAt(endPoint);
+    mesh.rotateX(Math.PI / 2); // 床面に水平にする
+
+    // 💡 天球(renderOrder=1, 2)やホットスポットよりも確実に前面に描画されるよう大きな数値を設定
+    mesh.renderOrder = 20; 
+    routeLinesGroup.add(mesh);
   });
 }
 
@@ -614,6 +636,7 @@ setupToggle('tg-grid-routes', null, (visible) => {
 
 
 /* ---- animation loop ---- */
+/* ---- animation loop ---- */
 function animate(now){
   requestAnimationFrame(animate);
   const dt=Math.min((now-lastTS)/1000,0.1);
@@ -646,8 +669,10 @@ function animate(now){
     sphereB.matrixAutoUpdate = false;
     sphereB.matrix.copy(flipMatrix);
 
-    routeLinesGroup.matrixAutoUpdate = false;
-    routeLinesGroup.matrix.copy(m);
+    // メッシュ化したルートグループに行列変形をそのまま掛けると破綻するため、
+    // ここでは位置とスケールの自然な連動のみに留めます
+    routeLinesGroup.matrixAutoUpdate = true;
+    routeLinesGroup.scale.set(s, 1, s); 
 
     if (walkT < 0.9) {
       sphereA.material.opacity = 1.0;
@@ -658,8 +683,9 @@ function animate(now){
       gridEdgesB.material.opacity = 0;
       gridPointsB.material.opacity = 0;
       
+      // メッシュ要素のフェードアウト
       routeLinesGroup.children.forEach(l => {
-        l.material.opacity = uiConfig.routes ? 0.45 * (1.0 - walkT) : 0;
+        l.material.opacity = uiConfig.routes ? 0.6 * (1.0 - walkT) : 0;
       });
     } else {
       const fadeProgress = (walkT - 0.9) / 0.1; 
@@ -700,9 +726,9 @@ function animate(now){
       gridPointsA.material.opacity = uiConfig.points ? 0.25 : 0;
     }
 
-    const pitchFactor = Math.cos(pitch); 
+    // 平面メッシュの透明度制御
     routeLinesGroup.children.forEach(l => {
-      l.material.opacity = uiConfig.routes ? 0.45 * Math.max(0, pitchFactor) : 0;
+      l.material.opacity = uiConfig.routes ? 0.6 : 0;
     });
   }
 
@@ -723,7 +749,7 @@ function animate(now){
   sphereB.material.wireframe = true;
   cameraHelper.update();
   
-  // デバッグモニター用平行投影カメラでのレンダリング（真上からの俯瞰図が復活）
+  // デバッグモニター用平行投影カメラでのレンダリング
   debugRenderer.render(scene, debugCamera);
   
   sphereA.material.wireframe = false;
