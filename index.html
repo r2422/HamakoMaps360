@@ -49,25 +49,9 @@
       <canvas id="debug-canvas"></canvas>
     </div>
 
-    <svg id="hud-minimap" class="interactive" viewBox="0 0 260 160" width="260" height="160" xmlns="http://www.w3.org/2000/svg" style="user-select: none; touch-action: none;">
-      <rect width="260" height="160" rx="12" fill="rgba(6, 12, 32, 0.75)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-      <rect id="mm-drag-mask" width="260" height="160" fill="transparent" style="cursor: grab;"/>
-      
-      <g id="mm-transform-group">
-        <g id="mm-edges-group"></g>
-        <g id="mm-nodes-group"></g>
-        <circle id="mm-pulse" cx="0" cy="0" r="12" fill="none" stroke="#5a7fff" stroke-width="1.5" opacity="0.4"/>
-        <polygon id="mm-arrow" points="0,0 0,0 0,0" fill="#fff" opacity="0.85"/>
-      </g>
-      
-      <text x="130" y="22" text-anchor="middle" font-size="9" font-family="'Rajdhani', sans-serif" font-weight="600" letter-spacing="0.15em" fill="rgba(255,255,255,0.45)" pointer-events="none">FLOOR MAP (3F)</text>
-      
-      <g id="mm-btn-rec" style="cursor: pointer;">
-        <rect x="214" y="126" width="34" height="22" rx="6" fill="rgba(20, 30, 65, 0.85)" stroke="rgba(90, 130, 255, 0.6)" stroke-width="1"/>
-        <circle cx="223" cy="137" r="3.5" fill="#ef4444"/>
-        <text x="233" y="140" font-size="8" font-family="'Rajdhani', sans-serif" font-weight="bold" fill="#ccd8ff">REC</text>
-      </g>
-    </svg>
+    <div id="hud-minimap" class="interactive">
+      <div id="hud-minimap-container"></div>
+    </div>
 
     <div id="hud-controls" class="interactive">
       <div id="ctrl-panel">

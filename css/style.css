@@ -216,8 +216,13 @@ body {
   bottom: 24px;
   right: 24px;
   z-index: 30;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   transition: opacity 0.2s;
+  pointer-events: auto; /* インタラクティブ操作を有効化 */
+}
+#hud-minimap-container {
+  width: 260px;
+  height: 160px;
+  display: block;
 }
 
 /* --- 下部中央：コントロールパネル --- */

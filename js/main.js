@@ -74,10 +74,10 @@ const tLoader   = new THREE.TextureLoader();
 const raycaster = new THREE.Raycaster();
 const mouse2    = new THREE.Vector2();
 
-/* ---- TPS DEBUG MONITOR ---- */
+/* ---- ORBITAL DEBUG MONITOR (上空から天球を見下ろすカメラ) ---- */
 const debugCanvas = document.getElementById('debug-canvas');
 const debugRenderer = new THREE.WebGLRenderer({canvas: debugCanvas, antialias: true});
-debugRenderer.setSize(220, 135); // タイトルバー(25px)を除いたエリアにアジャスト
+debugRenderer.setSize(220, 135); 
 
 const debugCamera = new THREE.OrthographicCamera(-70, 70, 44, -44, 1, 1000);
 debugCamera.position.set(0, 120, 0);
@@ -105,13 +105,14 @@ let lastTS      = 0;
 let hotspotTime = 0;
 let mmPulseT    = 0;
 
-/* --- ミニマップ操作用の内部変数 --- */
+/* --- ミニマップ操作用の内部変数（巨大地図対応） --- */
 let mmPanX = 0;      
 let mmPanY = 0;      
-let mmScale = 1.0;   
+let mmScale = 0.12; // 5640x4320の全体像が収まりやすい初期縮尺
 let isMMDragging = false;
 let mmStartX = 0;
 let mmStartY = 0;
+let lastFloorNumber = null;
 
 /* ---- UI Visibility Config ---- */
 const uiConfig = {
@@ -184,7 +185,7 @@ function makeHotspotCanvas(label, t){
   const bx=cx-tw/2, by=cy+70, bh=30;
   ctx.beginPath(); ctx.roundRect(bx,by,tw,bh,15);
   ctx.fillStyle='rgba(6,12,45,0.88)'; ctx.fill();
-  ctx.strokeStyle='rgba(90,130,255,0.5)'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.strokeStyle='rgba(90,130,255,0.5)'; ctx.lineWidth=1.5; strokeStyle=sg; ctx.stroke();
   ctx.fillStyle='#ccd8ff'; ctx.textAlign='center';
   ctx.fillText(label,cx,by+21);
   return cv;
@@ -226,8 +227,6 @@ function startWalk(targetNodeId, hotspotPos){
   tLoader.load(node.asset.url, tex=>{
     tex.wrapS=THREE.RepeatWrapping; tex.wrapT=THREE.RepeatWrapping;
     tex.minFilter=THREE.LinearMipMapLinearFilter; tex.generateMipmaps=true;
-    
-    // 360度カメラの180度反転撮影を相殺
     tex.offset.x = 0.5; 
 
     sphereB.material.map=tex; sphereB.material.needsUpdate=true;
@@ -298,8 +297,6 @@ function loadInitial(nodeId){
   tLoader.load(node.asset.url, tex=>{
     tex.wrapS=THREE.RepeatWrapping; tex.wrapT=THREE.RepeatWrapping;
     tex.minFilter=THREE.LinearMipMapLinearFilter; tex.generateMipmaps=true;
-    
-    // 360度カメラの180度反転撮影を相殺
     tex.offset.x = 0.5; 
 
     sphereA.material.map=tex; sphereA.material.needsUpdate=true;
@@ -324,10 +321,40 @@ function updateCompass(angle){
   $('compass-needle').setAttribute('transform',`rotate(${deg},36,36)`);
 }
 
+/* --- ミニマップ構築（外部背景画像を読み込める構造に最適化） --- */
 function initMinimapLayout() {
+  const container = $('hud-minimap-container');
+  if (!container) return;
+
+  // 動的に巨大背景画像付きのSVGレイアウトをインジェクション
+  container.innerHTML = `
+    <svg id="hud-minimap-svg" viewBox="0 0 260 160" width="260" height="160" xmlns="http://www.w3.org/2000/svg" style="user-select: none; touch-action: none; border-radius: 12px; display: block;">
+      <rect width="260" height="160" fill="rgba(6, 12, 32, 0.75)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+      
+      <g id="mm-transform-group">
+        <image id="mm-bg-map" href="" width="5640" height="4320" x="0" y="0" opacity="0.4" pointer-events="none" />
+        
+        <g id="mm-edges-group"></g>
+        <g id="mm-nodes-group"></g>
+        
+        <circle id="mm-pulse" cx="0" cy="0" r="45" fill="none" stroke="#5a7fff" stroke-width="6" opacity="0.5"/>
+        <polygon id="mm-arrow" points="0,-30 -20,25 0,10 20,25" fill="#fff" opacity="0.9"/>
+      </g>
+      
+      <rect id="mm-drag-mask" width="260" height="160" fill="transparent" style="cursor: grab;"/>
+      
+      <text id="mm-floor-title" x="130" y="22" text-anchor="middle" font-size="9" font-family="'Rajdhani', sans-serif" font-weight="600" letter-spacing="0.15em" fill="rgba(255,255,255,0.45)" pointer-events="none">FLOOR MAP</text>
+      
+      <g id="mm-btn-rec" style="cursor: pointer;">
+        <rect x="214" y="126" width="34" height="22" rx="6" fill="rgba(20, 30, 65, 0.85)" stroke="rgba(90, 130, 255, 0.6)" stroke-width="1"/>
+        <circle cx="223" cy="137" r="3.5" fill="#ef4444"/>
+        <text x="233" y="140" font-size="8" font-family="'Rajdhani', sans-serif" font-weight="bold" fill="#ccd8ff">REC</text>
+      </g>
+    </svg>
+  `;
+
   const nodesGroup = $('mm-nodes-group');
   const edgesGroup = $('mm-edges-group');
-  if (!nodesGroup || !edgesGroup) return;
   
   nodesGroup.innerHTML = ''; 
   edgesGroup.innerHTML = ''; 
@@ -337,7 +364,6 @@ function initMinimapLayout() {
   for (let id in NODES) {
     const node = NODES[id];
 
-    // --- 1. 辺（リンク）の動的生成 ---
     node.links.forEach(lk => {
       const targetNode = NODES[lk.targetId];
       if (targetNode) {
@@ -348,63 +374,87 @@ function initMinimapLayout() {
           line.setAttribute('y1', node.mmY);
           line.setAttribute('x2', targetNode.mmX);
           line.setAttribute('y2', targetNode.mmY);
-          line.setAttribute('stroke', 'rgba(255, 255, 255, 0.22)');
-          line.setAttribute('stroke-width', '1.8');
-          line.setAttribute('stroke-linecap', 'round');
+          line.setAttribute('stroke', 'rgba(90, 127, 255, 0.4)');
+          line.setAttribute('stroke-width', '4');
+          line.setAttribute('stroke-dasharray', '2,2');
           edgesGroup.appendChild(line);
           drawnEdges.add(edgeKey);
         }
       }
     });
 
-    // --- 2. 点（ノード）の動的生成 ---
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('id', `mm-dot-${node.id}`);
     circle.setAttribute('cx', node.mmX);
     circle.setAttribute('cy', node.mmY);
-    circle.setAttribute('r', '3.5'); 
-    circle.setAttribute('fill', '#a78bfa');
-    circle.setAttribute('opacity', '0.65');
+    circle.setAttribute('r', '14'); 
+    circle.setAttribute('fill', 'rgba(30, 45, 90, 0.8)');
+    circle.setAttribute('stroke', 'rgba(90, 127, 255, 0.6)');
+    circle.setAttribute('stroke-width', '3');
+    circle.style.cursor = 'pointer';
+    
+    // マスクが前面にあるため、ノードをクリックでワープさせたい場合はマスク側の座標検知か、
+    // ここでは現在地表示の更新ロジックに集中させます。
     nodesGroup.appendChild(circle);
   }
+
+  // ミニマップ用のイベントをここでバインド
+  setupMinimapInteractions();
+}
+
+function updateMinimapFloor(floorNumber) {
+  if (floorNumber === lastFloorNumber) return;
+  lastFloorNumber = floorNumber;
+  const bgMap = $('mm-bg-map');
+  const floorTitle = $('mm-floor-title');
+  if (bgMap) bgMap.setAttribute('href', `./maps/map_${floorNumber}f.svg`);
+  if (floorTitle) floorTitle.textContent = `FLOOR MAP (${floorNumber}F)`;
 }
 
 function updateMinimap(){
+  const currentNode = NODES[currentId];
+  if (!currentNode) return;
+
+  updateMinimapFloor(currentNode.floor);
+
   for (let id in NODES) {
     const dot = $(`mm-dot-${id}`);
     if (dot) {
       if (id === currentId) {
-        dot.setAttribute('fill', '#fff');
-        dot.setAttribute('r', '5.0');
-        dot.setAttribute('opacity', '1');
+        dot.setAttribute('fill', '#5a7fff');
+        dot.setAttribute('stroke', '#fff');
       } else {
-        dot.setAttribute('fill', '#a78bfa');
-        dot.setAttribute('r', '3.5');
-        dot.setAttribute('opacity', '0.65');
+        dot.setAttribute('fill', 'rgba(30, 45, 90, 0.8)');
+        dot.setAttribute('stroke', 'rgba(90, 127, 255, 0.6)');
       }
     }
   }
 
-  const currentNode = NODES[currentId];
-  if (currentNode) {
-    const ax = currentNode.mmX;
-    const ay = currentNode.mmY;
-    
-    $('mm-pulse').setAttribute('cx', ax);
-    $('mm-pulse').setAttribute('cy', ay);
-    $('mm-arrow').setAttribute('points', `${ax},${ay-8} ${ax+3.0},${ay-2} ${ax-3.0},${ay-2}`);
-  }
+  const ax = currentNode.mmX;
+  const ay = currentNode.mmY;
+  
+  $('mm-pulse').setAttribute('cx', ax);
+  $('mm-pulse').setAttribute('cy', ay);
+  
+  // 5640x4320スケールに合わせた現在地矢印のサイズ調整
+  $('mm-arrow').setAttribute('points', `${ax},${ay-30} ${ax+20},${ay+25} ${ax},${ay+10} ${ax-20},${ay+25}`);
 }
 
-/* --- スクロール・ズーム行列をSVGのコンテナグループに反映 --- */
 function applyMinimapTransform() {
   const group = $('mm-transform-group');
   if (group) {
     group.setAttribute('transform', `translate(${mmPanX}, ${mmPanY}) scale(${mmScale})`);
   }
+  
+  // 現在地矢印の向きを視線方向（yaw）に連動して動かす
+  const arrow = $('mm-arrow');
+  const currentNode = NODES[currentId];
+  if (arrow && currentNode) {
+    const deg = (yaw * 180) / Math.PI;
+    arrow.setAttribute('transform', `rotate(${deg}, ${currentNode.mmX}, ${currentNode.mmY})`);
+  }
 }
 
-/* --- 現在地ノードがミニマップの枠内中央（130, 80）に来るように位置を補正 --- */
 function focusCurrentNodeOnMinimap() {
   const currentNode = NODES[currentId];
   if (!currentNode) return;
@@ -468,59 +518,61 @@ let lastPinch=0;
 canvas.addEventListener('touchstart',e=>{ if(e.touches.length===2) lastPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); });
 canvas.addEventListener('touchmove',e=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); tFov=Math.max(30,Math.min(110,tFov-(d-lastPinch)*0.3)); lastPinch=d; } },{passive:true});
 
-/* --- ミニマップ内でのドラッグスクロールイベント --- */
-const mmMask = $('mm-drag-mask');
-mmMask.addEventListener('pointerdown', e => {
-  isMMDragging = true;
-  mmStartX = e.clientX - mmPanX;
-  mmStartY = e.clientY - mmPanY;
-  mmMask.setPointerCapture(e.pointerId);
-  mmMask.style.cursor = 'grabbing';
-  e.stopPropagation(); 
-});
-mmMask.addEventListener('pointermove', e => {
-  if (!isMMDragging) return;
-  mmPanX = e.clientX - mmStartX;
-  mmPanY = e.clientY - mmStartY;
-  applyMinimapTransform();
-  e.stopPropagation();
-});
-mmMask.addEventListener('pointerup', e => {
-  isMMDragging = false;
-  mmMask.style.cursor = 'grab';
-  e.stopPropagation();
-});
+/* --- ミニマップ内操作イベントを関数分離して初期化時にアタッチ --- */
+function setupMinimapInteractions() {
+  const mmMask = $('mm-drag-mask');
+  if (!mmMask) return;
 
-/* --- ミニマップ内でのホイールズームイベント --- */
-$('hud-minimap').addEventListener('wheel', e => {
-  e.preventDefault();
-  e.stopPropagation(); 
+  mmMask.addEventListener('pointerdown', e => {
+    isMMDragging = true;
+    mmStartX = e.clientX - mmPanX;
+    mmStartY = e.clientY - mmPanY;
+    mmMask.setPointerCapture(e.pointerId);
+    mmMask.style.cursor = 'grabbing';
+    e.stopPropagation(); 
+  });
+  mmMask.addEventListener('pointermove', e => {
+    if (!isMMDragging) return;
+    mmPanX = e.clientX - mmStartX;
+    mmPanY = e.clientY - mmStartY;
+    applyMinimapTransform();
+    e.stopPropagation();
+  });
+  mmMask.addEventListener('pointerup', e => {
+    isMMDragging = false;
+    mmMask.style.cursor = 'grab';
+    e.stopPropagation();
+  });
 
-  const zoomFactor = 1.1;
-  const oldScale = mmScale;
-  
-  if (e.deltaY < 0) {
-    mmScale = Math.min(6.0, mmScale * zoomFactor);
-  } else {
-    mmScale = Math.max(0.5, mmScale / zoomFactor);
-  }
+  $('hud-minimap').addEventListener('wheel', e => {
+    e.preventDefault();
+    e.stopPropagation(); 
 
-  const rect = $('hud-minimap').getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
+    const zoomFactor = 1.1;
+    const oldScale = mmScale;
+    
+    if (e.deltaY < 0) {
+      mmScale = Math.min(2.0, mmScale * zoomFactor);
+    } else {
+      mmScale = Math.max(0.02, mmScale / zoomFactor);
+    }
 
-  mmPanX = mouseX - (mouseX - mmPanX) * (mmScale / oldScale);
-  mmPanY = mouseY - (mouseY - mmPanY) * (mmScale / oldScale);
+    const rect = $('hud-minimap').getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-  applyMinimapTransform();
-}, { passive: false });
+    mmPanX = mouseX - (mouseX - mmPanX) * (mmScale / oldScale);
+    mmPanY = mouseY - (mouseY - mmPanY) * (mmScale / oldScale);
 
-/* --- REC（現在地復帰）ボタンイベント --- */
-$('mm-btn-rec').addEventListener('click', e => {
-  e.stopPropagation();
-  mmScale = 1.0; 
-  focusCurrentNodeOnMinimap();
-});
+    applyMinimapTransform();
+  }, { passive: false });
+
+  $('mm-btn-rec').addEventListener('click', e => {
+    e.stopPropagation();
+    mmScale = 0.12; 
+    focusCurrentNodeOnMinimap();
+  });
+}
 
 $('fov-slider').addEventListener('input', e=>{ tFov=+e.target.value; });
 $('btn-zm').onclick=()=>{ tFov=Math.max(30,tFov-10); };
@@ -657,21 +709,28 @@ function animate(now){
   if(Math.floor(now/40)%2===0) animateHotspots(hotspotTime);
 
   const pr=12+5*Math.abs(Math.sin(mmPulseT*2.3));
-  $('mm-pulse').setAttribute('r',pr.toFixed(1));
-  $('mm-pulse').setAttribute('opacity',(0.45-0.28*Math.abs(Math.sin(mmPulseT*2.3))).toFixed(2));
+  const pulseEl = $('mm-pulse');
+  if (pulseEl) {
+    pulseEl.setAttribute('r',pr.toFixed(1));
+    pulseEl.setAttribute('opacity',(0.45-0.28*Math.abs(Math.sin(mmPulseT*2.3))).toFixed(2));
+  }
 
+  // メインの3Dパノラマ空間レンダリング
   renderer.render(scene, camera);
 
+  // ワイヤーフレームによる上空天球デバッグモニターの更新
   sphereA.material.wireframe = true;
   sphereB.material.wireframe = true;
   cameraHelper.update();
+  
+  // デバッグモニター用平行投影カメラでのレンダリング（真上からの俯瞰図が復活）
   debugRenderer.render(scene, debugCamera);
   
   sphereA.material.wireframe = false;
   sphereB.material.wireframe = false;
 }
 
-// 初期セットアップの順序整理
+// 初期セットアップ
 initMinimapLayout();
 loadInitial('13_corridor_0020,0020');
 requestAnimationFrame(animate);
