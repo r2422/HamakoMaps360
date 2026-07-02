@@ -210,28 +210,41 @@ body {
   display: block;
 }
 
-/* --- 右下：インタラクティブ ミニマップ --- */
+/* ============================================================
+   ミニマップ & コントロールパネル（配置ロジック修正版）
+============================================================ */
+
+/* --- 【通常時】ミニマップ：画面右下寄せ・2倍サイズ --- */
 #hud-minimap {
   position: fixed;
   bottom: 24px;
   right: 24px;
+  left: auto;       /* 左寄せをクリア */
+  width: 520px;     /* 元の260pxの2倍固定 */
   z-index: 30;
-  transition: opacity 0.2s;
-  pointer-events: auto; /* インタラクティブ操作を有効化 */
+  transition: all 0.3s ease;
+  pointer-events: auto;
 }
 #hud-minimap-container {
-  width: 260px;
-  height: 160px;
+  width: 100%;
+  height: auto;
+}
+#hud-minimap-svg {
+  width: 100%;
+  height: auto;     /* 比率維持 */
   display: block;
 }
 
-/* --- 下部中央：コントロールパネル --- */
+/* --- 【通常時】コントロールパネル：画面左下寄せ・要素梱包 --- */
 #hud-controls {
   position: fixed;
   bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 30;
+  left: 24px;
+  right: auto;      /* 右寄せをクリア */
+  width: max-content; /* 横幅100%化を防ぎ、中身の要素サイズに梱包 */
+  z-index: 40;      /* 重なり順はミニマップより上（または同等） */
+  transition: all 0.3s ease;
+  pointer-events: auto;
 }
 #ctrl-panel {
   display: flex;
@@ -245,6 +258,29 @@ body {
   padding: 8px 16px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
+
+/* 💡 【オーバーラップ時】
+   ミニマップ（520px）とコントロールパネル（約210px）が干渉し始める画面幅
+   余白を含めて 520 + 210 + 48 = 778px 以下のときにレイアウトを変更 */
+@media (max-width: 780px) {
+  /* ミニマップ：左下寄せに変更、画面横幅の80%に拡大、縦幅比率は維持 */
+  #hud-minimap {
+    right: auto;
+    left: 6px;
+    bottom: 6px;
+    right: 6px;
+    width: calc(100vw - 12px);
+  }
+
+  /* コントロールパネル：左寄せを維持したまま、ミニマップの上側に退避（下部からの距離を調整） */
+  #hud-controls {
+    left: 24px;
+    bottom: calc(24px + (calc(100vw - 12px) * 160 / 260) + 16px); 
+    /* 解説：下部余白(24px) + ミニマップの動的な縦幅(横幅の160/260) + パネルとの間隔(16px) */
+  }
+}
+
+/* --- コントロール群のボタン装飾 --- */
 .hud-btn {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -280,12 +316,6 @@ body {
   color: rgba(255, 255, 255, 0.7);
   min-width: 38px;
   text-align: center;
-}
-.divider {
-  width: 1px;
-  height: 22px;
-  background: rgba(255, 255, 255, 0.12);
-  margin: 0 4px;
 }
 
 /* --- FOV スライダー --- */
