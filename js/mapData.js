@@ -79,9 +79,9 @@ const mapGraph = new MapGraph();
 
 // 各階の基準高
 const Y_BASE_1 = 0; 
-const Y_BASE_2 = 40; 
-const Y_BASE_3 = 80; 
-const Y_BASE_4 = 120; 
+const Y_BASE_2 = 80; 
+const Y_BASE_3 = 160; 
+const Y_BASE_4 = 240; 
 
 /* ------------------------------------------------------------
    北館3階のマップデータ定義
@@ -94,8 +94,8 @@ const Y_BASE_4 = 120;
   mapGraph.addNode(new MapNode('13_corridor_0330,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0330,0020.jpg', 0, 0, [330, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0380,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0380,0020.jpg', 0, 0, [380, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0520,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0520,0020.jpg', 0, 0, [520, Y_BASE_3,  20], 3, 'North'));
-  mapGraph.addNode(new MapNode('13_corridor_0570,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0570,0020.jpg', 0, 0, [570, Y_BASE_3,  20], 3, 'North'));
-  mapGraph.addNode(new MapNode('13_corridor_0750,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0750,0020.jpg', 0, 0, [750, Y_BASE_3,  20], 3, 'North'));
+  mapGraph.addNode(new MapNode('13_corridor_0570,0020', '北館 3階 廊下(R科準備室)', 'North building - Floor 3', '北館3F/13_corridor_0570,0020.jpg', 0, 0, [570, Y_BASE_3,  20], 3, 'North'));
+  mapGraph.addNode(new MapNode('13_corridor_0750,0020', '北館 3階 廊下(物理準備室)', 'North building - Floor 3', '北館3F/13_corridor_0750,0020.jpg', 0, 0, [750, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0870,0020', '北館 3階 物理室内', 'North building - Floor 3', '北館3F/13_corridor_0870,0020.jpg', 0, 0, [870, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0990,0020', '北館 3階 廊下', 'North building - Floor 3', '北館3F/13_corridor_0990,0020.jpg', 0, 0, [990, Y_BASE_3,  20], 3, 'North'));
 
@@ -144,9 +144,9 @@ const Y_BASE_4 = 120;
   mapGraph.getNode('13_corridor_0220,0020').addLink('13_classroom_0180,0100_132', '132教室に入る', 'Enter 132room');
   mapGraph.getNode('13_classroom_0180,0100_132').addLink('13_corridor_0220,0020', '廊下に出る', 'Exit');
 
-  mapGraph.getNode('13_corridor_0380,0020').addLink('13_classroom_0450,0100_理数工学室', '132教室に入る', 'Enter 理数工学室');
+  mapGraph.getNode('13_corridor_0380,0020').addLink('13_classroom_0450,0100_理数工学室', '理数工学室に入る', 'Enter 理数工学室');
   mapGraph.getNode('13_classroom_0450,0100_理数工学室').addLink('13_corridor_0380,0020', '廊下に出る', 'Exit');
-  mapGraph.getNode('13_corridor_0520,0020').addLink('13_classroom_0450,0100_理数工学室', '132教室に入る', 'Enter 理数工学室');
+  mapGraph.getNode('13_corridor_0520,0020').addLink('13_classroom_0450,0100_理数工学室', '理数工学室に入る', 'Enter 理数工学室');
   mapGraph.getNode('13_classroom_0450,0100_理数工学室').addLink('13_corridor_0520,0020', '廊下に出る', 'Exit');
 
   mapGraph.getNode('13_corridor_0870,0020').addLink('13_classroom_0870,0100_物理室', '物理室に入る', 'Enter 物理室');
@@ -173,8 +173,8 @@ mapGraph.addNode(new MapNode('11_stairs_0990,0140', '北館 1階 階段', 'North
 mapGraph.addNode(new MapNode('12_stairs_0330,0140', '北館 2階 階段', 'North building - Floor 2', '北館2F/12_stairs_0330,0140.jpg', 0, 0, [330, Y_BASE_2, 140], 2, 'North'));
 mapGraph.addNode(new MapNode('12_stairs_0990,0140', '北館 2階 階段', 'North building - Floor 2', '北館2F/12_stairs_0990,0140.jpg', 0, 0, [990, Y_BASE_2, 140], 2, 'North'));
 // 3階
-mapGraph.addNode(new MapNode('13_stairs_0330,0140', '北館 3階 階段', 'North building - Floor 3', '北館3F/13_stairs_0330,0140.jpg', 0, 0, [330, Y_BASE_3, 140], 3, 'North'));
-mapGraph.addNode(new MapNode('13_stairs_0990,0140', '北館 3階 階段', 'North building - Floor 3', '北館3F/13_stairs_0990,0140.jpg', 0, 0, [990, Y_BASE_3, 140], 3, 'North'));
+//mapGraph.addNode(new MapNode('13_stairs_0330,0140', '北館 3階 階段', 'North building - Floor 3', '北館3F/13_stairs_0330,0140.jpg', 0, 0, [330, Y_BASE_3, 140], 3, 'North'));
+//mapGraph.addNode(new MapNode('13_stairs_0990,0140', '北館 3階 階段', 'North building - Floor 3', '北館3F/13_stairs_0990,0140.jpg', 0, 0, [990, Y_BASE_3, 140], 3, 'North'));
 
 
 // === 本館 階段（Xは330共通、Zは 160 + 380 + 140 = 560） ===
@@ -249,47 +249,47 @@ mapGraph.addNode(new MapNode('13_bridge_mid_0990,0350', '3階 連絡通路 中�
 ============================================================ */
 
 // --- 1階：北館階段 ⇄ 廊下中間 ⇄ 本館階段 ---
-mapGraph.getNode('11_stairs_0330,0140').addLink('11_bridge_mid_0330,0350', '通路を通って本館方面へ', 'To Main Bldg');
-mapGraph.getNode('11_bridge_mid_0330,0350').addLink('11_stairs_0330,0140', '通路を通って北館へ', 'To North Bldg');
+mapGraph.getNode('11_stairs_0330,0140').addLink('11_bridge_mid_0330,0350', '空中廊下(本館方面)', 'To Main Bldg');
+mapGraph.getNode('11_bridge_mid_0330,0350').addLink('11_stairs_0330,0140', '北館へ', 'To North Bldg');
 
-mapGraph.getNode('11_bridge_mid_0330,0350').addLink('21_stairs_0330,0140', '本館へ入る', 'Enter Main Bldg');
-mapGraph.getNode('21_stairs_0330,0140').addLink('11_bridge_mid_0330,0350', '通路を通って北館方面へ', 'To North Bldg');
+mapGraph.getNode('11_bridge_mid_0330,0350').addLink('21_stairs_0330,0140', '本館へ', 'Enter Main Bldg');
+mapGraph.getNode('21_stairs_0330,0140').addLink('11_bridge_mid_0330,0350', '空中廊下(北館方面)', 'To North Bldg');
 
 
-mapGraph.getNode('11_stairs_0990,0140').addLink('11_bridge_mid_0990,0350', '通路を通って本館方面へ', 'To Main Bldg');
-mapGraph.getNode('11_bridge_mid_0990,0350').addLink('11_stairs_0990,0140', '通路を通って北館へ', 'To North Bldg');
+mapGraph.getNode('11_stairs_0990,0140').addLink('11_bridge_mid_0990,0350', '空中廊下(本館方面)', 'To Main Bldg');
+mapGraph.getNode('11_bridge_mid_0990,0350').addLink('11_stairs_0990,0140', '北館へ', 'To North Bldg');
 
-mapGraph.getNode('11_bridge_mid_0990,0350').addLink('21_stairs_0990,0140', '本館へ入る', 'Enter Main Bldg');
-mapGraph.getNode('21_stairs_0990,0140').addLink('11_bridge_mid_0990,0350', '通路を通って北館方面へ', 'To North Bldg');
+mapGraph.getNode('11_bridge_mid_0990,0350').addLink('21_stairs_0990,0140', '本館へ', 'Enter Main Bldg');
+mapGraph.getNode('21_stairs_0990,0140').addLink('11_bridge_mid_0990,0350', '空中廊下(北館方面)', 'To North Bldg');
 
 // --- 2階：北館階段 ⇄ 廊下中間 ⇄ 本館階段 ---
-mapGraph.getNode('12_stairs_0330,0140').addLink('12_bridge_mid_0330,0350', '連絡通路へ', 'To Bridge');
-mapGraph.getNode('12_bridge_mid_0330,0350').addLink('12_stairs_0330,0140', '連絡通路を通って北館へ', 'To North Bldg');
+mapGraph.getNode('12_stairs_0330,0140').addLink('12_bridge_mid_0330,0350', '空中廊下(本館方面)', 'To Bridge');
+mapGraph.getNode('12_bridge_mid_0330,0350').addLink('12_stairs_0330,0140', '北館へ', 'To North Bldg');
 
-mapGraph.getNode('12_bridge_mid_0330,0350').addLink('22_stairs_0330,0140', '本館へ入る', 'Enter Main Bldg');
-mapGraph.getNode('22_stairs_0330,0140').addLink('12_bridge_mid_0330,0350', '連絡通路へ', 'To Bridge');
+mapGraph.getNode('12_bridge_mid_0330,0350').addLink('22_stairs_0330,0140', '本館へ', 'Enter Main Bldg');
+mapGraph.getNode('22_stairs_0330,0140').addLink('12_bridge_mid_0330,0350', '空中廊下(北館方面)', 'To Bridge');
 
 
-mapGraph.getNode('12_stairs_0990,0140').addLink('12_bridge_mid_0990,0350', '連絡通路へ', 'To Bridge');
-mapGraph.getNode('12_bridge_mid_0990,0350').addLink('12_stairs_0990,0140', '連絡通路を通って北館へ', 'To North Bldg');
+mapGraph.getNode('12_stairs_0990,0140').addLink('12_bridge_mid_0990,0350', '空中廊下(本館方面)', 'To Bridge');
+mapGraph.getNode('12_bridge_mid_0990,0350').addLink('12_stairs_0990,0140', '北館へ', 'To North Bldg');
 
-mapGraph.getNode('12_bridge_mid_0990,0350').addLink('22_stairs_0990,0140', '本館へ入る', 'Enter Main Bldg');
-mapGraph.getNode('22_stairs_0990,0140').addLink('12_bridge_mid_0990,0350', '連絡通路へ', 'To Bridge');
+mapGraph.getNode('12_bridge_mid_0990,0350').addLink('22_stairs_0990,0140', '本館へ', 'Enter Main Bldg');
+mapGraph.getNode('22_stairs_0990,0140').addLink('12_bridge_mid_0990,0350', '空中廊下(北館方面)', 'To Bridge');
 
 
 // --- 3階：北館階段 ⇄ 廊下中間 ⇄ 本館階段 ---
-mapGraph.getNode('13_stairs_0330,0140').addLink('13_bridge_mid_0330,0350', '連絡通路へ', 'To Bridge');
-mapGraph.getNode('13_bridge_mid_0330,0350').addLink('13_stairs_0330,0140', '連絡通路を通って北館へ', 'To North Bldg');
+mapGraph.getNode('13_stairs_0330,0140').addLink('13_bridge_mid_0330,0350', '空中廊下(本館方面)', 'To Bridge');
+mapGraph.getNode('13_bridge_mid_0330,0350').addLink('13_stairs_0330,0140', '北館へ', 'To North Bldg');
 
-mapGraph.getNode('13_bridge_mid_0330,0350').addLink('23_stairs_0330,0140', '本館へ入る', 'Enter Main Bldg');
-mapGraph.getNode('23_stairs_0330,0140').addLink('13_bridge_mid_0330,0350', '連絡通路へ', 'To Bridge');
+mapGraph.getNode('13_bridge_mid_0330,0350').addLink('23_stairs_0330,0140', '本館へ', 'Enter Main Bldg');
+mapGraph.getNode('23_stairs_0330,0140').addLink('13_bridge_mid_0330,0350', '空中廊下(北館方面)', 'To Bridge');
 
 
-mapGraph.getNode('13_stairs_0990,0140').addLink('13_bridge_mid_0990,0350', '連絡通路へ', 'To Bridge');
-mapGraph.getNode('13_bridge_mid_0990,0350').addLink('13_stairs_0990,0140', '連絡通路を通って北館へ', 'To North Bldg');
+mapGraph.getNode('13_stairs_0990,0140').addLink('13_bridge_mid_0990,0350', '空中廊下(本館方面)', 'To Bridge');
+mapGraph.getNode('13_bridge_mid_0990,0350').addLink('13_stairs_0990,0140', '北館へ', 'To North Bldg');
 
-mapGraph.getNode('13_bridge_mid_0990,0350').addLink('23_stairs_0990,0140', '本館へ入る', 'Enter Main Bldg');
-mapGraph.getNode('23_stairs_0990,0140').addLink('13_bridge_mid_0990,0350', '連絡通路へ', 'To Bridge');
+mapGraph.getNode('13_bridge_mid_0990,0350').addLink('23_stairs_0990,0140', '本館へ', 'Enter Main Bldg');
+mapGraph.getNode('23_stairs_0990,0140').addLink('13_bridge_mid_0990,0350', '空中廊下(北館方面)', 'To Bridge');
 
 
 // ------------------------------------------------------------
