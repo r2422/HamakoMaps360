@@ -4,14 +4,37 @@
 
 const NODES = mapGraph.nodes;
 
+/* ---- 短縮ヘルパー関数 ---- */
+// 💡 他のファイル（minimap.jsなど）からでも参照できるよう、関数の巻き上げ（Hoist）が効くfunction宣言にするか、ファイル上部に配置します
+function $(id) { return document.getElementById(id); }
+function setLoadBar(p){ const bar = $('load-bar'); if(bar) bar.style.width = p+'%'; }
+
 /* ---- Main Three.js ---- */
 const canvas   = document.getElementById('sv-canvas');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+// 💡 関数定義自体はここで問題ありません
+function updateRendererSize() {
+  // CSSで適用されたサイズをそのまま取得
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+
+  // renderer.setSize に渡す
+  renderer.setSize(width, height, false);
+  
+  if (typeof camera !== 'undefined' && camera) {
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+}
 
 const scene  = new THREE.Scene();
+// 💡 先にcameraのインスタンスを生成します
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.01, 600);
+
+// 💡 cameraの初期化が完了した「この直後」にサイズ反映を実行します
+updateRendererSize();
 
 let gridEdgesA, gridPointsA;
 let gridEdgesB, gridPointsB;
@@ -110,10 +133,6 @@ const uiConfig = {
   routes: true,
   textSizeMode: 'constant' 
 };
-
-/* ---- 短縮ヘルパー関数 ---- */
-const $ = id => document.getElementById(id);
-function setLoadBar(p){ const bar = $('load-bar'); if(bar) bar.style.width = p+'%'; }
 
 /* ---- 進路パス・先端テキスト・ピンの生成関数 ---- */
 function buildRouteLines(node) {
@@ -225,7 +244,6 @@ let walkDir = new THREE.Vector3(0,0,-1);
 function startWalk(targetNodeId, hotspotPos){
   if(walkPhase !== 'idle') return;
 
-  // 💡 移動を開始する前に現在のノードを移動元として記憶
   if (typeof mmSrcNode !== 'undefined') {
     mmSrcNode = NODES[currentId];
   }
@@ -286,7 +304,6 @@ function finishWalk(){
   $('loc-name').textContent=node.name;
   $('loc-sub').textContent=node.sub;
   
-  // 💡 移動完了したため記憶をクリア
   if (typeof mmSrcNode !== 'undefined') mmSrcNode = null;
 
   if (typeof updateMinimap === 'function') updateMinimap();
@@ -339,9 +356,8 @@ function updateCompass(angle){
 /* ---- events (モバイル・マルチデバイス対応版) ---- */
 let lastX=0, lastY=0;
 
-// 💡 モバイル固有のスクロールジェスチャー競合を防ぐためのタッチ処理
 canvas.addEventListener('touchstart', e => {
-  if (e.touches.length > 1) return; // ピンチ時は回転させない
+  if (e.touches.length > 1) return; 
   if (walkPhase !== 'idle') return;
 
   isDragging = false; 
@@ -367,7 +383,7 @@ canvas.addEventListener('touchmove', e => {
 }, { passive: true });
 
 canvas.addEventListener('pointerdown', e => {
-  if (e.pointerType === 'touch') return; // モバイルタッチ時はtouchstartに委ねる
+  if (e.pointerType === 'touch') return; 
   if (walkPhase !== 'idle') return;
   isDragging = false; lastX = e.clientX; lastY = e.clientY;
   canvas.setPointerCapture(e.pointerId);
@@ -375,11 +391,12 @@ canvas.addEventListener('pointerdown', e => {
 });
 
 canvas.addEventListener('pointermove', e => {
-  if (e.pointerType === 'touch') return; // モバイルタッチ時はtouchmoveに委ねる
+  if (e.pointerType === 'touch') return; 
   if (walkPhase !== 'idle') { canvas.style.cursor = 'default'; return; }
   if (e.buttons === 0) {
-    mouse2.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse2.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    let canvasBounds = renderer.domElement.getBoundingClientRect();
+    mouse2.x = ((e.clientX - canvasBounds.left) / canvasBounds.width) * 2 - 1;
+    mouse2.y = -((e.clientY - canvasBounds.top) / canvasBounds.height) * 2 + 1;
     raycaster.setFromCamera(mouse2, camera);
 
     const hits = raycaster.intersectObjects(routeLinesGroup.children);
@@ -413,8 +430,9 @@ canvas.addEventListener('pointerup',e=>{
 canvas.addEventListener('dblclick', e => {
   if (walkPhase !== 'idle') return;
 
-  mouse2.x = (e.clientX / window.innerWidth) * 2 - 1;
-  mouse2.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  let canvasBounds = renderer.domElement.getBoundingClientRect();
+  mouse2.x = ((e.clientX - canvasBounds.left) / canvasBounds.width) * 2 - 1;
+  mouse2.y = -((e.clientY - canvasBounds.top) / canvasBounds.height) * 2 + 1;
   
   raycaster.setFromCamera(mouse2, camera);
   const hits = raycaster.intersectObjects(routeLinesGroup.children);
@@ -441,7 +459,7 @@ let lastPinch=0;
 canvas.addEventListener('touchstart',e=>{ if(e.touches.length===2) lastPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); });
 canvas.addEventListener('touchmove',e=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); tFov=Math.max(30,Math.min(110,tFov-(d-lastPinch)*0.3)); lastPinch=d; } },{passive:true});
 
-window.addEventListener('resize',()=>{ renderer.setSize(window.innerWidth,window.innerHeight,false); camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); });
+window.addEventListener('resize', updateRendererSize);
 
 /* ---- Helpers ---- */
 function setupToggle(id, targetEl, callback) {
@@ -549,7 +567,6 @@ function animate(now){
     updateCamera();
     updateCompass(yaw);
 
-    // 💡 walkPhase中も毎フレーム、移動量と現在のカメラ回転（yaw）をミニマップへリアルタイム反映
     if (typeof applyMinimapTransform === 'function') {
       applyMinimapTransform();
     }
@@ -627,6 +644,8 @@ function animate(now){
 
 /* ---- すべてのUI要素の初期化・登録処理をDOM構築完了後に実行する ---- */
 document.addEventListener('DOMContentLoaded', () => {
+  updateRendererSize();
+
   const slider = $('fov-slider');
   if(slider) slider.addEventListener('input', e=>{ tFov=+e.target.value; });
   
@@ -691,7 +710,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 初回表示のロードとアニメーションの開始
   loadInitial('13_corridor_0010,0020');
   requestAnimationFrame(animate);
 });

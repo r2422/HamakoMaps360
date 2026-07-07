@@ -303,7 +303,16 @@ mapGraph.getNode('23_stairs_0990,0560').addLink('13_passageway_mid_0990,0350', '
   mapGraph.addNode(new MapNode('21_entrance_0720,0560_昇降口', '本館 1階 昇降口', 'Main building - Floor 1 Other Place', '本館1F/21_entrance_0720,0560_昇降口.jpg', 0, 0, [720, Y_BASE_1, 560], 1, 'Main'));
 
   // --- 廊下ノード ---
-  mapGraph.addNode(new MapNode('21_corridor_0000,0000', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0000,0000.jpg', Math.PI / 2, 0, [ 0, Y_BASE_1, 0], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0330,0560', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0330,0560.jpg', Math.PI / 2, 0, [ 330, Y_BASE_1, 560], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0330,0680', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0330,0680.jpg', 0, 0, [ 330, Y_BASE_1, 680], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0330,0000', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0330,0000.jpg', 0, 0, [ 330, Y_BASE_1, 680], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0450,0680', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0450,0680.jpg', 0, 0, [ 450, Y_BASE_1, 680], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0510,0680', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0510,0680.jpg', 0, 0, [ 510, Y_BASE_1, 680], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0630,0680', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0630,0680.jpg', 0, 0, [ 630, Y_BASE_1, 680], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0720,0680', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0720,0680.jpg', 0, 0, [ 720, Y_BASE_1, 680], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0870,0680', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0870,0680.jpg', 0, 0, [ 870, Y_BASE_1, 680], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_0990,0820', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_0990,0820.jpg', 0, 0, [ 990, Y_BASE_1, 820], 1, 'Main'));
+  mapGraph.addNode(new MapNode('21_corridor_1020,0710', '本館 1階 廊下', 'Main building - Floor 1', '本館1F/21_corridor_1020,0710.jpg', 0, 0, [ 1020, Y_BASE_1, 710], 1, 'Main'));
 
   // --- 教室ノード ---
   mapGraph.addNode(new MapNode('21_classroom_0000,0000_211', '本館 1階 211教室', 'Main building - Floor 1 211-classroom', '本館1F/21_classroom_0000,0000_211.jpg', 0, 0, [ 0, Y_BASE_1, 0], 1, 'Main'));

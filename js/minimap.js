@@ -63,22 +63,6 @@ function initMinimapLayout() {
         <text id="mm-floor-title" x="14" y="15" text-anchor="start" font-size="8" font-family="'Noto Sans JP', sans-serif" font-weight="700" letter-spacing="0.04em" fill="#8B95B4" pointer-events="none">フロアマップ</text>
       </g>
 
-      <g id="mm-building-buttons" transform="translate(12, 27)" font-family="'Noto Sans JP', sans-serif" font-weight="700" font-size="8">
-        <rect width="102" height="18" rx="9" fill="#121C38" stroke="#3A4E78" stroke-width="1"/>
-        <g id="mm-btn-north" style="cursor: pointer;">
-          <rect x="1" y="1" width="32" height="16" rx="8" fill="transparent"/>
-          <text x="17" y="12" text-anchor="middle" fill="#8B95B4">北館</text>
-        </g>
-        <g id="mm-btn-main" style="cursor: pointer;" transform="translate(35, 0)">
-          <rect x="1" y="1" width="32" height="16" rx="8" fill="#43E8C8"/>
-          <text x="17" y="12" text-anchor="middle" fill="#08302A">本館</text>
-        </g>
-        <g id="mm-btn-south" style="cursor: pointer;" transform="translate(69, 0)">
-          <rect x="1" y="1" width="32" height="16" rx="8" fill="transparent"/>
-          <text x="17" y="12" text-anchor="middle" fill="#8B95B4">南館</text>
-        </g>
-      </g>
-
       <g id="mm-zoom-controls" transform="translate(12, 132)">
         <rect width="42" height="20" rx="6" fill="#121C38" stroke="#3A4E78" stroke-width="1"/>
         <line x1="21" y1="3" x2="21" y2="17" stroke="#3A4E78" stroke-width="1"/>
@@ -92,7 +76,7 @@ function initMinimapLayout() {
         </g>
       </g>
 
-      <g id="mm-floor-buttons" transform="translate(224, 10)" font-family="'Share Tech Mono', monospace" font-size="8">
+      <g id="mm-floor-buttons" transform="translate(224, 64)" font-family="'Share Tech Mono', monospace" font-size="8">
         <g id="mm-btn-f4" style="cursor: pointer;">
           <rect width="32" height="16" rx="4" fill="transparent" stroke="#3A4E78" stroke-width="1"/>
           <text x="16" y="11" text-anchor="middle" fill="#8B95B4">4F</text>
@@ -188,7 +172,7 @@ function updateMinimapFloor(floorNumber) {
   if (bgMap) bgMap.setAttribute('href', `../maps/${floorNumber}F.svg`);
   
   // 💡 指定形式「FLOOR MAP (●館●F)」に更新
-  if (floorTitle) floorTitle.textContent = `FLOOR MAP (${buildingName}${floorNumber}F)`;
+  if (floorTitle) floorTitle.textContent = `${buildingName}${floorNumber}F`;
 
   const dots = Array.from($('mm-nodes-group').children);
   dots.forEach(dot => {
@@ -449,13 +433,6 @@ function setupMinimapInteractions() {
   $('mm-btn-zoom-out').addEventListener('click', e => {
     e.stopPropagation();
     changeMMZoom(false, 92, 80);
-  });
-
-  ['north', 'main', 'south'].forEach(b => {
-    $(`mm-btn-${b}`).addEventListener('click', e => {
-      e.stopPropagation();
-      console.log(`${b}棟エリアが選択されました`);
-    });
   });
 }
 

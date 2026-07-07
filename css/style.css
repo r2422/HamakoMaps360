@@ -16,11 +16,19 @@ body {
   height: 100vh;
 }
 
+/* Canvasとレティクルを包むコンテナ */
+.sv-container {
+  position: relative;
+  width: 100%;
+  height: 100%; /* PC時は画面全体、モバイル時はメディアクエリで高さが削られます */
+  overflow: hidden;
+}
+
 /* --- メインキャンバス --- */
 #sv-canvas {
   display: block;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%; /* 親コンテナのサイズに100%追従 */
   cursor: grab;
   touch-action: none;
   -webkit-user-select: none; /* iOS Safari用 */
@@ -29,6 +37,20 @@ body {
 #sv-canvas:active {
   cursor: grabbing;
 }
+
+@media (max-width: 780px) {
+  /* 💡 モバイル時は、Canvasの親コンテナ自体の高さを計算して削ります */
+  .sv-container {
+    width: 100vw;
+    height: calc(100dvh - (160 / 260 * 100dvw));
+  }
+
+  #sv-canvas {
+    width: 100%;
+    height: 100%;
+  }
+}
+
 /* ミニマップのコンテナやSVGマスク */
 #hud-minimap-container,
 #hud-minimap-svg,
@@ -40,7 +62,8 @@ body {
 
 /* --- 照準 (Crosshair) --- */
 #crosshair {
-  position: fixed;
+  /* 💡 fixed から absolute に変更。これで画面全体ではなく親の .sv-container の中心（50%）に固定されます */
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -221,17 +244,13 @@ body {
   display: block;
 }
 
-/* ============================================================
-   ミニマップ & コントロールパネル（配置ロジック修正版）
-============================================================ */
-
-/* --- 【通常時】ミニマップ：画面右下寄せ・2倍サイズ --- */
+/* --- ミニマップ：画面右下寄せ --- */
 #hud-minimap {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  left: auto;       /* 左寄せをクリア */
-  width: 520px;     /* 元の260pxの2倍固定 */
+  left: auto;
+  width: 520px;
   z-index: 30;
   transition: all 0.3s ease;
   pointer-events: auto;
@@ -242,18 +261,18 @@ body {
 }
 #hud-minimap-svg {
   width: 100%;
-  height: auto;     /* 比率維持 */
+  height: auto;
   display: block;
 }
 
-/* --- 【通常時】コントロールパネル：画面左下寄せ・要素梱包 --- */
+/* --- コントロールパネル：画面左下寄せ --- */
 #hud-controls {
   position: fixed;
-  bottom: 24px;
+  bottom: 6px;
   left: 24px;
-  right: auto;      /* 右寄せをクリア */
-  width: max-content; /* 横幅100%化を防ぎ、中身の要素サイズに梱包 */
-  z-index: 40;      /* 重なり順はミニマップより上（または同等） */
+  right: auto;
+  width: max-content;
+  z-index: 40;
   transition: all 0.3s ease;
   pointer-events: auto;
 }
@@ -270,11 +289,7 @@ body {
   box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
-/* 💡 【オーバーラップ時】
-   ミニマップ（520px）とコントロールパネル（約210px）が干渉し始める画面幅
-   余白を含めて 520 + 210 + 48 = 778px 以下のときにレイアウトを変更 */
 @media (max-width: 780px) {
-  /* ミニマップ：左下寄せに変更、画面横幅の80%に拡大、縦幅比率は維持 */
   #hud-minimap {
     right: auto;
     left: 0px;
@@ -283,11 +298,9 @@ body {
     width: calc(100vw);
   }
 
-  /* コントロールパネル：左寄せを維持したまま、ミニマップの上側に退避（下部からの距離を調整） */
   #hud-controls {
     left: 24px;
-    bottom: calc(24px + (calc(100vw) * 160 / 260) + 16px); 
-    /* 解説：下部余白(24px) + ミニマップの動的な縦幅(横幅の160/260) + パネルとの間隔(16px) */
+    bottom: calc(6px + (calc(100vw) * 160 / 260) + 16px); 
   }
 }
 
@@ -405,9 +418,7 @@ body {
   transition: background 0.05s;
 }
 
-/* ============================================================
-   設定モーダル (SYSTEM CONFIG 改良版)
-============================================================ */
+/* --- 設定モーダル --- */
 #settings-modal {
   position: fixed;
   inset: 0;

@@ -7,13 +7,14 @@
   <link rel="stylesheet" href="../css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link rel="manifest" href="../pwa/manifest.json">
-  <link rel="icon" href="../pwa/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../pwa/favicon256.ico" type="image/x-icon">
 </head>
 <body>
 
-  <canvas id="sv-canvas"></canvas>
-
-  <div id="crosshair"></div>
+  <div class="sv-container">
+    <canvas id="sv-canvas"></canvas>
+    <div id="crosshair"></div>
+  </div>
 
   <div id="step-flash"></div>
 
@@ -104,7 +105,7 @@
           <span class="setting-label">Orbital Debug Monitor</span>
           <span class="setting-sub">TPSデバッグモニターの切り替え</span>
         </div>
-        <label class="switch"><input type="checkbox" id="tg-hud-debug" checked><span class="slider"></span></label>
+        <label class="switch"><input type="checkbox" id="tg-hud-debug"><span class="slider"></span></label>
       </div>
       
       <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:14px 0;">
@@ -114,7 +115,7 @@
           <span class="setting-label">Show Sphere Wireframe</span>
           <span class="setting-sub">全球ワイヤーフレームの描画</span>
         </div>
-        <label class="switch"><input type="checkbox" id="tg-grid-edges" checked><span class="slider"></span></label>
+        <label class="switch"><input type="checkbox" id="tg-grid-edges"><span class="slider"></span></label>
       </div>
       
       <div class="setting-row">
@@ -122,7 +123,7 @@
           <span class="setting-label">Show Vertex Points</span>
           <span class="setting-sub">全球頂点粒子の描画</span>
         </div>
-        <label class="switch"><input type="checkbox" id="tg-grid-points" checked><span class="slider"></span></label>
+        <label class="switch"><input type="checkbox" id="tg-grid-points"><span class="slider"></span></label>
       </div>
       
       <div class="setting-row">

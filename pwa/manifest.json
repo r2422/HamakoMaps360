@@ -3,17 +3,17 @@
   "short_name": "hamako-maps-360",
   "start_url": "../html/index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4CAF50",
+  "background_color": "#522B8C",
+  "theme_color": "#522B8C",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
       "type": "image/png"
     }
   ]
