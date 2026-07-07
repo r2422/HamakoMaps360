@@ -22,9 +22,20 @@ body {
   width: 100vw;
   height: 100vh;
   cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none; /* iOS Safari用 */
+  user-select: none;
 }
 #sv-canvas:active {
   cursor: grabbing;
+}
+/* ミニマップのコンテナやSVGマスク */
+#hud-minimap-container,
+#hud-minimap-svg,
+#mm-drag-mask {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* --- 照準 (Crosshair) --- */
@@ -266,16 +277,16 @@ body {
   /* ミニマップ：左下寄せに変更、画面横幅の80%に拡大、縦幅比率は維持 */
   #hud-minimap {
     right: auto;
-    left: 6px;
-    bottom: 6px;
-    right: 6px;
-    width: calc(100vw - 12px);
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    width: calc(100vw);
   }
 
   /* コントロールパネル：左寄せを維持したまま、ミニマップの上側に退避（下部からの距離を調整） */
   #hud-controls {
     left: 24px;
-    bottom: calc(24px + (calc(100vw - 12px) * 160 / 260) + 16px); 
+    bottom: calc(24px + (calc(100vw) * 160 / 260) + 16px); 
     /* 解説：下部余白(24px) + ミニマップの動的な縦幅(横幅の160/260) + パネルとの間隔(16px) */
   }
 }

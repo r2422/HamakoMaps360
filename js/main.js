@@ -20,7 +20,7 @@ const routeLinesGroup = new THREE.Group();
 scene.add(routeLinesGroup);
 
 function makeSphere(radius, isB = false){
-  const g = new THREE.SphereGeometry(radius, 40, 20);
+  const g = new THREE.SphereGeometry(radius, 60, 60);
   g.scale(-1,1,1);
   
   const m = new THREE.MeshBasicMaterial({
@@ -90,7 +90,7 @@ cameraHelper.material.depthWrite = false;
 scene.add(cameraHelper);
 
 /* ---- state ---- */
-let currentId   = '13_corridor_0000,0020';
+let currentId   = '13_corridor_0010,0020';
 let nextId      = null;
 let yaw=0, pitch=0, tYaw=0, tPitch=0;
 let fov=75, tFov=75;
@@ -113,7 +113,7 @@ const uiConfig = {
 
 /* ---- 短縮ヘルパー関数 ---- */
 const $ = id => document.getElementById(id);
-function setLoadBar(p){ $('load-bar').style.width = p+'%'; }
+function setLoadBar(p){ const bar = $('load-bar'); if(bar) bar.style.width = p+'%'; }
 
 /* ---- 進路パス・先端テキスト・ピンの生成関数 ---- */
 function buildRouteLines(node) {
@@ -224,12 +224,19 @@ let walkDir = new THREE.Vector3(0,0,-1);
 
 function startWalk(targetNodeId, hotspotPos){
   if(walkPhase !== 'idle') return;
+
+  // 💡 移動を開始する前に現在のノードを移動元として記憶
+  if (typeof mmSrcNode !== 'undefined') {
+    mmSrcNode = NODES[currentId];
+  }
+
   nextId    = targetNodeId;
   walkPhase = 'walk';
   walkT     = 0;
 
   walkDir = new THREE.Vector3(...hotspotPos).normalize();
-  $('hud-speed').style.opacity='1';
+  const speedHud = $('hud-speed');
+  if(speedHud) speedHud.style.opacity='1';
 
   setLoadBar(30);
   const node=NODES[targetNodeId];
@@ -279,13 +286,17 @@ function finishWalk(){
   $('loc-name').textContent=node.name;
   $('loc-sub').textContent=node.sub;
   
+  // 💡 移動完了したため記憶をクリア
+  if (typeof mmSrcNode !== 'undefined') mmSrcNode = null;
+
   if (typeof updateMinimap === 'function') updateMinimap();
   if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
 
   yaw = tYaw; pitch = tPitch;
 
   setLoadBar(100); setTimeout(()=>setLoadBar(0),400);
-  $('hud-speed').style.opacity='0';
+  const speedHud = $('hud-speed');
+  if(speedHud) speedHud.style.opacity='0';
 
   setTimeout(()=>{ walkPhase='idle'; },200);
 }
@@ -325,46 +336,78 @@ function updateCompass(angle){
   $('compass-needle').setAttribute('transform',`rotate(${deg},36,36)`);
 }
 
-/* ---- events ---- */
+/* ---- events (モバイル・マルチデバイス対応版) ---- */
 let lastX=0, lastY=0;
-canvas.addEventListener('pointerdown',e=>{
-  if(walkPhase!=='idle') return;
-  isDragging=false; lastX=e.clientX; lastY=e.clientY;
+
+// 💡 モバイル固有のスクロールジェスチャー競合を防ぐためのタッチ処理
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length > 1) return; // ピンチ時は回転させない
+  if (walkPhase !== 'idle') return;
+
+  isDragging = false; 
+  lastX = e.touches[0].clientX; 
+  lastY = e.touches[0].clientY;
+}, { passive: true });
+
+canvas.addEventListener('touchmove', e => {
+  if (e.touches.length > 1) return;
+  if (walkPhase !== 'idle') return;
+
+  const dx = e.touches[0].clientX - lastX;
+  const dy = e.touches[0].clientY - lastY;
+
+  if (Math.abs(dx) + Math.abs(dy) > 2) isDragging = true;
+
+  tYaw   -= dx * 0.004;
+  tPitch += dy * 0.004;
+  tPitch = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, tPitch));
+
+  lastX = e.touches[0].clientX;
+  lastY = e.touches[0].clientY;
+}, { passive: true });
+
+canvas.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'touch') return; // モバイルタッチ時はtouchstartに委ねる
+  if (walkPhase !== 'idle') return;
+  isDragging = false; lastX = e.clientX; lastY = e.clientY;
   canvas.setPointerCapture(e.pointerId);
   e.preventDefault();
 });
-canvas.addEventListener('pointermove',e=>{
-  if(walkPhase!=='idle'){ canvas.style.cursor='default'; return; }
-  if(e.buttons===0){
-    mouse2.x=(e.clientX/window.innerWidth)*2-1;
-    mouse2.y=-(e.clientY/window.innerHeight)*2+1;
-    raycaster.setFromCamera(mouse2,camera);
 
-    const hits=raycaster.intersectObjects(routeLinesGroup.children);
-    const tip=$('tooltip');
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerType === 'touch') return; // モバイルタッチ時はtouchmoveに委ねる
+  if (walkPhase !== 'idle') { canvas.style.cursor = 'default'; return; }
+  if (e.buttons === 0) {
+    mouse2.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse2.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse2, camera);
+
+    const hits = raycaster.intersectObjects(routeLinesGroup.children);
+    const tip = $('tooltip');
     
     const hitObj = hits.length ? hits[0].object : null;
-    if(hitObj && hitObj.userData && hitObj.userData.isRoute && (hitObj.userData.isText || hitObj.userData.isPin)){
+    if (hitObj && hitObj.userData && hitObj.userData.isRoute && (hitObj.userData.isText || hitObj.userData.isPin)) {
       const lk = hitObj.userData.link;
-      canvas.style.cursor='pointer';
-      tip.textContent=lk.hint || lk.label || "移動する";
-      tip.style.left=e.clientX+'px'; tip.style.top=e.clientY+'px';
-      tip.style.opacity='1';
+      canvas.style.cursor = 'pointer';
+      tip.textContent = lk.hint || lk.label || "移動する";
+      tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px';
+      tip.style.opacity = '1';
     } else {
-      canvas.style.cursor='grab'; tip.style.opacity='0';
+      canvas.style.cursor = 'grab'; tip.style.opacity = '0';
     }
     return;
   }
-  const dx=e.clientX-lastX, dy=e.clientY-lastY;
-  if(Math.abs(dx)+Math.abs(dy)>3) isDragging=true;
-  tYaw  -=dx*0.0038;
-  tPitch+=dy*0.0038;
-  tPitch=Math.max(-Math.PI/2.1,Math.min(Math.PI/2.1,tPitch));
-  lastX=e.clientX; lastY=e.clientY;
+  const dx = e.clientX - lastX, dy = e.clientY - lastY;
+  if (Math.abs(dx) + Math.abs(dy) > 3) isDragging = true;
+  tYaw   -= dx * 0.0038;
+  tPitch += dy * 0.0038;
+  tPitch = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, tPitch));
+  lastX = e.clientX; lastY = e.clientY;
 });
 
 canvas.addEventListener('pointerup',e=>{
-  if(walkPhase!=='idle'||isDragging) return;
+  if (e.pointerType === 'touch') return;
+  if (walkPhase !== 'idle' || isDragging) return;
 });
 
 canvas.addEventListener('dblclick', e => {
@@ -398,68 +441,18 @@ let lastPinch=0;
 canvas.addEventListener('touchstart',e=>{ if(e.touches.length===2) lastPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); });
 canvas.addEventListener('touchmove',e=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); tFov=Math.max(30,Math.min(110,tFov-(d-lastPinch)*0.3)); lastPinch=d; } },{passive:true});
 
-$('fov-slider').addEventListener('input', e=>{ tFov=+e.target.value; });
-$('btn-zm').onclick=()=>{ tFov=Math.max(30,tFov-10); };
-$('btn-zp').onclick=()=>{ tFov=Math.min(110,tFov+10); };
-// $('btn-reset').onclick=()=>{ const n=NODES[currentId]; tYaw=n.initYaw; tPitch=0; tFov=75; };
 window.addEventListener('resize',()=>{ renderer.setSize(window.innerWidth,window.innerHeight,false); camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); });
 
-/* ---- Modal Events & HUD Controller ---- */
-const modal = $('settings-modal');
-$('btn-settings').onclick = () => modal.classList.add('open');
-$('btn-close-modal').onclick = () => modal.classList.remove('open');
-modal.onclick = (e) => { if(e.target === modal) modal.classList.remove('open'); };
-
+/* ---- Helpers ---- */
 function setupToggle(id, targetEl, callback) {
-  $(id).addEventListener('change', e => {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener('change', e => {
     const visible = e.target.checked;
     if (targetEl) targetEl.style.opacity = visible ? '1' : '0';
     if (callback) callback(visible);
   });
 }
-setupToggle('tg-hud-loc', $('hud-location'));
-setupToggle('tg-hud-compass', $('hud-compass'));
-setupToggle('tg-hud-map', $('hud-minimap'));
-setupToggle('tg-hud-debug', $('debug-container'));
-
-setupToggle('tg-grid-edges', null, (visible) => {
-  uiConfig.edges = visible;
-  if(walkPhase === 'idle') gridEdgesA.material.opacity = visible ? 0.15 : 0;
-});
-setupToggle('tg-grid-points', null, (visible) => {
-  uiConfig.points = visible;
-  if(walkPhase === 'idle') gridPointsA.material.opacity = visible ? 0.25 : 0;
-});
-setupToggle('tg-grid-routes', null, (visible) => {
-  uiConfig.routes = visible;
-  buildRouteLines(NODES[currentId]);
-});
-
-/* ---- HUD: 文字サイズモード 切り替えイベント ---- */
-document.addEventListener('DOMContentLoaded', () => {
-  const textSizeBtn = document.getElementById('btn-text-size-mode');
-  if (textSizeBtn) {
-    if (uiConfig.textSizeMode === 'distance') {
-      textSizeBtn.textContent = 'Distance';
-      textSizeBtn.style.color = '#ccc';
-    } else {
-      textSizeBtn.textContent = 'Constant';
-      textSizeBtn.style.color = '#55ff7f';
-    }
-
-    textSizeBtn.addEventListener('click', () => {
-      if (uiConfig.textSizeMode === 'constant') {
-        uiConfig.textSizeMode = 'distance';
-        textSizeBtn.textContent = 'Distance';
-        textSizeBtn.style.color = '#ccc';
-      } else {
-        uiConfig.textSizeMode = 'constant';
-        textSizeBtn.textContent = 'Constant';
-        textSizeBtn.style.color = '#55ff7f';
-      }
-    });
-  }
-});
 
 function onWorkspaceClick(event) {
   const rect = renderer.domElement.getBoundingClientRect();
@@ -556,6 +549,11 @@ function animate(now){
     updateCamera();
     updateCompass(yaw);
 
+    // 💡 walkPhase中も毎フレーム、移動量と現在のカメラ回転（yaw）をミニマップへリアルタイム反映
+    if (typeof applyMinimapTransform === 'function') {
+      applyMinimapTransform();
+    }
+
     if(walkT>=1) finishWalk();
   } else {
     if(autoRotate&&!isDragging) tYaw+=0.06*dt;
@@ -569,8 +567,10 @@ function animate(now){
     updateCamera();
     updateCompass(yaw);
 
-    $('fov-slider').value=Math.round(fov);
-    $('fov-readout').textContent=Math.round(fov)+'°';
+    const fovSlider = $('fov-slider');
+    const fovReadout = $('fov-readout');
+    if(fovSlider) fovSlider.value=Math.round(fov);
+    if(fovReadout) fovReadout.textContent=Math.round(fov)+'°';
 
     if (gridEdgesA && gridPointsA) {
       gridEdgesA.material.opacity = uiConfig.edges ? 0.15 : 0;
@@ -625,9 +625,73 @@ function animate(now){
   sphereB.material.wireframe = false;
 }
 
-// 💡 HTMLのDOM構築がすべて完了した後に初期設定とループを開始する
+/* ---- すべてのUI要素の初期化・登録処理をDOM構築完了後に実行する ---- */
 document.addEventListener('DOMContentLoaded', () => {
-  // もし minimap.js 側の自動フックを外す場合は、ここで initMinimapLayout() を先に呼んでも良いです
-  loadInitial('13_corridor_0000,0020');
+  const slider = $('fov-slider');
+  if(slider) slider.addEventListener('input', e=>{ tFov=+e.target.value; });
+  
+  const btnZm = $('btn-zm');
+  if(btnZm) btnZm.onclick=()=>{ tFov=Math.max(30,tFov-10); };
+  
+  const btnZp = $('btn-zp');
+  if(btnZp) btnZp.onclick=()=>{ tFov=Math.min(110,tFov+10); };
+  
+  const btnReset = $('btn-reset');
+  if(btnReset) btnReset.onclick=()=>{ const n=NODES[currentId]; tYaw=n.initYaw; tPitch=0; tFov=75; };
+
+  /* ---- Modal Events & HUD Controller ---- */
+  const modal = $('settings-modal');
+  const btnSettings = $('btn-settings');
+  const btnCloseModal = $('btn-close-modal');
+  
+  if(btnSettings) btnSettings.onclick = () => modal.classList.add('open');
+  if(btnCloseModal) btnCloseModal.onclick = () => modal.classList.remove('open');
+  if(modal) modal.onclick = (e) => { if(e.target === modal) modal.classList.remove('open'); };
+
+  /* ---- 設定画面トグルの初期フック ---- */
+  setupToggle('tg-hud-loc', $('hud-location'));
+  setupToggle('tg-hud-compass', $('hud-compass'));
+  setupToggle('tg-hud-map', $('hud-minimap'));
+  setupToggle('tg-hud-debug', $('debug-container'));
+
+  setupToggle('tg-grid-edges', null, (visible) => {
+    uiConfig.edges = visible;
+    if(walkPhase === 'idle' && gridEdgesA) gridEdgesA.material.opacity = visible ? 0.15 : 0;
+  });
+  setupToggle('tg-grid-points', null, (visible) => {
+    uiConfig.points = visible;
+    if(walkPhase === 'idle' && gridPointsA) gridPointsA.material.opacity = visible ? 0.25 : 0;
+  });
+  setupToggle('tg-grid-routes', null, (visible) => {
+    uiConfig.routes = visible;
+    buildRouteLines(NODES[currentId]);
+  });
+
+  /* ---- HUD: 文字サイズモード 切り替えイベント ---- */
+  const textSizeBtn = document.getElementById('btn-text-size-mode');
+  if (textSizeBtn) {
+    if (uiConfig.textSizeMode === 'distance') {
+      textSizeBtn.textContent = 'Distance';
+      textSizeBtn.style.color = '#ccc';
+    } else {
+      textSizeBtn.textContent = 'Constant';
+      textSizeBtn.style.color = '#55ff7f';
+    }
+
+    textSizeBtn.addEventListener('click', () => {
+      if (uiConfig.textSizeMode === 'constant') {
+        uiConfig.textSizeMode = 'distance';
+        textSizeBtn.textContent = 'Distance';
+        textSizeBtn.style.color = '#ccc';
+      } else {
+        uiConfig.textSizeMode = 'constant';
+        textSizeBtn.textContent = 'Constant';
+        textSizeBtn.style.color = '#55ff7f';
+      }
+    });
+  }
+
+  // 初回表示のロードとアニメーションの開始
+  loadInitial('13_corridor_0010,0020');
   requestAnimationFrame(animate);
 });

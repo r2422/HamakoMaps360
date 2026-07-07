@@ -3,6 +3,7 @@
  */
 
 /* --- ミニマップ管理用の状態変数 --- */
+let mmSrcNode = null; // 💡 main.jsのwalkPhaseと連動して移動元ノードを記憶する変数
 let mmPanX = 0;      
 let mmPanY = 0;      
 let mmScale = 0.12; 
@@ -17,7 +18,6 @@ function initMinimapLayout() {
   const container = $('hud-minimap-container');
   if (!container) return;
 
-  // 💡 幅・高さを2倍（520x320）に変更。viewBoxの比率(260:160)は維持
   container.innerHTML = `
     <svg id="hud-minimap-svg" viewBox="0 0 260 160" width="520" height="320" xmlns="http://www.w3.org/2000/svg" style="user-select: none; touch-action: none; border-radius: 12px; display: block;">
       <defs>
@@ -45,7 +45,7 @@ function initMinimapLayout() {
         <rect width="260" height="160" fill="url(#mm-grid)"/>
 
         <g id="mm-transform-group">
-          <image id="mm-bg-map" href="" width="5640" height="4320" x="0" y="0" opacity="0.35" pointer-events="none" />
+          <image id="mm-bg-map" href="" width="5690" height="4370" x="0" y="0" opacity="0.7" pointer-events="none" />
           <g id="mm-edges-group"></g>
           <g id="mm-nodes-group"></g>
         </g>
@@ -131,10 +131,11 @@ function initMinimapLayout() {
         if (!drawnEdges.has(edgeKey)) {
           const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
           line.setAttribute('id', `mm-edge-${edgeKey}`);
-          line.setAttribute('x1', node.mmX);
-          line.setAttribute('y1', node.mmY);
-          line.setAttribute('x2', targetNode.mmX);
-          line.setAttribute('y2', targetNode.mmY);
+          // 💡 SVG端の25px余白に適合させるオフセット処理
+          line.setAttribute('x1', node.mmX + 25);
+          line.setAttribute('y1', node.mmY + 25);
+          line.setAttribute('x2', targetNode.mmX + 25);
+          line.setAttribute('y2', targetNode.mmY + 25);
           line.setAttribute('stroke', 'rgba(90, 127, 255, 0.4)');
           line.setAttribute('stroke-width', '4');
           line.setAttribute('stroke-dasharray', '2,2');
@@ -149,8 +150,9 @@ function initMinimapLayout() {
 
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('id', `mm-dot-${node.id}`);
-    circle.setAttribute('cx', node.mmX);
-    circle.setAttribute('cy', node.mmY);
+    // 💡 SVG端の25px余白に適合させるオフセット処理
+    circle.setAttribute('cx', node.mmX + 25);
+    circle.setAttribute('cy', node.mmY + 25);
     circle.setAttribute('r', '14'); 
     circle.setAttribute('fill', 'rgba(30, 45, 90, 0.8)');
     circle.setAttribute('stroke', 'rgba(90, 127, 255, 0.6)');
@@ -168,10 +170,25 @@ function updateMinimapFloor(floorNumber) {
   if (floorNumber === currentMinimapFloor) return;
   currentMinimapFloor = floorNumber;
 
+  // 💡 アクティブな建物ボタンから文字列（「北館」「本館」「南館」）を取得
+  let buildingName = "本館"; 
+  ['north', 'main', 'south'].forEach(b => {
+    const btn = $(`mm-btn-${b}`);
+    if (btn) {
+      const rect = btn.querySelector('rect');
+      if (rect && rect.getAttribute('fill') !== 'transparent') {
+        const textNode = btn.querySelector('text');
+        if (textNode) buildingName = textNode.textContent; 
+      }
+    }
+  });
+
   const bgMap = $('mm-bg-map');
   const floorTitle = $('mm-floor-title');
-  if (bgMap) bgMap.setAttribute('href', `./maps/map_${floorNumber}f.svg`);
-  if (floorTitle) floorTitle.textContent = `FLOOR MAP (${floorNumber}F)`;
+  if (bgMap) bgMap.setAttribute('href', `../maps/${floorNumber}F.svg`);
+  
+  // 💡 指定形式「FLOOR MAP (●館●F)」に更新
+  if (floorTitle) floorTitle.textContent = `FLOOR MAP (${buildingName}${floorNumber}F)`;
 
   const dots = Array.from($('mm-nodes-group').children);
   dots.forEach(dot => {
@@ -229,7 +246,6 @@ function updateMinimap(){
     }
   }
 
-  // 💡 現在地の描画更新処理を applyMinimapTransform に委託するため、ここでは中心座標算出のみ実行
   applyMinimapTransform();
 }
 
@@ -239,20 +255,32 @@ function applyMinimapTransform() {
     group.setAttribute('transform', `translate(${mmPanX}, ${mmPanY}) scale(${mmScale})`);
   }
   
-  // 💡 プレイヤーマーカー（矢印とパルス）の位置調整ロジック
   const player = $('mm-player');
   const arrow = $('mm-arrow');
-  const pulse = $('mm-pulse');
-  const currentNode = NODES[currentId];
+  
+  const activeNodeId = (typeof walkPhase !== 'undefined' && walkPhase === 'walk' && nextId) ? nextId : currentId;
+  const currentNode = NODES[activeNodeId];
 
   if (player && currentNode) {
-    // 拡大・パンの変換行列を逆算して、ドラッグマスク上で常に正しいピクセル位置へ配置する
-    const screenX = currentNode.mmX * mmScale + mmPanX;
-    const screenY = currentNode.mmY * mmScale + mmPanY;
+    // 💡 プレイヤーピンも描画に合わせるため、基準座標に + 25 を付与する
+    let currentMMX = currentNode.mmX + 25;
+    let currentMMY = currentNode.mmY + 25;
+
+    if (typeof walkPhase !== 'undefined' && walkPhase === 'walk' && mmSrcNode) {
+      const srcX = mmSrcNode.mmX + 25;
+      const srcY = mmSrcNode.mmY + 25;
+      const dstX = currentNode.mmX + 25;
+      const dstY = currentNode.mmY + 25;
+      currentMMX = srcX + (dstX - srcX) * walkT;
+      currentMMY = srcY + (dstY - srcY) * walkT;
+    }
+
+    const screenX = currentMMX * mmScale + mmPanX;
+    const screenY = currentMMY * mmScale + mmPanY;
     
     player.setAttribute('transform', `translate(${screenX}, ${screenY})`);
 
-    if (arrow) {
+    if (arrow && typeof yaw !== 'undefined') {
       const deg = (yaw * 180) / Math.PI;
       arrow.setAttribute('transform', `rotate(${deg}, 0, 0)`);
     }
@@ -262,8 +290,9 @@ function applyMinimapTransform() {
 function focusCurrentNodeOnMinimap() {
   const currentNode = NODES[currentId];
   if (!currentNode) return;
-  mmPanX = 95 - currentNode.mmX * mmScale; 
-  mmPanY = 80 - currentNode.mmY * mmScale;
+  // 💡 +25px されたノードの中心に追従フォーカスさせる計算
+  mmPanX = 95 - (currentNode.mmX + 25) * mmScale; 
+  mmPanY = 80 - (currentNode.mmY + 25) * mmScale;
   applyMinimapTransform();
 }
 
@@ -314,8 +343,9 @@ function setupMinimapInteractions() {
       const node = NODES[id];
       if (node.floor !== currentMinimapFloor) continue;
 
-      const dx = node.mmX - clickSVGX;
-      const dy = node.mmY - clickSVGY;
+      // 💡 描画座標 (+25) とクリック逆シミュレート座標の距離を算出
+      const dx = (node.mmX + 25) - clickSVGX;
+      const dy = (node.mmY + 25) - clickSVGY;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist < minDist && dist < 100) { 
@@ -325,7 +355,56 @@ function setupMinimapInteractions() {
     }
 
     if (closestNodeId && closestNodeId !== currentId) {
-      loadInitial(closestNodeId);
+      const targetNode = NODES[closestNodeId];
+
+      const oldModal = $('mm-tp-modal');
+      if (oldModal) oldModal.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'mm-tp-modal';
+      modal.style = `
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: #121c38;
+        border: 1.5px solid #3a4e78;
+        border-radius: 8px;
+        padding: 16px;
+        color: #e9edf7;
+        font-family: 'Noto Sans JP', sans-serif;
+        font-size: 12px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        z-index: 10000;
+        min-width: 180px;
+      `;
+      
+      modal.innerHTML = `
+        <div style="margin-bottom: 14px; font-weight: bold; letter-spacing: 0.04em;">
+          「${targetNode.name}」へ<br>移動しますか？
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button id="mm-tp-yes" style="background: #43e8c8; color: #08302a; border: none; padding: 6px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">はい</button>
+          <button id="mm-tp-no" style="background: #223154; color: #8b95b4; border: 1px solid #3a4e78; padding: 6px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">いいえ</button>
+        </div>
+      `;
+
+      const targetContainer = $('hud-minimap-container') || document.body;
+      targetContainer.style.position = 'relative'; 
+      targetContainer.appendChild(modal);
+
+      $('mm-tp-yes').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        modal.remove();
+        if (typeof loadInitial === 'function') {
+          loadInitial(closestNodeId);
+        }
+      });
+
+      $('mm-tp-no').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        modal.remove();
+      });
     }
   });
 
@@ -384,9 +463,7 @@ function setupMinimapInteractions() {
  * メインループ（animate内）から呼び出されるパルス表現用アップデート
  */
 function updateMinimapPulse(dt) {
-  if (typeof mmPulseT === 'undefined') return;
-  // 💡 元々設定されていたCSSのインラインanimateタグ(<animate>)と重複競合を防ぐため、
-  // スケール分離後はこの関数側の属性上書きは実行せず空にするか、CSSアニメーション側に委ねます。
+  // SVG内のインライン<animate>タグ要素が自動動作するため空にしています。
 }
 
 // 初期化フック
