@@ -237,7 +237,7 @@ mapGraph.addNode(new MapNode('11_passageway_mid_0990,0350', '1階 連絡通路 �
 
 // --- 2階 空中廊下中間 ---
 mapGraph.addNode(new MapNode('12_passageway_mid_0330,0350', '2階 連絡通路 中間点', 'Connecting Bridge 2F - Mid', 'Bridge/12_passageway_mid.jpg', 0, 0, [330, Y_BASE_2, 350], 2, 'North'));
-mapGraph.addNode(new MapNode('12_passageway_mid_0990,0350', '2階 連絡通路 中間点', 'Connecting Bridge 2F - Mid', 'Bridge/12_passageway_mid.jpg', 0, 0, [990, Y_BASE_2, 350], 2, 'North'));
+mapGraph.addNode(new MapNode('12_passageway_mid_0990,0350', '2階 連絡通路 中間点', 'Connecting Bridge 2F - Mid', '北館2F/12_passageway_mid_0990,0350.jpg', 0, 0, [990, Y_BASE_2, 350], 2, 'North'));
 
 // --- 3階 空中廊下中間 ---
 mapGraph.addNode(new MapNode('13_passageway_mid_0330,0350', '3階 連絡通路 中間点', 'Connecting Bridge 3F - Mid', 'Bridge/13_passageway_mid.jpg', 0, 0, [330, Y_BASE_3, 350], 3, 'North'));
@@ -318,6 +318,8 @@ mapGraph.getNode('23_stairs_0990,0560').addLink('13_passageway_mid_0990,0350', '
 
   mapGraph.addNode(new MapNode('21_outside_0720,0520_昇降口', '本館 1階 昇降口', 'Main building - Floor 1 Other Place', '本館1F/21_entrance_0720,0520_昇降口.jpg', 0, 0, [720, Y_BASE_1, 520], 1, 'Main'));
   mapGraph.addNode(new MapNode('21_outside_0120,0560_職員玄関', '本館 1階 職員玄関', 'Main building - Floor 1 Other Place', '本館1F/21_outside_0120,0560_職員玄関.jpg', 0, 0, [120, Y_BASE_1, 560], 1, 'Main'));
+  
+  
   // 座標変換とベクトルビルドを実行
 mapGraph.calcMinimapCoords();
 mapGraph.buildAllLinks();
