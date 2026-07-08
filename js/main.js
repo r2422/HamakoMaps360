@@ -465,6 +465,17 @@ window.addEventListener('resize', updateRendererSize);
 function setupToggle(id, targetEl, callback) {
   const el = $(id);
   if (!el) return;
+
+  // 1. ページ読み込み時に、現在のHTMLのチェック状態(checked)を強制適用する
+  const isChecked = el.checked;
+  if (targetEl) {
+    targetEl.style.opacity = isChecked ? '1' : '0';
+  }
+  if (callback) {
+    callback(isChecked);
+  }
+
+  // 2. ユーザーが操作した時のイベントリスナー
   el.addEventListener('change', e => {
     const visible = e.target.checked;
     if (targetEl) targetEl.style.opacity = visible ? '1' : '0';
