@@ -216,8 +216,8 @@ body {
   position: fixed;
   top: 164px;
   right: 24px;
-  width: 220px;
-  height: 160px;
+  width: calc(220 * 2)px;
+  height: calc(160 * 2)px;
   background: rgba(6, 12, 32, 0.65);
   border: 1px solid rgba(90, 127, 255, 0.4);
   border-radius: 12px;

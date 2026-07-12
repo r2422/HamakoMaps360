@@ -15,7 +15,7 @@ class MapNode {
     this.name = name;
     this.sub = sub;
     this.asset = new PanoramaAsset(imageFile);
-    this.initYaw = initYaw;
+    this.initYaw = initYaw; // TPしたときに向いている方向
     this.mmIdx = mmIdx; 
     this.pos3D = pos3D; // [x, y, z] 絶対空間座標
     this.floor = floor;
@@ -91,7 +91,7 @@ const Y_BASE_4 = 240;
   mapGraph.addNode(new MapNode('13_corridor_0010,0020', '北館 3階 廊下', '131前', '北館3F/13_corridor_0010,0020.jpg', Math.PI / 2, 0, [ 10, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0120,0020', '北館 3階 廊下', '131, 132中間', '北館3F/13_corridor_0120,0020.jpg', 0, 0, [120, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0220,0020', '北館 3階 廊下', '132前', '北館3F/13_corridor_0220,0020.jpg', 0, 0, [220, Y_BASE_3,  20], 3, 'North'));
-  mapGraph.addNode(new MapNode('13_corridor_0330,0020', '北館 3階 廊下', '階段前', '北館3F/13_corridor_0330,0020.jpg', 0, 0, [330, Y_BASE_3,  20], 3, 'North'));
+  mapGraph.addNode(new MapNode('13_corridor_0330,0020', '北館 3階 廊下', '階段前', '北館3F/13_corridor_0330,0020.jpg', Math.PI, 0, [330, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0380,0020', '北館 3階 廊下', '理数工学室前', '北館3F/13_corridor_0380,0020.jpg', 0, 0, [380, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0520,0020', '北館 3階 廊下', '理数工学室前', '北館3F/13_corridor_0520,0020.jpg', 0, 0, [520, Y_BASE_3,  20], 3, 'North'));
   mapGraph.addNode(new MapNode('13_corridor_0570,0020', '北館 3階 廊下(R科準備室)', 'R科準備室前', '北館3F/13_corridor_0570,0020.jpg', 0, 0, [570, Y_BASE_3,  20], 3, 'North'));
@@ -319,7 +319,23 @@ mapGraph.getNode('23_stairs_0990,0560').addLink('13_passageway_mid_0990,0350', '
   mapGraph.addNode(new MapNode('21_outside_0720,0520_昇降口', '本館 1階 昇降口', 'Main building - Floor 1 Other Place', '本館1F/21_entrance_0720,0520_昇降口.jpg', 0, 0, [720, Y_BASE_1, 520], 1, 'Main'));
   mapGraph.addNode(new MapNode('21_outside_0120,0560_職員玄関', '本館 1階 職員玄関', 'Main building - Floor 1 Other Place', '本館1F/21_outside_0120,0560_職員玄関.jpg', 0, 0, [120, Y_BASE_1, 560], 1, 'Main'));
   
+  mapGraph.getNode('21_entrance_0120,0640_職員玄関').addLink('21_outside_0120,0560_職員玄関', '外へ', 'out');
+  mapGraph.getNode('21_outside_0120,0560_職員玄関').addLink('21_entrance_0120,0640_職員玄関', '中へ', 'in');
+
+  mapGraph.getNode('21_corridor_0320,0560').addLink('21_corridor_0330,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0330,0680').addLink('21_corridor_0320,0560', '移動', '移動');
+  mapGraph.getNode('21_corridor_0330,0680').addLink('21_corridor_0450,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0450,0680').addLink('21_corridor_0330,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0450,0680').addLink('21_corridor_0510,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0510,0680').addLink('21_corridor_0450,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0510,0680').addLink('21_corridor_0630,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0630,0680').addLink('21_corridor_0510,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0630,0680').addLink('21_corridor_0720,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0720,0680').addLink('21_corridor_0630,0680', '移動', '移動');
+  mapGraph.getNode('21_corridor_0720,0680').addLink('21_entrance_0720,0640_昇降口', '移動', '移動');
+  mapGraph.getNode('21_entrance_0720,0640_昇降口').addLink('21_corridor_0720,0680', '移動', '移動');
   
+
   // 座標変換とベクトルビルドを実行
 mapGraph.calcMinimapCoords();
 mapGraph.buildAllLinks();

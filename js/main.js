@@ -5,7 +5,6 @@
 const NODES = mapGraph.nodes;
 
 /* ---- 短縮ヘルパー関数 ---- */
-// 💡 他のファイル（minimap.jsなど）からでも参照できるよう、関数の巻き上げ（Hoist）が効くfunction宣言にするか、ファイル上部に配置します
 function $(id) { return document.getElementById(id); }
 function setLoadBar(p){ const bar = $('load-bar'); if(bar) bar.style.width = p+'%'; }
 
@@ -14,13 +13,10 @@ const canvas   = document.getElementById('sv-canvas');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 
-// 💡 関数定義自体はここで問題ありません
 function updateRendererSize() {
-  // CSSで適用されたサイズをそのまま取得
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
 
-  // renderer.setSize に渡す
   renderer.setSize(width, height, false);
   
   if (typeof camera !== 'undefined' && camera) {
@@ -30,10 +26,8 @@ function updateRendererSize() {
 }
 
 const scene  = new THREE.Scene();
-// 💡 先にcameraのインスタンスを生成します
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.01, 600);
 
-// 💡 cameraの初期化が完了した「この直後」にサイズ反映を実行します
 updateRendererSize();
 
 let gridEdgesA, gridPointsA;
@@ -100,11 +94,12 @@ const mouse2    = new THREE.Vector2();
 /* ---- ORBITAL DEBUG MONITOR ---- */
 const debugCanvas = document.getElementById('debug-canvas');
 const debugRenderer = new THREE.WebGLRenderer({canvas: debugCanvas, antialias: true});
-debugRenderer.setSize(220, 135); 
+debugRenderer.setSize(220 * 2, 135 * 2); 
 
-const debugCamera = new THREE.OrthographicCamera(-70, 70, 44, -44, 1, 1000);
-debugCamera.position.set(0, 120, 0);
-debugCamera.lookAt(0, 0, 0);
+const debugOrtho = new THREE.OrthographicCamera(-400, 400, 300, -300, 1, 2000);
+const debugPersp = new THREE.PerspectiveCamera(75, (220 * 2)/ (135 *2), 1, 2000);
+let activeDebugCamera = debugOrtho;
+let isOrtho = true;
 
 const cameraHelper = new THREE.CameraHelper(camera);
 cameraHelper.renderOrder = 999;
@@ -178,7 +173,7 @@ function buildRouteLines(node) {
     mesh.rotateX(Math.PI / 2);
     mesh.renderOrder = 20;
 
-    mesh.userData = { isRoute: true, link: lk };
+    mesh.userData = { isRoute: true, link: lk, isLine: true };
     routeLinesGroup.add(mesh);
 
     const canvas = document.createElement('canvas');
@@ -466,19 +461,21 @@ function setupToggle(id, targetEl, callback) {
   const el = $(id);
   if (!el) return;
 
-  // 1. ページ読み込み時に、現在のHTMLのチェック状態(checked)を強制適用する
   const isChecked = el.checked;
   if (targetEl) {
+    targetEl.style.display = isChecked ? '' : 'none';
     targetEl.style.opacity = isChecked ? '1' : '0';
   }
   if (callback) {
     callback(isChecked);
   }
 
-  // 2. ユーザーが操作した時のイベントリスナー
   el.addEventListener('change', e => {
     const visible = e.target.checked;
-    if (targetEl) targetEl.style.opacity = visible ? '1' : '0';
+    if (targetEl) {
+      targetEl.style.display = visible ? '' : 'none';
+      targetEl.style.opacity = visible ? '1' : '0';
+    }
     if (callback) callback(visible);
   });
 }
@@ -523,6 +520,13 @@ function animate(now){
   if(walkPhase=='walk'){
     walkT=Math.min(walkT+dt/WALK_DUR,1);
 
+    routeLinesGroup.children.forEach(l => {
+      if (l.material) {
+        if (Array.isArray(l.material)) l.material.forEach(m => m.opacity = 0);
+        else l.material.opacity = 0;
+      }
+    });
+
     yaw = tYaw;
     pitch = tPitch;
 
@@ -556,10 +560,6 @@ function animate(now){
       gridPointsA.material.opacity = uiConfig.points ? 0.35 : 0;
       gridEdgesB.material.opacity = 0;
       gridPointsB.material.opacity = 0;
-      
-      routeLinesGroup.children.forEach(l => {
-        if(l.material) l.material.opacity = uiConfig.routes ? 0.6 * (1.0 - walkT) : 0;
-      });
     } else {
       const fadeProgress = (walkT - 0.9) / 0.1; 
       sphereB.material.opacity = fadeProgress;
@@ -569,8 +569,6 @@ function animate(now){
       gridPointsA.material.opacity = uiConfig.points ? 0.35 * (1.0 - fadeProgress) : 0;
       gridEdgesB.material.opacity = uiConfig.edges ? 0.15 * fadeProgress : 0;
       gridPointsB.material.opacity = uiConfig.points ? 0.25 * fadeProgress : 0;
-      
-      routeLinesGroup.children.forEach(l => { if(l.material) l.material.opacity = 0; });
     }
 
     camera.fov=fov;
@@ -608,30 +606,23 @@ function animate(now){
     const yOffset = -3.8;
 
     routeLinesGroup.children.forEach(l => {
-      if (l.material) {
-        l.material.opacity = uiConfig.routes ? (l.userData.isPin ? 0.9 : 0.6) : 0;
-      }
-      
       if (l.userData && l.userData.isRoute) {
-        if (l.userData.isText || l.userData.isPin) {
-          const distToCamera = camera.position.distanceTo(l.position);
-          
-          let scaleFactor = 1.0;
-          if (uiConfig.textSizeMode === 'constant') {
-            scaleFactor = distToCamera * 0.12; 
-          } else {
-            scaleFactor = 1.0;
-          }
+        if (l.material) {
+          if (l.userData.isLine) l.material.opacity = uiConfig.routes ? 0.4 : 0;
+          else if (l.userData.isText || l.userData.isPin) l.material.opacity = uiConfig.routes ? 1.0 : 0;
+        }
+        
+        const distToCamera = camera.position.distanceTo(l.position);
+        let scaleFactor = (uiConfig.textSizeMode === 'constant') ? distToCamera * 0.12 : 1.0;
 
-          if (l.userData.isText) {
-            l.scale.set(4 * scaleFactor, 1 * scaleFactor, 1);
-            l.position.y = (yOffset + 0.5) + (1.0 * scaleFactor) + 0.1;
-          }
-          
-          if (l.userData.isPin) {
-            l.scale.set(scaleFactor, scaleFactor, scaleFactor);
-            l.quaternion.copy(camera.quaternion);
-          }
+        if (l.userData.isText) {
+          l.scale.set(4 * scaleFactor, 1 * scaleFactor, 1);
+          l.position.y = (yOffset + 0.5) + (1.0 * scaleFactor) + 0.1;
+        }
+        
+        if (l.userData.isPin) {
+          l.scale.set(scaleFactor, scaleFactor, scaleFactor);
+          l.quaternion.copy(camera.quaternion);
         }
       }
     });
@@ -647,13 +638,12 @@ function animate(now){
   sphereB.material.wireframe = true;
   cameraHelper.update();
   
-  debugRenderer.render(scene, debugCamera);
+  debugRenderer.render(scene, activeDebugCamera);
   
   sphereA.material.wireframe = false;
   sphereB.material.wireframe = false;
 }
 
-/* ---- すべてのUI要素の初期化・登録処理をDOM構築完了後に実行する ---- */
 document.addEventListener('DOMContentLoaded', () => {
   updateRendererSize();
 
@@ -669,7 +659,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnReset = $('btn-reset');
   if(btnReset) btnReset.onclick=()=>{ const n=NODES[currentId]; tYaw=n.initYaw; tPitch=0; tFov=75; };
 
-  /* ---- Modal Events & HUD Controller ---- */
   const modal = $('settings-modal');
   const btnSettings = $('btn-settings');
   const btnCloseModal = $('btn-close-modal');
@@ -678,7 +667,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if(btnCloseModal) btnCloseModal.onclick = () => modal.classList.remove('open');
   if(modal) modal.onclick = (e) => { if(e.target === modal) modal.classList.remove('open'); };
 
-  /* ---- 設定画面トグルの初期フック ---- */
   setupToggle('tg-hud-loc', $('hud-location'));
   setupToggle('tg-hud-compass', $('hud-compass'));
   setupToggle('tg-hud-map', $('hud-minimap'));
@@ -697,7 +685,6 @@ document.addEventListener('DOMContentLoaded', () => {
     buildRouteLines(NODES[currentId]);
   });
 
-  /* ---- HUD: 文字サイズモード 切り替えイベント ---- */
   const textSizeBtn = document.getElementById('btn-text-size-mode');
   if (textSizeBtn) {
     if (uiConfig.textSizeMode === 'distance') {
@@ -724,3 +711,29 @@ document.addEventListener('DOMContentLoaded', () => {
   loadInitial('13_corridor_0010,0020');
   requestAnimationFrame(animate);
 });
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === '0') {
+    isOrtho = !isOrtho;
+    activeDebugCamera = isOrtho ? debugOrtho : debugPersp;
+    activeDebugCamera.position.set(0, 120, 0);
+    activeDebugCamera.lookAt(0, 0, 0);
+  }
+  switch(e.key) {
+    case '1': activeDebugCamera.position.set(0, 30, 0); activeDebugCamera.lookAt(0, 0, 0); break;
+    case '2': activeDebugCamera.position.set(0, 50, 0); activeDebugCamera.lookAt(0, 0, 0); break;
+    case '3': activeDebugCamera.position.set(50, 10, 0); activeDebugCamera.lookAt(0, 0, 0); break;
+  }
+  activeDebugCamera.updateProjectionMatrix();
+});
+
+debugCanvas.addEventListener('wheel', (e) => {
+  e.stopPropagation(); e.preventDefault();
+  if (isOrtho) {
+    activeDebugCamera.zoom -= e.deltaY * 0.001;
+    activeDebugCamera.zoom = Math.max(0.1, Math.min(activeDebugCamera.zoom, 10));
+  } else {
+    activeDebugCamera.position.z -= e.deltaY * 0.1;
+  }
+  activeDebugCamera.updateProjectionMatrix();
+}, { passive: false });
