@@ -1,0 +1,118 @@
+{
+  "nodes": {
+    "12_stairs_0330,0140": {
+      "name": "北館 2階 階段",
+      "sub": "North building - Floor 2",
+      "imageFile": "12_stairs_0330,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        80,
+        140
+      ],
+      "floor": 2,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "11_stairs_0330,0140",
+          "label": "階段で1階へ",
+          "hint": "Down to 1F"
+        },
+        {
+          "targetId": "13_stairs_0330,0140",
+          "label": "階段で3階へ",
+          "hint": "Up to 3F"
+        },
+        {
+          "targetId": "12_passageway_mid_0330,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "12_stairs_0990,0140": {
+      "name": "北館 2階 階段",
+      "sub": "North building - Floor 2",
+      "imageFile": "12_stairs_0990,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        80,
+        140
+      ],
+      "floor": 2,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "11_stairs_0990,0140",
+          "label": "階段で1階へ",
+          "hint": "Down to 1F"
+        },
+        {
+          "targetId": "13_stairs_0990,0140",
+          "label": "階段で3階へ",
+          "hint": "Up to 3F"
+        },
+        {
+          "targetId": "12_passageway_mid_0990,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "12_passageway_mid_0330,0350": {
+      "name": "2階 連絡通路 中間点",
+      "sub": "Connecting Bridge 2F - Mid",
+      "imageFile": "12_passageway_mid.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        80,
+        350
+      ],
+      "floor": 2,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "12_stairs_0330,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "22_stairs_0330,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    },
+    "12_passageway_mid_0990,0350": {
+      "name": "2階 連絡通路 中間点",
+      "sub": "Connecting Bridge 2F - Mid",
+      "imageFile": "12_passageway_mid_0990,0350.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        80,
+        350
+      ],
+      "floor": 2,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "12_stairs_0990,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "22_stairs_0990,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    }
+    }
+}

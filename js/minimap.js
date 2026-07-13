@@ -15,6 +15,12 @@ let mmPulseT = 0; // メインループからのdt蓄積用
 
 /* --- ミニマップ構築 --- */
 function initMinimapLayout() {
+  // グローバル変数 window.NODES がロード後であることを確認
+  if (!window.NODES || Object.keys(window.NODES).length === 0) {
+    console.error("NODESがまだ準備できていません。初期化順序を見直してください。");
+    return;
+  }
+  
   const container = $('hud-minimap-container');
   if (!container) return;
 
@@ -443,7 +449,9 @@ function updateMinimapPulse(dt) {
   // SVG内のインライン<animate>タグ要素が自動動作するため空にしています。
 }
 
+/*
 // 初期化フック
 document.addEventListener('DOMContentLoaded', () => {
   initMinimapLayout();
 });
+*/

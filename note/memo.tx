@@ -1,0 +1,26 @@
+(function exportMapData() {
+  const exportData = { nodes: {} };
+  
+  for (const id in mapGraph.nodes) {
+    const node = mapGraph.nodes[id];
+    exportData.nodes[id] = {
+      name: node.name,
+      sub: node.sub,
+      // URLからファイル名部分だけを抽出する処理
+      imageFile: node.asset.url.split('/').pop(),
+      initYaw: node.initYaw,
+      mmIdx: node.mmIdx,
+      pos3D: node.pos3D,
+      floor: node.floor,
+      building: node.building,
+      links: node.links.map(link => ({
+        targetId: link.targetId,
+        label: link.label,
+        hint: link.hint
+      }))
+    };
+  }
+  
+  // コンソールに表示。これをコピーしてください
+  console.log(JSON.stringify(exportData, null, 2));
+})();

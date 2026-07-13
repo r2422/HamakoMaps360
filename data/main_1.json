@@ -1,0 +1,360 @@
+{
+  "nodes": {
+    "21_stairs_0330,0560": {
+      "name": "本館 1階 階段",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_stairs_0330,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "22_stairs_0330,0560",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0330,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To North Bldg"
+        }
+      ]
+    },
+    "21_stairs_0990,0560": {
+      "name": "本館 1階 階段",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_stairs_0990,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "22_stairs_0990,0560",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0990,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To North Bldg"
+        }
+      ]
+    },
+    "21_entrance_0120,0640_職員玄関": {
+      "name": "本館 1階 職員玄関",
+      "sub": "Main building - Floor 1 Other Place",
+      "imageFile": "21_entrance_0120,0640_職員玄関.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        120,
+        0,
+        640
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_outside_0120,0560_職員玄関",
+          "label": "外へ",
+          "hint": "out"
+        }
+      ]
+    },
+    "21_entrance_0720,0640_昇降口": {
+      "name": "本館 1階 昇降口",
+      "sub": "Main building - Floor 1 Other Place",
+      "imageFile": "21_entrance_0720,0640_昇降口.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        720,
+        0,
+        640
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0720,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0320,0560": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0320,0560.jpg",
+      "initYaw": 1.5707963267948966,
+      "mmIdx": 0,
+      "pos3D": [
+        320,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0330,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0330,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0330,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0320,0560",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0450,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0330,0000": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0330,0000.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corridor_0450,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0450,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        450,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0330,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0510,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0510,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0510,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        510,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0450,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0630,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0630,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0630,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        630,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0510,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0720,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0720,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0720,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        720,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0630,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_entrance_0720,0640_昇降口",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0870,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0870,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        870,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corridor_0990,0820": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0990,0820.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        820
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corridor_1020,0710": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_1020,0710.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        1020,
+        0,
+        710
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_stairs_0990,0680": {
+      "name": "本館 1階 階段",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_stairs_0990,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_outside_0720,0520_昇降口": {
+      "name": "本館 1階 昇降口",
+      "sub": "Main building - Floor 1 Other Place",
+      "imageFile": "21_entrance_0720,0520_昇降口.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        720,
+        0,
+        520
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_outside_0120,0560_職員玄関": {
+      "name": "本館 1階 職員玄関",
+      "sub": "Main building - Floor 1 Other Place",
+      "imageFile": "21_outside_0120,0560_職員玄関.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        120,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_entrance_0120,0640_職員玄関",
+          "label": "中へ",
+          "hint": "in"
+        }
+      ]
+    }
+  }
+}

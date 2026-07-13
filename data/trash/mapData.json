@@ -1,0 +1,1200 @@
+{
+  "nodes": {
+    "13_corridor_0010,0020": {
+      "name": "北館 3階 廊下",
+      "sub": "131前",
+      "imageFile": "13_corridor_0010,0020.jpg",
+      "initYaw": 1.5707963267948966,
+      "mmIdx": 0,
+      "pos3D": [
+        10,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0120,0020",
+          "label": "廊下を東へ",
+          "hint": "East"
+        },
+        {
+          "targetId": "13_classroom_0060,0100_131",
+          "label": "131教室に入る",
+          "hint": "Enter 131room"
+        }
+      ]
+    },
+    "13_corridor_0120,0020": {
+      "name": "北館 3階 廊下",
+      "sub": "131, 132中間",
+      "imageFile": "13_corridor_0120,0020.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        120,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0010,0020",
+          "label": "廊下を西へ",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_corridor_0220,0020",
+          "label": "廊下を東へ",
+          "hint": "East"
+        },
+        {
+          "targetId": "13_classroom_0060,0100_131",
+          "label": "131教室に入る",
+          "hint": "Enter 131room"
+        },
+        {
+          "targetId": "13_classroom_0180,0100_132",
+          "label": "132教室に入る",
+          "hint": "Enter 132room"
+        }
+      ]
+    },
+    "13_corridor_0220,0020": {
+      "name": "北館 3階 廊下",
+      "sub": "132前",
+      "imageFile": "13_corridor_0220,0020.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        220,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0120,0020",
+          "label": "廊下を西へ",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_corridor_0330,0020",
+          "label": "廊下を東へ",
+          "hint": "East"
+        },
+        {
+          "targetId": "13_classroom_0180,0100_132",
+          "label": "132教室に入る",
+          "hint": "Enter 132room"
+        }
+      ]
+    },
+    "13_corridor_0330,0020": {
+      "name": "北館 3階 廊下",
+      "sub": "階段前",
+      "imageFile": "13_corridor_0330,0020.jpg",
+      "initYaw": 3.141592653589793,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0220,0020",
+          "label": "廊下を西へ",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_corridor_0380,0020",
+          "label": "廊下を東へ",
+          "hint": "East"
+        },
+        {
+          "targetId": "13_stairs_0330,0140",
+          "label": "階段へ",
+          "hint": "Enter Stairs"
+        }
+      ]
+    },
+    "13_corridor_0380,0020": {
+      "name": "北館 3階 廊下",
+      "sub": "理数工学室前",
+      "imageFile": "13_corridor_0380,0020.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        380,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0330,0020",
+          "label": "廊下を西へ",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_corridor_0520,0020",
+          "label": "廊下を東へ",
+          "hint": "East"
+        },
+        {
+          "targetId": "13_classroom_0450,0100_理数工学室",
+          "label": "理数工学室に入る",
+          "hint": "Enter 理数工学室"
+        }
+      ]
+    },
+    "13_corridor_0520,0020": {
+      "name": "北館 3階 廊下",
+      "sub": "理数工学室前",
+      "imageFile": "13_corridor_0520,0020.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        520,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0380,0020",
+          "label": "廊下を西へ",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_corridor_0570,0020",
+          "label": "廊下を東へ",
+          "hint": "East"
+        },
+        {
+          "targetId": "13_classroom_0450,0100_理数工学室",
+          "label": "理数工学室に入る",
+          "hint": "Enter 理数工学室"
+        }
+      ]
+    },
+    "13_corridor_0570,0020": {
+      "name": "北館 3階 廊下(R科準備室)",
+      "sub": "R科準備室前",
+      "imageFile": "13_corridor_0570,0020.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        570,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0520,0020",
+          "label": "廊下を西へ",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_corridor_0696,0020",
+          "label": "廊下を東へ",
+          "hint": "East"
+        }
+      ]
+    },
+    "13_corridor_0696,0020": {
+      "name": "北館 3階 廊下(物理準備室)",
+      "sub": "物理準備室前",
+      "imageFile": "13_corridor_0696,0020.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        696,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0570,0020",
+          "label": "廊下を西へ",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_corridor_0870,0020",
+          "label": "物理実験室に入る",
+          "hint": "Enter Physics Room"
+        }
+      ]
+    },
+    "13_corridor_0870,0020": {
+      "name": "北館 3階 物理実験室内",
+      "sub": "物理実験室内",
+      "imageFile": "13_corridor_0870,0020.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        870,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0696,0020",
+          "label": "廊下に出る",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_corridor_0990,0020",
+          "label": "廊下に出る",
+          "hint": "Enter Physics Room"
+        },
+        {
+          "targetId": "13_classroom_0870,0100_物理実験室",
+          "label": "物理実験室に入る",
+          "hint": "Enter 物理実験室"
+        }
+      ]
+    },
+    "13_corridor_0990,0020": {
+      "name": "北館 3階 廊下",
+      "sub": "物理実験室、○○実習室前",
+      "imageFile": "13_corridor_0990,0020.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        160,
+        20
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0870,0020",
+          "label": "物理実験室に入る",
+          "hint": "West"
+        },
+        {
+          "targetId": "13_stairs_0990,0140",
+          "label": "階段へ",
+          "hint": "Enter Stairs"
+        }
+      ]
+    },
+    "13_classroom_0060,0100_131": {
+      "name": "北館 3階 131教室",
+      "sub": "R3",
+      "imageFile": "13_classroom_0060,0100_131re.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        60,
+        160,
+        100
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0010,0020",
+          "label": "廊下に出る",
+          "hint": "Exit"
+        },
+        {
+          "targetId": "13_corridor_0120,0020",
+          "label": "廊下に出る",
+          "hint": "Exit"
+        }
+      ]
+    },
+    "13_classroom_0180,0100_132": {
+      "name": "北館 3階 132教室",
+      "sub": "R2",
+      "imageFile": "13_classroom_0180,0100_132.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        180,
+        160,
+        100
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0120,0020",
+          "label": "廊下に出る",
+          "hint": "Exit"
+        },
+        {
+          "targetId": "13_corridor_0220,0020",
+          "label": "廊下に出る",
+          "hint": "Exit"
+        }
+      ]
+    },
+    "13_classroom_0450,0100_理数工学室": {
+      "name": "北館 3階 理数工学室",
+      "sub": "",
+      "imageFile": "13_classroom_0450,0100_理数工学室.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        450,
+        160,
+        100
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0380,0020",
+          "label": "廊下に出る",
+          "hint": "Exit"
+        },
+        {
+          "targetId": "13_corridor_0520,0020",
+          "label": "廊下に出る",
+          "hint": "Exit"
+        }
+      ]
+    },
+    "13_classroom_0870,0100_物理実験室": {
+      "name": "北館 3階 物理実験室",
+      "sub": "",
+      "imageFile": "13_classroom_0870,0100_物理実験室re.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        870,
+        160,
+        100
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0870,0020",
+          "label": "廊下に出る",
+          "hint": "Exit"
+        }
+      ]
+    },
+    "13_stairs_0330,0140": {
+      "name": "北館 3-2階 階段",
+      "sub": "",
+      "imageFile": "13_stairs_0330,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        120,
+        140
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0330,0020",
+          "label": "廊下へ",
+          "hint": "Exit"
+        },
+        {
+          "targetId": "12_stairs_0330,0140",
+          "label": "階段で2階へ",
+          "hint": "Down to 2F"
+        },
+        {
+          "targetId": "13_passageway_mid_0330,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "13_stairs_0990,0140": {
+      "name": "北館 3-2階 階段",
+      "sub": "",
+      "imageFile": "13_stairs_0990,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        120,
+        140
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_corridor_0990,0020",
+          "label": "廊下へ",
+          "hint": "Exit"
+        },
+        {
+          "targetId": "12_stairs_0990,0140",
+          "label": "階段で2階へ",
+          "hint": "Down to 2F"
+        },
+        {
+          "targetId": "13_passageway_mid_0990,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "11_stairs_0330,0140": {
+      "name": "北館 1階 階段",
+      "sub": "North building - Floor 1",
+      "imageFile": "11_stairs_0330,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        140
+      ],
+      "floor": 1,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "12_stairs_0330,0140",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0330,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Main Bldg"
+        }
+      ]
+    },
+    "11_stairs_0990,0140": {
+      "name": "北館 1階 階段",
+      "sub": "North building - Floor 1",
+      "imageFile": "11_stairs_0990,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        140
+      ],
+      "floor": 1,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "12_stairs_0990,0140",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0990,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Main Bldg"
+        }
+      ]
+    },
+    "12_stairs_0330,0140": {
+      "name": "北館 2階 階段",
+      "sub": "North building - Floor 2",
+      "imageFile": "12_stairs_0330,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        80,
+        140
+      ],
+      "floor": 2,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "11_stairs_0330,0140",
+          "label": "階段で1階へ",
+          "hint": "Down to 1F"
+        },
+        {
+          "targetId": "13_stairs_0330,0140",
+          "label": "階段で3階へ",
+          "hint": "Up to 3F"
+        },
+        {
+          "targetId": "12_passageway_mid_0330,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "12_stairs_0990,0140": {
+      "name": "北館 2階 階段",
+      "sub": "North building - Floor 2",
+      "imageFile": "12_stairs_0990,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        80,
+        140
+      ],
+      "floor": 2,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "11_stairs_0990,0140",
+          "label": "階段で1階へ",
+          "hint": "Down to 1F"
+        },
+        {
+          "targetId": "13_stairs_0990,0140",
+          "label": "階段で3階へ",
+          "hint": "Up to 3F"
+        },
+        {
+          "targetId": "12_passageway_mid_0990,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "21_stairs_0330,0560": {
+      "name": "本館 1階 階段",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_stairs_0330,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "22_stairs_0330,0560",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0330,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To North Bldg"
+        }
+      ]
+    },
+    "21_stairs_0990,0560": {
+      "name": "本館 1階 階段",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_stairs_0990,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "22_stairs_0990,0560",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0990,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To North Bldg"
+        }
+      ]
+    },
+    "22_stairs_0330,0560": {
+      "name": "本館 2階 階段",
+      "sub": "Main building - Floor 2",
+      "imageFile": "22_stairs_0330,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        80,
+        560
+      ],
+      "floor": 2,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_stairs_0330,0560",
+          "label": "階段で1階へ",
+          "hint": "Down to 1F"
+        },
+        {
+          "targetId": "23_stairs_0330,0560",
+          "label": "階段で3階へ",
+          "hint": "Up to 3F"
+        },
+        {
+          "targetId": "12_passageway_mid_0330,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "22_stairs_0990,0560": {
+      "name": "本館 2階 階段",
+      "sub": "Main building - Floor 2",
+      "imageFile": "22_stairs_0990,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        80,
+        560
+      ],
+      "floor": 2,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_stairs_0990,0560",
+          "label": "階段で1階へ",
+          "hint": "Down to 1F"
+        },
+        {
+          "targetId": "23_stairs_0990,0560",
+          "label": "階段で3階へ",
+          "hint": "Up to 3F"
+        },
+        {
+          "targetId": "12_passageway_mid_0990,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "23_stairs_0330,0560": {
+      "name": "本館 3階 階段",
+      "sub": "Main building - Floor 3",
+      "imageFile": "23_stairs_0330,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        160,
+        560
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "22_stairs_0330,0560",
+          "label": "階段で2階へ",
+          "hint": "Down to 2F"
+        },
+        {
+          "targetId": "13_passageway_mid_0330,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "23_stairs_0990,0560": {
+      "name": "本館 3階 階段",
+      "sub": "Main building - Floor 3",
+      "imageFile": "23_stairs_0990,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        160,
+        560
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "22_stairs_0990,0560",
+          "label": "階段で2階へ",
+          "hint": "Down to 2F"
+        },
+        {
+          "targetId": "13_passageway_mid_0990,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "11_passageway_mid_0330,0350": {
+      "name": "1階 連絡通路 中間点",
+      "sub": "Connecting Bridge 1F - Mid",
+      "imageFile": "11_passageway_mid.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        350
+      ],
+      "floor": 1,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "11_stairs_0330,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "21_stairs_0330,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    },
+    "11_passageway_mid_0990,0350": {
+      "name": "1階 連絡通路 中間点",
+      "sub": "Connecting Bridge 1F - Mid",
+      "imageFile": "11_passageway_mid.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        350
+      ],
+      "floor": 1,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "11_stairs_0990,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "21_stairs_0990,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    },
+    "12_passageway_mid_0330,0350": {
+      "name": "2階 連絡通路 中間点",
+      "sub": "Connecting Bridge 2F - Mid",
+      "imageFile": "12_passageway_mid.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        80,
+        350
+      ],
+      "floor": 2,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "12_stairs_0330,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "22_stairs_0330,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    },
+    "12_passageway_mid_0990,0350": {
+      "name": "2階 連絡通路 中間点",
+      "sub": "Connecting Bridge 2F - Mid",
+      "imageFile": "12_passageway_mid_0990,0350.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        80,
+        350
+      ],
+      "floor": 2,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "12_stairs_0990,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "22_stairs_0990,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    },
+    "13_passageway_mid_0330,0350": {
+      "name": "3階 連絡通路 中間点",
+      "sub": "Connecting Bridge 3F - Mid",
+      "imageFile": "13_passageway_mid.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        160,
+        350
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_stairs_0330,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "23_stairs_0330,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    },
+    "13_passageway_mid_0990,0350": {
+      "name": "3階 連絡通路 中間点",
+      "sub": "Connecting Bridge 3F - Mid",
+      "imageFile": "13_passageway_mid.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        160,
+        350
+      ],
+      "floor": 3,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "13_stairs_0990,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "23_stairs_0990,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    },
+    "21_entrance_0120,0640_職員玄関": {
+      "name": "本館 1階 職員玄関",
+      "sub": "Main building - Floor 1 Other Place",
+      "imageFile": "21_entrance_0120,0640_職員玄関.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        120,
+        0,
+        640
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_outside_0120,0560_職員玄関",
+          "label": "外へ",
+          "hint": "out"
+        }
+      ]
+    },
+    "21_entrance_0720,0640_昇降口": {
+      "name": "本館 1階 昇降口",
+      "sub": "Main building - Floor 1 Other Place",
+      "imageFile": "21_entrance_0720,0640_昇降口.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        720,
+        0,
+        640
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0720,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0320,0560": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0320,0560.jpg",
+      "initYaw": 1.5707963267948966,
+      "mmIdx": 0,
+      "pos3D": [
+        320,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0330,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0330,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0330,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0320,0560",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0450,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0330,0000": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0330,0000.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corridor_0450,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0450,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        450,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0330,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0510,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0510,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0510,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        510,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0450,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0630,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0630,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0630,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        630,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0510,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0720,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0720,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0720,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        720,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_corridor_0630,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_entrance_0720,0640_昇降口",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
+    },
+    "21_corridor_0870,0680": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0870,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        870,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corridor_0990,0820": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_0990,0820.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        820
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corridor_1020,0710": {
+      "name": "本館 1階 廊下",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_corridor_1020,0710.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        1020,
+        0,
+        710
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_stairs_0990,0680": {
+      "name": "本館 1階 階段",
+      "sub": "Main building - Floor 1",
+      "imageFile": "21_stairs_0990,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        680
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_outside_0720,0520_昇降口": {
+      "name": "本館 1階 昇降口",
+      "sub": "Main building - Floor 1 Other Place",
+      "imageFile": "21_entrance_0720,0520_昇降口.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        720,
+        0,
+        520
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_outside_0120,0560_職員玄関": {
+      "name": "本館 1階 職員玄関",
+      "sub": "Main building - Floor 1 Other Place",
+      "imageFile": "21_outside_0120,0560_職員玄関.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        120,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_entrance_0120,0640_職員玄関",
+          "label": "中へ",
+          "hint": "in"
+        }
+      ]
+    }
+  }
+}

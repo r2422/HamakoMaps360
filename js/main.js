@@ -131,6 +131,9 @@ const uiConfig = {
 
 /* ---- 進路パス・先端テキスト・ピンの生成関数 ---- */
 function buildRouteLines(node) {
+  // nodeが不正な場合は中断（データ読み込み待ち対応）
+  if (!node || !node.links) return;
+
   while(routeLinesGroup.children.length) {
     const child = routeLinesGroup.children[0];
     if (child.geometry) child.geometry.dispose();
@@ -684,7 +687,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uiConfig.routes = visible;
     buildRouteLines(NODES[currentId]);
   });
-
+  
   const textSizeBtn = document.getElementById('btn-text-size-mode');
   if (textSizeBtn) {
     if (uiConfig.textSizeMode === 'distance') {
@@ -707,9 +710,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  loadInitial('13_corridor_0010,0020');
-  requestAnimationFrame(animate);
 });
 
 window.addEventListener('keydown', (e) => {
@@ -737,3 +737,58 @@ debugCanvas.addEventListener('wheel', (e) => {
   }
   activeDebugCamera.updateProjectionMatrix();
 }, { passive: false });
+
+async function initMapData() {
+  const files = [
+    'north_1.json', 'north_2.json', 'north_3.json', 'north_4.json',
+    'main_1.json', 'main_2.json', 'main_3.json', 'main_4.json',
+    'south_1.json', 'south_2.json', 'south_3.json', 'south_4.json'
+  ];
+
+  const results = await Promise.all(
+    files.map(name => fetch(`../data/${name}`).then(res => res.json()))
+  );
+
+  mapGraph.loadFromMultipleJSON(results);
+}
+
+// 起動時に呼び出す
+initMapData().then(() => {
+  console.log("マップデータ読み込み完了");
+  
+  // 初期化処理をここに集約
+  loadInitial('13_corridor_0010,0020');
+  
+  setupToggle('tg-hud-loc', $('hud-location'));
+  setupToggle('tg-hud-compass', $('hud-compass'));
+  setupToggle('tg-hud-map', $('hud-minimap'));
+  setupToggle('tg-hud-debug', $('debug-container'));
+
+  setupToggle('tg-grid-edges', null, (visible) => {
+    uiConfig.edges = visible;
+    if(walkPhase === 'idle' && gridEdgesA) gridEdgesA.material.opacity = visible ? 0.15 : 0;
+  });
+  setupToggle('tg-grid-points', null, (visible) => {
+    uiConfig.points = visible;
+    if(walkPhase === 'idle' && gridPointsA) gridPointsA.material.opacity = visible ? 0.25 : 0;
+  });
+  setupToggle('tg-grid-routes', null, (visible) => {
+    uiConfig.routes = visible;
+    buildRouteLines(NODES[currentId]);
+  });
+
+  requestAnimationFrame(animate);
+});
+
+// main.js の初期化処理
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. まずデータをロードする（完了するまで待機）
+    await initMapData(); // ※先ほど定義したPromiseを返す関数
+    
+    // 2. データがロードされたことが確定してから UI を生成
+    initMinimapLayout();
+    
+    // 3. 必要な初期化を実行
+    loadInitial('13_corridor_0010,0020');
+    requestAnimationFrame(animate);
+});

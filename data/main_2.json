@@ -1,0 +1,66 @@
+{
+  "nodes": {
+    "22_stairs_0330,0560": {
+      "name": "本館 2階 階段",
+      "sub": "Main building - Floor 2",
+      "imageFile": "22_stairs_0330,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        80,
+        560
+      ],
+      "floor": 2,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_stairs_0330,0560",
+          "label": "階段で1階へ",
+          "hint": "Down to 1F"
+        },
+        {
+          "targetId": "23_stairs_0330,0560",
+          "label": "階段で3階へ",
+          "hint": "Up to 3F"
+        },
+        {
+          "targetId": "12_passageway_mid_0330,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    },
+    "22_stairs_0990,0560": {
+      "name": "本館 2階 階段",
+      "sub": "Main building - Floor 2",
+      "imageFile": "22_stairs_0990,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        80,
+        560
+      ],
+      "floor": 2,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "21_stairs_0990,0560",
+          "label": "階段で1階へ",
+          "hint": "Down to 1F"
+        },
+        {
+          "targetId": "23_stairs_0990,0560",
+          "label": "階段で3階へ",
+          "hint": "Up to 3F"
+        },
+        {
+          "targetId": "12_passageway_mid_0990,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To Bridge"
+        }
+      ]
+    }
+    }
+}

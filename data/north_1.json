@@ -1,0 +1,108 @@
+{
+  "nodes": {
+    "11_stairs_0330,0140": {
+      "name": "北館 1階 階段",
+      "sub": "North building - Floor 1",
+      "imageFile": "11_stairs_0330,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        140
+      ],
+      "floor": 1,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "12_stairs_0330,0140",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0330,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Main Bldg"
+        }
+      ]
+    },
+    "11_stairs_0990,0140": {
+      "name": "北館 1階 階段",
+      "sub": "North building - Floor 1",
+      "imageFile": "11_stairs_0990,0140.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        140
+      ],
+      "floor": 1,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "12_stairs_0990,0140",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0990,0350",
+          "label": "空中廊下(本館方面)",
+          "hint": "To Main Bldg"
+        }
+      ]
+    },
+    "11_passageway_mid_0330,0350": {
+      "name": "1階 連絡通路 中間点",
+      "sub": "Connecting Bridge 1F - Mid",
+      "imageFile": "11_passageway_mid.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        350
+      ],
+      "floor": 1,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "11_stairs_0330,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "21_stairs_0330,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    },
+    "11_passageway_mid_0990,0350": {
+      "name": "1階 連絡通路 中間点",
+      "sub": "Connecting Bridge 1F - Mid",
+      "imageFile": "11_passageway_mid.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        350
+      ],
+      "floor": 1,
+      "building": "North",
+      "links": [
+        {
+          "targetId": "11_stairs_0990,0140",
+          "label": "北館へ",
+          "hint": "To North Bldg"
+        },
+        {
+          "targetId": "21_stairs_0990,0560",
+          "label": "本館へ",
+          "hint": "Enter Main Bldg"
+        }
+      ]
+    }
+    }
+}
