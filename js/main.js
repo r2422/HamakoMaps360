@@ -37,7 +37,7 @@ const routeLinesGroup = new THREE.Group();
 scene.add(routeLinesGroup);
 
 function makeSphere(radius, isB = false){
-  const g = new THREE.SphereGeometry(radius, 60, 60);
+  const g = new THREE.SphereGeometry(radius, 40, 40);
   g.scale(-1,1,1);
   
   const m = new THREE.MeshBasicMaterial({
@@ -100,6 +100,7 @@ const debugOrtho = new THREE.OrthographicCamera(-400, 400, 300, -300, 1, 2000);
 const debugPersp = new THREE.PerspectiveCamera(75, (220 * 2)/ (135 *2), 1, 2000);
 let activeDebugCamera = debugOrtho;
 let isOrtho = true;
+let isDebugMonitorOn = false; // trueの時だけ2回目のレンダリングを行う
 
 const cameraHelper = new THREE.CameraHelper(camera);
 cameraHelper.renderOrder = 999;
@@ -258,7 +259,7 @@ function startWalk(targetNodeId, hotspotPos){
   const node=NODES[targetNodeId];
   tLoader.load(node.asset.url, tex=>{
     tex.wrapS=THREE.RepeatWrapping; tex.wrapT=THREE.RepeatWrapping;
-    tex.minFilter=THREE.LinearMipMapLinearFilter; tex.generateMipmaps=true;
+    tex.minFilter=THREE.LinearFilter; tex.generateMipmaps=false;
     tex.offset.x = 0.5; 
 
     sphereB.material.map=tex; sphereB.material.needsUpdate=true;
@@ -328,7 +329,7 @@ function loadInitial(nodeId){
   setLoadBar(20);
   tLoader.load(node.asset.url, tex=>{
     tex.wrapS=THREE.RepeatWrapping; tex.wrapT=THREE.RepeatWrapping;
-    tex.minFilter=THREE.LinearMipMapLinearFilter; tex.generateMipmaps=true;
+    tex.minFilter=THREE.LinearFilter; tex.generateMipmaps=false;
     tex.offset.x = 0.5; 
 
     sphereA.material.map=tex; sphereA.material.needsUpdate=true;
@@ -637,14 +638,17 @@ function animate(now){
 
   renderer.render(scene, camera);
 
-  sphereA.material.wireframe = true;
-  sphereB.material.wireframe = true;
-  cameraHelper.update();
-  
-  debugRenderer.render(scene, activeDebugCamera);
-  
-  sphereA.material.wireframe = false;
-  sphereB.material.wireframe = false;
+  // デバッグモニターが非表示の間はシーンの2重レンダリングとwireframe切替を行わない（負荷軽減）
+  if (isDebugMonitorOn) {
+    sphereA.material.wireframe = true;
+    sphereB.material.wireframe = true;
+    cameraHelper.update();
+
+    debugRenderer.render(scene, activeDebugCamera);
+
+    sphereA.material.wireframe = false;
+    sphereB.material.wireframe = false;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -673,7 +677,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupToggle('tg-hud-loc', $('hud-location'));
   setupToggle('tg-hud-compass', $('hud-compass'));
   setupToggle('tg-hud-map', $('hud-minimap'));
-  setupToggle('tg-hud-debug', $('debug-container'));
+  setupToggle('tg-hud-debug', $('debug-container'), (visible) => {
+    isDebugMonitorOn = visible;
+  });
 
   setupToggle('tg-grid-edges', null, (visible) => {
     uiConfig.edges = visible;
@@ -752,43 +758,10 @@ async function initMapData() {
   mapGraph.loadFromMultipleJSON(results);
 }
 
-// 起動時に呼び出す
-initMapData().then(() => {
-  console.log("マップデータ読み込み完了");
-  
-  // 初期化処理をここに集約
-  loadInitial('13_corridor_0010,0020');
-  
-  setupToggle('tg-hud-loc', $('hud-location'));
-  setupToggle('tg-hud-compass', $('hud-compass'));
-  setupToggle('tg-hud-map', $('hud-minimap'));
-  setupToggle('tg-hud-debug', $('debug-container'));
-
-  setupToggle('tg-grid-edges', null, (visible) => {
-    uiConfig.edges = visible;
-    if(walkPhase === 'idle' && gridEdgesA) gridEdgesA.material.opacity = visible ? 0.15 : 0;
-  });
-  setupToggle('tg-grid-points', null, (visible) => {
-    uiConfig.points = visible;
-    if(walkPhase === 'idle' && gridPointsA) gridPointsA.material.opacity = visible ? 0.25 : 0;
-  });
-  setupToggle('tg-grid-routes', null, (visible) => {
-    uiConfig.routes = visible;
-    buildRouteLines(NODES[currentId]);
-  });
-
-  requestAnimationFrame(animate);
-});
-
-// main.js の初期化処理
+// 起動時に呼び出す（initMinimapLayout → loadInitial の順序を保証する版のみ残す）
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. まずデータをロードする（完了するまで待機）
-    await initMapData(); // ※先ほど定義したPromiseを返す関数
-    
-    // 2. データがロードされたことが確定してから UI を生成
+    await initMapData();
     initMinimapLayout();
-    
-    // 3. 必要な初期化を実行
     loadInitial('13_corridor_0010,0020');
     requestAnimationFrame(animate);
 });

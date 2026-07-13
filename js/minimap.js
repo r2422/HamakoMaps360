@@ -156,8 +156,20 @@ function initMinimapLayout() {
   setupMinimapInteractions();
 }
 
+function syncPlayerVisibility() {
+  const currentNode = NODES[currentId];
+  const isCurrentFloor = currentNode && currentNode.floor === currentMinimapFloor;
+  const player = $('mm-player');
+  if (player) player.style.display = isCurrentFloor ? 'block' : 'none';
+}
+
 function updateMinimapFloor(floorNumber) {
-  if (floorNumber === currentMinimapFloor) return;
+  if (floorNumber === currentMinimapFloor) {
+    // フロア自体は変わらなくても、実際にそのフロアにいるかどうかは
+    // 呼び出しタイミングによって変化しているため、表示同期だけは必ず行う
+    syncPlayerVisibility();
+    return;
+  }
   currentMinimapFloor = floorNumber;
 
   // 💡 アクティブな建物ボタンから文字列（「北館」「本館」「南館」）を取得
@@ -212,9 +224,7 @@ function updateMinimapFloor(floorNumber) {
     }
   });
 
-  const currentNode = NODES[currentId];
-  const isCurrentFloor = currentNode && currentNode.floor === floorNumber;
-  $('mm-player').style.display = isCurrentFloor ? 'block' : 'none';
+  syncPlayerVisibility();
 }
 
 function updateMinimap(){

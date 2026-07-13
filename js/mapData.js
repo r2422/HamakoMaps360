@@ -111,6 +111,7 @@ const Y_BASE_4 = 240;
   
 // window.NODES = mapGraph.nodes;
 
+/*
 // 外部JSON（mapData.json）を読み込んで初期化するための関数
 async function loadMapData() {
     try {
@@ -131,3 +132,4 @@ async function loadMapData() {
 
 // 実行する
 loadMapData();
+*/
