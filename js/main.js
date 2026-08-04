@@ -37,7 +37,7 @@ const routeLinesGroup = new THREE.Group();
 scene.add(routeLinesGroup);
 
 function makeSphere(radius, isB = false){
-  const g = new THREE.SphereGeometry(radius, 40, 40);
+  const g = new THREE.SphereGeometry(radius,60, 60);
   g.scale(-1,1,1);
   
   const m = new THREE.MeshBasicMaterial({
@@ -119,6 +119,7 @@ let autoRotate  = false;
 let walkPhase   = 'idle';
 let walkT       = 0;
 const WALK_DUR  = 1.1;
+let nextTextureReady = false; // 遷移先テクスチャの読み込みが完了したか（演出タイマーとの競合対策）
 
 let lastTS      = 0;
 
@@ -157,29 +158,93 @@ function buildRouteLines(node) {
     const targetZ = lk.pos[2] / 4;
 
     const startPoint = new THREE.Vector3(0, yOffset, 0);
-    const endPoint = new THREE.Vector3(targetX, yOffset, targetZ); 
-
+    const endPoint = new THREE.Vector3(targetX, yOffset, targetZ);
     const distance = startPoint.distanceTo(endPoint);
     const direction = new THREE.Vector3().subVectors(endPoint, startPoint).normalize();
 
-    const geo = new THREE.PlaneGeometry(0.8, distance);
-    const mat = new THREE.MeshBasicMaterial({
+    // 進行方向を向くシェブロン角度（コード内の他所と同じyaw規約 atan2(x,-z) 系に合わせて導出）
+    const chevronAngle = Math.atan2(-direction.x, -direction.z);
+
+    /* ---- 現在地から足元マーカーまでを結ぶ、薄い帯（補助線） ---- */
+    const bandGeo = new THREE.PlaneGeometry(0.18, distance);
+    const bandMat = new THREE.MeshBasicMaterial({
       color: 0x5a7fff,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.22,
       side: THREE.DoubleSide,
       depthTest: false,
       depthWrite: false
     });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.copy(startPoint).add(direction.clone().multiplyScalar(distance / 2));
-    mesh.lookAt(endPoint);
-    mesh.rotateX(Math.PI / 2);
-    mesh.renderOrder = 20;
+    const bandMesh = new THREE.Mesh(bandGeo, bandMat);
+    bandMesh.position.copy(startPoint).add(direction.clone().multiplyScalar(distance / 2));
+    bandMesh.lookAt(endPoint);
+    bandMesh.rotateX(Math.PI / 2);
+    bandMesh.renderOrder = 18;
+    bandMesh.raycast = () => {}; // 視覚的な補助線のみ。クリック／ホバー判定には関与させない
+    bandMesh.userData = { isRoute: true, link: lk, isBand: true };
+    routeLinesGroup.add(bandMesh);
 
-    mesh.userData = { isRoute: true, link: lk, isLine: true };
-    routeLinesGroup.add(mesh);
+    /* ---- 足元の円形マーカー（Googleストリートビュー風のナビゲーション・チップ） ---- */
+    const discRadius = 1.15; // 一回り大きく
+    const discSize = 256;
+    const discCanvas = document.createElement('canvas');
+    discCanvas.width = discSize; discCanvas.height = discSize;
+    const dctx = discCanvas.getContext('2d');
 
+    // 半透明の白ディスク（放射グラデーションで縁をフェード）
+    const grad = dctx.createRadialGradient(discSize/2, discSize/2, discSize*0.04, discSize/2, discSize/2, discSize*0.48);
+    grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+    grad.addColorStop(0.72, 'rgba(255,255,255,0.55)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    dctx.fillStyle = grad;
+    dctx.beginPath();
+    dctx.arc(discSize/2, discSize/2, discSize*0.48, 0, Math.PI*2);
+    dctx.fill();
+
+    // 進行方向を示すシェブロン（シンプルな三角形1つに簡略化）。canvas上方向 = ローカルY+ = 移動方向に一致
+    dctx.fillStyle = '#1a73e8';
+    dctx.beginPath();
+    dctx.moveTo(discSize*0.50, discSize*0.22);
+    dctx.lineTo(discSize*0.74, discSize*0.62);
+    dctx.lineTo(discSize*0.26, discSize*0.62);
+    dctx.closePath();
+    dctx.fill();
+
+    const discGeo = new THREE.CircleGeometry(discRadius, 32);
+    discGeo.rotateX(-Math.PI / 2); // 地面と水平になるよう平置き（法線が+Y）
+
+    const discMat = new THREE.MeshBasicMaterial({
+      map: new THREE.CanvasTexture(discCanvas),
+      transparent: true,
+      depthTest: false,
+      depthWrite: false
+    });
+    const discMesh = new THREE.Mesh(discGeo, discMat);
+    discMesh.position.set(targetX, yOffset + 0.02, targetZ);
+    discMesh.rotation.y = chevronAngle;
+    discMesh.renderOrder = 20;
+    discMesh.userData = { isRoute: true, link: lk, isDisc: true };
+    routeLinesGroup.add(discMesh);
+
+    // 脈動するパルスリング（クリック可能であることを示すアフォーダンス）
+    const pulseGeo = new THREE.RingGeometry(discRadius, discRadius * 1.17, 40);
+    pulseGeo.rotateX(-Math.PI / 2);
+    const pulseMat = new THREE.MeshBasicMaterial({
+      color: 0x1a73e8,
+      transparent: true,
+      opacity: 0.5,
+      side: THREE.DoubleSide,
+      depthTest: false,
+      depthWrite: false
+    });
+    const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
+    pulseMesh.position.set(targetX, yOffset + 0.015, targetZ);
+    pulseMesh.renderOrder = 19;
+    pulseMesh.raycast = () => {}; // クリック判定は本体のディスクにのみ発生させる
+    pulseMesh.userData = { isRoute: true, link: lk, isPulse: true };
+    routeLinesGroup.add(pulseMesh);
+
+    /* ---- 行き先ラベル（案内テキスト） ---- */
     const canvas = document.createElement('canvas');
     canvas.width = 512;  
     canvas.height = 128;
@@ -211,29 +276,6 @@ function buildRouteLines(node) {
     
     textSprite.userData = { isRoute: true, link: lk, isText: true, targetX: targetX, targetZ: targetZ };
     routeLinesGroup.add(textSprite);
-
-    const shape = new THREE.Shape();
-    shape.moveTo(-0.2, 0.3);
-    shape.lineTo(0.1, 0.3);
-    shape.lineTo(0, 0);
-    shape.lineTo(-0.1, 0.3);
-
-    const pinGeo = new THREE.ShapeGeometry(shape);
-    const pinMat = new THREE.MeshBasicMaterial({
-      color: 0x55ff7f,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.9,
-      depthTest: false,
-      depthWrite: false
-    });
-    const pinMesh = new THREE.Mesh(pinGeo, pinMat);
-    
-    pinMesh.position.set(targetX, yOffset + 1.0, targetZ);
-    pinMesh.renderOrder = 22; 
-    
-    pinMesh.userData = { isRoute: true, link: lk, isPin: true };
-    routeLinesGroup.add(pinMesh);
   });
 }
 
@@ -250,6 +292,7 @@ function startWalk(targetNodeId, hotspotPos){
   nextId    = targetNodeId;
   walkPhase = 'walk';
   walkT     = 0;
+  nextTextureReady = false;
 
   walkDir = new THREE.Vector3(...hotspotPos).normalize();
   const speedHud = $('hud-speed');
@@ -257,14 +300,26 @@ function startWalk(targetNodeId, hotspotPos){
 
   setLoadBar(30);
   const node=NODES[targetNodeId];
-  tLoader.load(node.asset.url, tex=>{
-    tex.wrapS=THREE.RepeatWrapping; tex.wrapT=THREE.RepeatWrapping;
-    tex.minFilter=THREE.LinearFilter; tex.generateMipmaps=false;
-    tex.offset.x = 0.5; 
+  tLoader.load(
+    node.asset.url,
+    tex=>{
+      tex.wrapS=THREE.RepeatWrapping; tex.wrapT=THREE.RepeatWrapping;
+      tex.minFilter=THREE.LinearFilter; tex.generateMipmaps=false;
+      tex.offset.x = 0.5; 
 
-    sphereB.material.map=tex; sphereB.material.needsUpdate=true;
-    setLoadBar(80);
-  });
+      sphereB.material.map=tex; sphereB.material.needsUpdate=true;
+      setLoadBar(80);
+      nextTextureReady = true;
+    },
+    undefined,
+    err=>{
+      // 読み込み失敗時も演出が永久に止まってしまわないよう、
+      // 古い（あるいは無い）テクスチャのままでも進行を許可する
+      console.error('パノラマ画像の読み込みに失敗しました:', node.asset.url, err);
+      setLoadBar(80);
+      nextTextureReady = true;
+    }
+  );
 }
 
 function finishWalk(){
@@ -402,7 +457,7 @@ canvas.addEventListener('pointermove', e => {
     const tip = $('tooltip');
     
     const hitObj = hits.length ? hits[0].object : null;
-    if (hitObj && hitObj.userData && hitObj.userData.isRoute && (hitObj.userData.isText || hitObj.userData.isPin)) {
+    if (hitObj && hitObj.userData && hitObj.userData.isRoute && (hitObj.userData.isText || hitObj.userData.isDisc)) {
       const lk = hitObj.userData.link;
       canvas.style.cursor = 'pointer';
       tip.textContent = lk.hint || lk.label || "移動する";
@@ -439,7 +494,7 @@ canvas.addEventListener('dblclick', e => {
   if (hits.length) {
     const hitObj = hits[0].object;
     if (hitObj.userData && hitObj.userData.isRoute && hitObj.userData.link) {
-      if (hitObj.userData.isText || hitObj.userData.isPin) {
+      if (hitObj.userData.isText || hitObj.userData.isDisc) {
         const lk = hitObj.userData.link;
         const targetPos = lk.pos ? [lk.pos[0] / 4, -3.8 + 1.0, lk.pos[2] / 4] : [0, 0, 0];
         startWalk(lk.targetId, targetPos);
@@ -522,7 +577,10 @@ function animate(now){
   lastTS=now;
 
   if(walkPhase=='walk'){
-    walkT=Math.min(walkT+dt/WALK_DUR,1);
+    // テクスチャの読み込みが間に合っていない場合、クロスフェード開始点(0.9)手前で足踏みさせる。
+    // これにより「読み込み未完了の画像がsphereAへ確定コピーされる」競合状態を防ぐ。
+    const walkTCap = nextTextureReady ? 1 : 0.9;
+    walkT=Math.min(walkT+dt/WALK_DUR, walkTCap);
 
     routeLinesGroup.children.forEach(l => {
       if (l.material) {
@@ -612,8 +670,18 @@ function animate(now){
     routeLinesGroup.children.forEach(l => {
       if (l.userData && l.userData.isRoute) {
         if (l.material) {
-          if (l.userData.isLine) l.material.opacity = uiConfig.routes ? 0.4 : 0;
-          else if (l.userData.isText || l.userData.isPin) l.material.opacity = uiConfig.routes ? 1.0 : 0;
+          if (l.userData.isBand) {
+            l.material.opacity = uiConfig.routes ? 0.22 : 0;
+          } else if (l.userData.isDisc) {
+            l.material.opacity = uiConfig.routes ? 1.0 : 0;
+          } else if (l.userData.isPulse) {
+            // 0〜1.5秒でリングが外側へ広がりながらフェードする脈動アニメーション
+            const pulsePhase = (now % 1500) / 1500;
+            l.scale.set(1 + pulsePhase * 0.7, 1, 1 + pulsePhase * 0.7);
+            l.material.opacity = uiConfig.routes ? (1 - pulsePhase) * 0.5 : 0;
+          } else if (l.userData.isText) {
+            l.material.opacity = uiConfig.routes ? 1.0 : 0;
+          }
         }
         
         const distToCamera = camera.position.distanceTo(l.position);
@@ -623,13 +691,13 @@ function animate(now){
           l.scale.set(4 * scaleFactor, 1 * scaleFactor, 1);
           l.position.y = (yOffset + 0.5) + (1.0 * scaleFactor) + 0.1;
         }
-        
-        if (l.userData.isPin) {
-          l.scale.set(scaleFactor, scaleFactor, scaleFactor);
-          l.quaternion.copy(camera.quaternion);
-        }
       }
     });
+
+    // 視点回転（yaw）をリアルタイムでミニマップのプレイヤー向き（mm-player矢印）へ反映
+    if (typeof applyMinimapTransform === 'function') {
+      applyMinimapTransform();
+    }
   }
 
   if (typeof updateMinimapPulse === 'function') {

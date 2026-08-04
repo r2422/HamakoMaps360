@@ -163,34 +163,30 @@ function syncPlayerVisibility() {
   if (player) player.style.display = isCurrentFloor ? 'block' : 'none';
 }
 
+function syncFloorTitle() {
+  // 💡 現在地ノードの building プロパティから館名を判定する。
+  //    フロア番号そのものが変わらない移動（同フロア内で別棟へ渡る等）でも
+  //    必ず再評価されるよう、updateMinimapFloor から独立させている。
+  const bMap = { 'North': '北館', 'Main': '本館', 'South': '南館' };
+  const locatedNode = NODES[currentId];
+  const buildingName = (locatedNode && bMap[locatedNode.building]) || '本館';
+  const floorTitle = $('mm-floor-title');
+  if (floorTitle) floorTitle.textContent = `${buildingName}${currentMinimapFloor}F`;
+}
+
 function updateMinimapFloor(floorNumber) {
   if (floorNumber === currentMinimapFloor) {
-    // フロア自体は変わらなくても、実際にそのフロアにいるかどうかは
+    // フロア番号自体は変わらなくても、実際にいる階・棟は
     // 呼び出しタイミングによって変化しているため、表示同期だけは必ず行う
     syncPlayerVisibility();
+    syncFloorTitle();
     return;
   }
   currentMinimapFloor = floorNumber;
 
-  // 💡 アクティブな建物ボタンから文字列（「北館」「本館」「南館」）を取得
-  let buildingName = "本館"; 
-  ['north', 'main', 'south'].forEach(b => {
-    const btn = $(`mm-btn-${b}`);
-    if (btn) {
-      const rect = btn.querySelector('rect');
-      if (rect && rect.getAttribute('fill') !== 'transparent') {
-        const textNode = btn.querySelector('text');
-        if (textNode) buildingName = textNode.textContent; 
-      }
-    }
-  });
-
   const bgMap = $('mm-bg-map');
-  const floorTitle = $('mm-floor-title');
   if (bgMap) bgMap.setAttribute('href', `../maps/${floorNumber}F.svg`);
-  
-  // 💡 指定形式「FLOOR MAP (●館●F)」に更新
-  if (floorTitle) floorTitle.textContent = `${buildingName}${floorNumber}F`;
+  syncFloorTitle();
 
   const dots = Array.from($('mm-nodes-group').children);
   dots.forEach(dot => {
