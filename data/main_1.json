@@ -273,7 +273,18 @@
       ],
       "floor": 1,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "21_corridor_0720,0680",
+          "label": "移動",
+          "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0990,0680",
+          "label": "移動",
+          "hint": "移動"
+        }
+      ]
     },
     "21_corridor_0990,0820": {
       "name": "本館 1階 廊下",

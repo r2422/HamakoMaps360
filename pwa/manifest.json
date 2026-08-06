@@ -1,6 +1,6 @@
 {
-  "name": "hamako-maps-360",
-  "short_name": "hamako-maps-360",
+  "name": "浜工ストリートビュー360",
+  "short_name": "浜工ストリートビュー360",
   "start_url": "../html/index.html",
   "display": "standalone",
   "background_color": "#522B8C",

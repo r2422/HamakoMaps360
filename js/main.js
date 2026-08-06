@@ -37,7 +37,7 @@ const routeLinesGroup = new THREE.Group();
 scene.add(routeLinesGroup);
 
 function makeSphere(radius, isB = false){
-  const g = new THREE.SphereGeometry(radius,60, 60);
+  const g = new THREE.SphereGeometry(radius, 60, 60);
   g.scale(-1,1,1);
   
   const m = new THREE.MeshBasicMaterial({
@@ -109,7 +109,7 @@ cameraHelper.material.depthWrite = false;
 scene.add(cameraHelper);
 
 /* ---- state ---- */
-let currentId   = '13_corridor_0010,0020';
+let currentId   = '13_classroom_0450,0100_理数工学室';
 let nextId      = null;
 let yaw=0, pitch=0, tYaw=0, tPitch=0;
 let fov=75, tFov=75;
@@ -481,16 +481,17 @@ canvas.addEventListener('pointerup',e=>{
   if (walkPhase !== 'idle' || isDragging) return;
 });
 
-canvas.addEventListener('dblclick', e => {
+/* ---- ホットスポットのヒット判定＆移動開始（マウスのdblclick／タッチのダブルタップ共通処理） ---- */
+function tryTeleportAt(clientX, clientY){
   if (walkPhase !== 'idle') return;
 
-  let canvasBounds = renderer.domElement.getBoundingClientRect();
-  mouse2.x = ((e.clientX - canvasBounds.left) / canvasBounds.width) * 2 - 1;
-  mouse2.y = -((e.clientY - canvasBounds.top) / canvasBounds.height) * 2 + 1;
-  
+  const canvasBounds = renderer.domElement.getBoundingClientRect();
+  mouse2.x = ((clientX - canvasBounds.left) / canvasBounds.width) * 2 - 1;
+  mouse2.y = -((clientY - canvasBounds.top) / canvasBounds.height) * 2 + 1;
+
   raycaster.setFromCamera(mouse2, camera);
   const hits = raycaster.intersectObjects(routeLinesGroup.children);
-  
+
   if (hits.length) {
     const hitObj = hits[0].object;
     if (hitObj.userData && hitObj.userData.isRoute && hitObj.userData.link) {
@@ -501,7 +502,38 @@ canvas.addEventListener('dblclick', e => {
       }
     }
   }
+}
+
+canvas.addEventListener('dblclick', e => {
+  tryTeleportAt(e.clientX, e.clientY);
 });
+
+/* ---- iOS/タッチ向け：ダブルタップ検知（dblclickはタッチでは発火しないため自前で実装） ---- */
+let lastTapTime = 0;
+let lastTapX = 0, lastTapY = 0;
+const DOUBLE_TAP_MS = 320;   // この間隔以内の2回タップをダブルタップとみなす
+const DOUBLE_TAP_DIST = 30;  // 2回のタップ位置がこの距離(px)以内であること
+
+canvas.addEventListener('touchend', e => {
+  if (walkPhase !== 'idle') return;
+  if (e.changedTouches.length !== 1 || e.touches.length > 0) return; // 単指タップのみ対象（ピンチ操作等は除外）
+  if (isDragging) { lastTapTime = 0; return; } // ドラッグ（視点回転）の指離しはタップ扱いしない
+
+  const touch = e.changedTouches[0];
+  const now = performance.now();
+  const dx = touch.clientX - lastTapX;
+  const dy = touch.clientY - lastTapY;
+  const dist = Math.hypot(dx, dy);
+
+  if (now - lastTapTime < DOUBLE_TAP_MS && dist < DOUBLE_TAP_DIST) {
+    tryTeleportAt(touch.clientX, touch.clientY);
+    lastTapTime = 0; // 3回連続タップ等で誤爆しないようリセット
+  } else {
+    lastTapTime = now;
+    lastTapX = touch.clientX;
+    lastTapY = touch.clientY;
+  }
+}, { passive: true });
 
 canvas.addEventListener('wheel',e=>{
   if(walkPhase!=='idle') return;
@@ -830,6 +862,6 @@ async function initMapData() {
 document.addEventListener('DOMContentLoaded', async () => {
     await initMapData();
     initMinimapLayout();
-    loadInitial('13_corridor_0010,0020');
+    loadInitial('13_classroom_0450,0100_理数工学室');
     requestAnimationFrame(animate);
 });
