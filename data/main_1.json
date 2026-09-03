@@ -49,6 +49,11 @@
           "targetId": "11_passageway_mid_0990,0350",
           "label": "空中廊下(北館方面)",
           "hint": "To North Bldg"
+        },
+        {
+          "targetId": "21_stairs_0990,0680",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -91,6 +96,11 @@
           "targetId": "21_corridor_0720,0680",
           "label": "移動",
           "hint": "移動"
+        },
+        {
+          "targetId": "21_outside_0720,0520_昇降口",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -257,6 +267,11 @@
           "targetId": "21_entrance_0720,0640_昇降口",
           "label": "移動",
           "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_0870,0680",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -283,6 +298,11 @@
           "targetId": "21_corridor_0990,0680",
           "label": "移動",
           "hint": "移動"
+        },
+        {
+          "targetId": "21_corridor_1020,0710",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -299,7 +319,13 @@
       ],
       "floor": 1,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "21_corridor_1020,0710",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "21_corridor_1020,0710": {
       "name": "本館 1階 廊下",
@@ -314,7 +340,23 @@
       ],
       "floor": 1,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "21_corridor_0870,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_corridor_0990,0820",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_stairs_0990,0680",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "21_stairs_0990,0680": {
       "name": "本館 1階 階段",
@@ -329,7 +371,18 @@
       ],
       "floor": 1,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "21_corridor_1020,0710",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_stairs_0990,0560",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "21_outside_0720,0520_昇降口": {
       "name": "本館 1階 昇降口",
@@ -344,7 +397,13 @@
       ],
       "floor": 1,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "21_entrance_0720,0640_昇降口",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "21_outside_0120,0560_職員玄関": {
       "name": "本館 1階 職員玄関",

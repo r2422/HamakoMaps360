@@ -2,6 +2,14 @@
    OBJECT-ORIENTED MAP GRAPH & ASSET MANAGEMENT (JSON対応版)
 ============================================================ */
 
+/* ============================================================
+   ミニマップ座標変換の定数（順変換はcalcMinimapCoords、逆変換はminimap.jsの
+   編集モードで使用。両者が同じ値を参照できるようモジュールスコープに置く）
+============================================================ */
+const MINIMAP_SCALE   = 3.0; // 3D空間の1単位 = ミニマップSVG上の何px か
+const MINIMAP_OFFSET_X = 0;  // ミニマップSVG原点(0,0)に対する3D空間原点のズレ補正
+const MINIMAP_OFFSET_Y = 0;
+
 class PanoramaAsset {
   // コンストラクタに nodeInfo を渡せるように変更
   constructor(fileName, nodeInfo) {
@@ -65,18 +73,11 @@ class MapGraph {
 
   // ミニマップ座標の計算
   calcMinimapCoords() {
-    // 3D空間上の1単位が、地図SVG上で何ピクセルに相当するかの固定倍率（3倍相似に対応）
-    const scale = 3.0; 
-
-    // 地図SVGの原点(0,0)に対する、3D空間の原点のズレを補正するオフセット（必要に応じて調整）
-    const offsetX = 0;    
-    const offsetY = 0;    
-
     for (let id in this.nodes) {
       const node = this.nodes[id];
       // X軸、Z軸に固定スケールを掛け、5640x4320の座標の中に正確に配置
-      node.mmX = offsetX + node.pos3D[0] * scale;
-      node.mmY = offsetY + node.pos3D[2] * scale;
+      node.mmX = MINIMAP_OFFSET_X + node.pos3D[0] * MINIMAP_SCALE;
+      node.mmY = MINIMAP_OFFSET_Y + node.pos3D[2] * MINIMAP_SCALE;
     }
   }
 

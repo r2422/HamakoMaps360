@@ -109,7 +109,7 @@ cameraHelper.material.depthWrite = false;
 scene.add(cameraHelper);
 
 /* ---- state ---- */
-let currentId   = '13_classroom_0450,0100_理数工学室';
+let currentId   = '21_entrance_0720,0640_昇降口';
 let nextId      = null;
 let yaw=0, pitch=0, tYaw=0, tPitch=0;
 let fov=75, tFov=75;
@@ -780,6 +780,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupToggle('tg-hud-debug', $('debug-container'), (visible) => {
     isDebugMonitorOn = visible;
   });
+  setupToggle('tg-edit-mode', null, (visible) => {
+    if (typeof setMinimapEditMode === 'function') setMinimapEditMode(visible);
+  });
 
   setupToggle('tg-grid-edges', null, (visible) => {
     uiConfig.edges = visible;
@@ -819,6 +822,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('keydown', (e) => {
+  if (e.altKey && (e.key === 'e' || e.key === 'E')) {
+    e.preventDefault();
+    const editToggle = document.getElementById('tg-edit-mode');
+    if (editToggle) {
+      editToggle.checked = !editToggle.checked;
+      editToggle.dispatchEvent(new Event('change'));
+    }
+    return;
+  }
   if (e.key === '0') {
     isOrtho = !isOrtho;
     activeDebugCamera = isOrtho ? debugOrtho : debugPersp;
@@ -862,6 +874,6 @@ async function initMapData() {
 document.addEventListener('DOMContentLoaded', async () => {
     await initMapData();
     initMinimapLayout();
-    loadInitial('13_classroom_0450,0100_理数工学室');
+    loadInitial('21_entrance_0720,0640_昇降口');
     requestAnimationFrame(animate);
 });
