@@ -114,6 +114,10 @@ let nextId      = null;
 let yaw=0, pitch=0, tYaw=0, tPitch=0;
 let fov=75, tFov=75;
 let isDragging  = false;
+let yawVelocity = 0;    // 指/マウスを離した瞬間の勢いを保持する角速度（rad/秒相当）
+let pitchVelocity = 0;
+const INERTIA_STRENGTH = 0.4; // 慣性の初速をどれだけ抑えるか（1.0で等倍、小さいほど控えめ）
+let lastDragMoveTs = 0; // 角速度算出用の直前タイムスタンプ
 let autoRotate  = false;
 
 let walkPhase   = 'idle';
@@ -415,6 +419,8 @@ canvas.addEventListener('touchstart', e => {
   if (walkPhase !== 'idle') return;
 
   isDragging = false; 
+  yawVelocity = 0; pitchVelocity = 0;
+  lastDragMoveTs = performance.now();
   lastX = e.touches[0].clientX; 
   lastY = e.touches[0].clientY;
 }, { passive: true });
@@ -428,6 +434,12 @@ canvas.addEventListener('touchmove', e => {
 
   if (Math.abs(dx) + Math.abs(dy) > 2) isDragging = true;
 
+  const now = performance.now();
+  const dtSec = Math.max((now - lastDragMoveTs) / 1000, 1/240);
+  yawVelocity   = (-dx * 0.004) / dtSec * INERTIA_STRENGTH;
+  pitchVelocity = ( dy * 0.004) / dtSec * INERTIA_STRENGTH;
+  lastDragMoveTs = now;
+
   tYaw   -= dx * 0.004;
   tPitch += dy * 0.004;
   tPitch = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, tPitch));
@@ -440,6 +452,8 @@ canvas.addEventListener('pointerdown', e => {
   if (e.pointerType === 'touch') return; 
   if (walkPhase !== 'idle') return;
   isDragging = false; lastX = e.clientX; lastY = e.clientY;
+  yawVelocity = 0; pitchVelocity = 0;
+  lastDragMoveTs = performance.now();
   canvas.setPointerCapture(e.pointerId);
   e.preventDefault();
 });
@@ -470,6 +484,11 @@ canvas.addEventListener('pointermove', e => {
   }
   const dx = e.clientX - lastX, dy = e.clientY - lastY;
   if (Math.abs(dx) + Math.abs(dy) > 3) isDragging = true;
+  const now = performance.now();
+  const dtSec = Math.max((now - lastDragMoveTs) / 1000, 1/240);
+  yawVelocity   = (-dx * 0.0038) / dtSec * INERTIA_STRENGTH;
+  pitchVelocity = ( dy * 0.0038) / dtSec * INERTIA_STRENGTH;
+  lastDragMoveTs = now;
   tYaw   -= dx * 0.0038;
   tPitch += dy * 0.0038;
   tPitch = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, tPitch));
@@ -478,7 +497,9 @@ canvas.addEventListener('pointermove', e => {
 
 canvas.addEventListener('pointerup',e=>{
   if (e.pointerType === 'touch') return;
-  if (walkPhase !== 'idle' || isDragging) return;
+  const wasDragging = isDragging;
+  isDragging = false; // 離した瞬間に必ずリセット（idleループで慣性回転を効かせるため）
+  if (walkPhase !== 'idle' || wasDragging) return;
 });
 
 /* ---- ホットスポットのヒット判定＆移動開始（マウスのdblclick／タッチのダブルタップ共通処理） ---- */
@@ -517,7 +538,10 @@ const DOUBLE_TAP_DIST = 30;  // 2回のタップ位置がこの距離(px)以内�
 canvas.addEventListener('touchend', e => {
   if (walkPhase !== 'idle') return;
   if (e.changedTouches.length !== 1 || e.touches.length > 0) return; // 単指タップのみ対象（ピンチ操作等は除外）
-  if (isDragging) { lastTapTime = 0; return; } // ドラッグ（視点回転）の指離しはタップ扱いしない
+
+  const wasDragging = isDragging;
+  isDragging = false; // 離した瞬間に必ずリセット（idleループで慣性回転を効かせるため）
+  if (wasDragging) { lastTapTime = 0; return; } // ドラッグ（視点回転）の指離しはタップ扱いしない
 
   const touch = e.changedTouches[0];
   const now = performance.now();
@@ -677,6 +701,20 @@ function animate(now){
     if(walkT>=1) finishWalk();
   } else {
     if(autoRotate&&!isDragging) tYaw+=0.06*dt;
+
+    if (!isDragging && (Math.abs(yawVelocity) > 0.002 || Math.abs(pitchVelocity) > 0.002)) {
+      // 指／マウスを離した瞬間の勢いを、減速しながら少しだけ引き継ぐ（慣性回転）
+      tYaw   += yawVelocity * dt;
+      tPitch += pitchVelocity * dt;
+      tPitch = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, tPitch));
+
+      const friction = Math.pow(0.008, dt); // 短時間でほぼ収束する摩擦係数（控えめな「遊び」にとどめる）
+      yawVelocity   *= friction;
+      pitchVelocity *= friction;
+      if (Math.abs(yawVelocity)   < 0.002) yawVelocity = 0;
+      if (Math.abs(pitchVelocity) < 0.002) pitchVelocity = 0;
+    }
+
     const k=1-Math.pow(0.008,dt*10);
     yaw  +=(tYaw -yaw  )*k;
     pitch+=(tPitch-pitch)*k;
@@ -779,6 +817,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupToggle('tg-hud-map', $('hud-minimap'));
   setupToggle('tg-hud-debug', $('debug-container'), (visible) => {
     isDebugMonitorOn = visible;
+    // FOVスライダー等のコントロールパネルは、通常時は非表示にし、デバッグ時のみ表示する
+    const ctrlPanel = $('hud-controls');
+    if (ctrlPanel) ctrlPanel.style.display = visible ? '' : 'none';
   });
   setupToggle('tg-edit-mode', null, (visible) => {
     if (typeof setMinimapEditMode === 'function') setMinimapEditMode(visible);
