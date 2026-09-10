@@ -23,12 +23,12 @@
 </mask>
 <path d="M2905 2485H3085V3505H2905V2485Z" fill="white"/>
 <path d="M3085 2485H3075V3505H3085H3095V2485H3085ZM2905 3505H2915V2485H2905H2895V3505H2905Z" fill="#FF8D28" mask="url(#path-7-outside-4_135_3175)"/>
-<mask id="path-9-outside-5_135_3175" maskUnits="userSpaceOnUse" x="3085" y="2115" width="1450" height="140" fill="black">
-<rect fill="white" x="3085" y="2115" width="1450" height="140"/>
-<path d="M3085 2125H4525V2245H3085V2125Z"/>
+<mask id="path-9-outside-5_135_3175" maskUnits="userSpaceOnUse" x="3085" y="2115" width="2590" height="140" fill="black">
+<rect fill="white" x="3085" y="2115" width="2590" height="140"/>
+<path d="M3085 2125H5665V2245H3085V2125Z"/>
 </mask>
-<path d="M3085 2125H4525V2245H3085V2125Z" fill="white"/>
-<path d="M4525 2125H4535V2115H4525V2125ZM4525 2245V2255H4535V2245H4525ZM3085 2125V2135H4525V2125V2115H3085V2125ZM4525 2125H4515V2245H4525H4535V2125H4525ZM4525 2245V2235H3085V2245V2255H4525V2245Z" fill="#FF8D28" mask="url(#path-9-outside-5_135_3175)"/>
+<path d="M3085 2125H5665V2245H3085V2125Z" fill="white"/>
+<path d="M5665 2125H5675V2115H5665V2125ZM5665 2245V2255H5675V2245H5665ZM3085 2125V2135H5665V2125V2115H3085V2125ZM5665 2125H5655V2245H5665H5675V2125H5665ZM5665 2245V2235H3085V2245V2255H5665V2245Z" fill="#FF8D28" mask="url(#path-9-outside-5_135_3175)"/>
 <rect x="20" y="3500" width="3070" height="850" fill="#D9D9D9" stroke="#FF8D28" stroke-width="10"/>
 <rect x="20" y="1640" width="3070" height="850" fill="#D9D9D9" stroke="#FF8D28" stroke-width="10"/>
 <rect x="20" y="20" width="3610" height="490" fill="#D9D9D9" stroke="#FF8D28" stroke-width="10"/>
@@ -352,7 +352,7 @@
 <rect x="2905.5" y="505.5" width="179" height="1139" fill="#FBD9FF" stroke="#715600"/>
 <rect x="925.5" y="2484.5" width="179" height="1019" fill="#FBD9FF" stroke="#715600"/>
 <rect x="2905.5" y="2485.5" width="179" height="1019" fill="#FBD9FF" stroke="#715600"/>
-<rect x="3085.5" y="2124.5" width="1439" height="119" fill="#FBD9FF" stroke="#715600"/>
+<rect x="3085.5" y="2125.5" width="2579" height="119" fill="#FBD9FF" stroke="#715600"/>
 <defs>
 <filter id="filter0_i_135_3175" x="4040" y="800" width="1625" height="1325" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
