@@ -360,10 +360,10 @@
 <path d="M3265 25H3625V505H3265V265V145H3085V25H3265Z" fill="#DBDBDB"/>
 </g>
 <path d="M3624.5 25.5V504.5H3265.5V144.5H3085.5V25.5H3624.5Z" stroke="#715600"/>
-<rect x="925.5" y="505.5" width="236" height="1139" fill="#F4FFDF" stroke="#715600"/>
-<rect x="3532.5" y="505.5" width="236" height="1139" fill="#F4FFDF" stroke="#715600"/>
-<rect x="925.5" y="2485.5" width="236" height="1019" fill="#F4FFDF" stroke="#715600"/>
-<rect x="3532.5" y="2485.5" width="236" height="1019" fill="#F4FFDF" stroke="#715600"/>
+<rect x="925.5" y="505.5" width="179" height="1139" fill="#F4FFDF" stroke="#715600"/>
+<rect x="2905.5" y="505.5" width="179" height="1139" fill="#F4FFDF" stroke="#715600"/>
+<rect x="925.5" y="2484.5" width="179" height="1019" fill="#F4FFDF" stroke="#715600"/>
+<rect x="2905.5" y="2485.5" width="179" height="1019" fill="#F4FFDF" stroke="#715600"/>
 <rect x="3085.5" y="2125.5" width="2579" height="119" fill="#F4FFDF" stroke="#715600"/>
 <defs>
 <filter id="filter0_i_135_3176" x="4040" y="800" width="1625" height="1325" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
