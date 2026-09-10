@@ -110,35 +110,65 @@ body {
 /* --- 左上：位置情報バッジ --- */
 #hud-location {
   position: fixed;
-  top: 24px;
-  left: 24px;
+  top: 0px;
+  left: 0px;
   z-index: 30;
   transition: opacity 0.2s;
 }
 #loc-badge {
   display: inline-block;
-  background: rgba(6, 12, 32, 0.55);
+  background: rgba(82, 43, 140, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-radius: 12px;
+  border-radius: 0 0 12px 0;
   padding: 12px 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  /* box-shadow: 0 8px 24px rgba(0,0,0,0.3); */
 }
 #loc-name {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: #fff;
-  line-height: 1.1;
+    position: relative;
+    display: inline-grid;
+
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1.1;
+}
+
+.loc-outline,
+.loc-fill {
+    grid-area: 1 / 1;
+}
+
+.loc-outline {
+    position: relative;
+    z-index: 1;
+
+    color: #1c1e26;
+    -webkit-text-stroke: 1.5px #1c1e26;
+}
+
+.loc-fill {
+    position: relative;
+    z-index: 2;
+
+    background: linear-gradient(
+        180deg,
+        #8affff 0%,
+        #00bfff 50%,
+        #0055ff 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 #loc-sub {
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(163, 184, 204, 0.6);
+  color: rgba(245, 250, 255, 0.6);
   margin-top: 4px;
   font-family: monospace;
 }
