@@ -8,6 +8,14 @@ const NODES = mapGraph.nodes;
 function $(id) { return document.getElementById(id); }
 function setLoadBar(p){ const bar = $('load-bar'); if(bar) bar.style.width = p+'%'; }
 
+function setLocationName(name) {
+    const locName = $('loc-name');
+    if (!locName) return;
+
+    locName.querySelector('.loc-outline').textContent = name;
+    locName.querySelector('.loc-fill').textContent = name;
+}
+
 /* ---- Main Three.js ---- */
 const canvas   = document.getElementById('sv-canvas');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
@@ -359,7 +367,7 @@ function finishWalk(){
   buildRouteLines(node);
 
   currentId=nextId; nextId=null;
-  $('loc-name').textContent=node.name;
+  setLocationName(node.name);
   $('loc-sub').textContent=node.sub;
   
   if (typeof mmSrcNode !== 'undefined') mmSrcNode = null;
@@ -378,7 +386,7 @@ function finishWalk(){
 
 function loadInitial(nodeId){
   const node=NODES[nodeId];
-  $('loc-name').textContent=node.name;
+  setLocationName(node.name);
   $('loc-sub').textContent=node.sub;
   currentId=nodeId;
   
