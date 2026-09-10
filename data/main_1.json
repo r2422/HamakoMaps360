@@ -392,7 +392,7 @@
     "21_outside_0720,0520_昇降口": {
       "name": "本館 1階 昇降口",
       "sub": "Main building - Floor 1 Other Place",
-      "imageFile": "21_entrance_0720,0520_昇降口.jpg",
+      "imageFile": "21_outside_0720,0520_昇降口.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
