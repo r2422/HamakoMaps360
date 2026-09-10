@@ -355,6 +355,11 @@
           "targetId": "21_stairs_0990,0680",
           "label": "",
           "hint": ""
+        },
+        {
+          "targetId": "21_corridor_1180,0720_食堂渡り廊下",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -425,6 +430,44 @@
           "hint": "in"
         }
       ]
-    }
-  }
-}
+    },
+    {
+"21_corridor_1180,0720_食堂渡り廊下": {
+"name": "本館 1階 廊下",
+"sub": "Main building - Floor 1",
+"imageFile": "21_corridor_1180,0720_食堂渡り廊下.jpg",
+"initYaw": 0,
+"mmIdx": 0,
+"pos3D": [1180, 0, 720],
+"floor": 1,
+"building": "Main",
+"links": [
+        {
+          "targetId": "21_corridor_1020,0710",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_corridor_1270,0720_食堂渡り廊下",
+          "label": "",
+          "hint": ""
+        }
+      ]
+},
+"21_corridor_1270,0720_食堂渡り廊下": {
+"name": "本館 1階 廊下",
+"sub": "Main building - Floor 1",
+"imageFile": "21_corridor_1270,0720_食堂渡り廊下.jpg",
+"initYaw": 0,
+"mmIdx": 0,
+"pos3D": [1270, 0, 720],
+"floor": 1,
+"building": "Main",
+"links": [
+        {
+          "targetId": "21_corridor_1180,0720_食堂渡り廊下",
+          "label": "",
+          "hint": ""
+        }
+      ]
+},
