@@ -300,7 +300,7 @@
           "hint": "移動"
         },
         {
-          "targetId": "21_corridor_1020,0710",
+          "targetId": "21_corridor_1020,0720",
           "label": "",
           "hint": ""
         }
@@ -321,22 +321,22 @@
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_1020,0710",
+          "targetId": "21_corridor_1020,0720",
           "label": "",
           "hint": ""
         }
       ]
     },
-    "21_corridor_1020,0710": {
+    "21_corridor_1020,0720": {
       "name": "本館 1階 廊下",
       "sub": "Main building - Floor 1",
-      "imageFile": "21_corridor_1020,0710.jpg",
+      "imageFile": "21_corridor_1020,0720.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         1020,
         0,
-        710
+        720
       ],
       "floor": 1,
       "building": "Main",
@@ -378,7 +378,7 @@
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_1020,0710",
+          "targetId": "21_corridor_1020,0720",
           "label": "",
           "hint": ""
         },
@@ -446,7 +446,7 @@
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_1020,0710",
+          "targetId": "21_corridor_1020,0720",
           "label": "",
           "hint": ""
         },
