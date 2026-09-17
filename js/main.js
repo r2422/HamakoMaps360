@@ -415,9 +415,237 @@ function updateCamera(){
   camera.lookAt(camera.position.x+x, camera.position.y+y, camera.position.z+z);
 }
 
-function updateCompass(angle){
-  const deg=-angle*180/Math.PI;
-  $('compass-needle').setAttribute('transform',`rotate(${deg},36,36)`);
+const compassCanvas = document.getElementById('hud-compass');
+const compassCtx = compassCanvas.getContext('2d');
+
+const compassText = document.getElementById('compass-text');
+
+const COMPASS_FOV = 90;
+const COMPASS_STEP = 5;
+
+function normalizeDegrees(degrees) {
+    return (degrees % 360 + 360) % 360;
+}
+
+function getDirectionLabel(degrees) {
+    degrees = normalizeDegrees(degrees);
+
+    if (degrees >= 337.5 || degrees < 22.5) {
+        return '北';
+    }
+
+    if (degrees < 67.5) {
+        return '北東';
+    }
+
+    if (degrees < 112.5) {
+        return '東';
+    }
+
+    if (degrees < 157.5) {
+        return '南東';
+    }
+
+    if (degrees < 202.5) {
+        return '南';
+    }
+
+    if (degrees < 247.5) {
+        return '南西';
+    }
+
+    if (degrees < 292.5) {
+        return '西';
+    }
+
+    return '北西';
+}
+
+function drawCompass(angle) {
+    const degrees = normalizeDegrees(
+        -angle * 180 / Math.PI
+    );
+
+    const roundedDegrees = Math.round(degrees);
+
+    compassText.textContent =
+        `${roundedDegrees}°（${getDirectionLabel(degrees)}）`;
+
+    const rect = compassCanvas.getBoundingClientRect();
+
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+
+    const devicePixelRatioValue = window.devicePixelRatio || 1;
+
+    const targetWidth = Math.round(width * devicePixelRatioValue);
+    const targetHeight = Math.round(height * devicePixelRatioValue);
+
+    if (
+        compassCanvas.width !== targetWidth ||
+        compassCanvas.height !== targetHeight
+    ) {
+        compassCanvas.width = targetWidth;
+        compassCanvas.height = targetHeight;
+    }
+
+    compassCtx.setTransform(
+        devicePixelRatioValue,
+        0,
+        0,
+        devicePixelRatioValue,
+        0,
+        0
+    );
+
+    compassCtx.clearRect(0, 0, width, height);
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const pixelsPerDegree = width / COMPASS_FOV;
+
+    const minDegrees = degrees - COMPASS_FOV / 2;
+    const maxDegrees = degrees + COMPASS_FOV / 2;
+
+    /*
+     * 中央の赤い現在方向マーカー
+     */
+    compassCtx.fillStyle = '#D95757';
+
+    compassCtx.beginPath();
+    compassCtx.moveTo(centerX - 8, 0);
+    compassCtx.lineTo(centerX + 8, 0);
+    compassCtx.lineTo(centerX, 11);
+    compassCtx.closePath();
+    compassCtx.fill();
+
+    /*
+     * 中央の縦線
+     */
+    compassCtx.strokeStyle = 'rgba(217, 87, 87, 0.9)';
+    compassCtx.lineWidth = 1.5;
+
+    compassCtx.beginPath();
+    compassCtx.moveTo(centerX, 11);
+    compassCtx.lineTo(centerX, height);
+    compassCtx.stroke();
+
+    /*
+     * 目盛りと方位文字
+     */
+    const startStep =
+        Math.floor(minDegrees / COMPASS_STEP) * COMPASS_STEP;
+
+    const endStep =
+        Math.ceil(maxDegrees / COMPASS_STEP) * COMPASS_STEP;
+
+    compassCtx.textAlign = 'center';
+    compassCtx.textBaseline = 'middle';
+
+    for (
+        let direction = startStep;
+        direction <= endStep;
+        direction += COMPASS_STEP
+    ) {
+        const offsetDegrees = direction - degrees;
+        const x = centerX + offsetDegrees * pixelsPerDegree;
+
+        if (x < -30 || x > width + 30) {
+            continue;
+        }
+
+        const normalizedDirection = normalizeDegrees(direction);
+
+        const isCardinal =
+            normalizedDirection === 0 ||
+            normalizedDirection === 90 ||
+            normalizedDirection === 180 ||
+            normalizedDirection === 270;
+
+        const isDiagonal =
+            normalizedDirection === 45 ||
+            normalizedDirection === 135 ||
+            normalizedDirection === 225 ||
+            normalizedDirection === 315;
+
+        const isLarge = direction % 45 === 0;
+        const isMedium = direction % 15 === 0;
+
+        let tickHeight = 7;
+
+        if (isLarge) {
+            tickHeight = 24;
+        } else if (isMedium) {
+            tickHeight = 16;
+        }
+
+        /*
+         * 目盛り
+         */
+        compassCtx.strokeStyle = isCardinal
+            ? '#8B78B5'
+            : 'rgba(79, 66, 104, 0.58)';
+
+        compassCtx.lineWidth = isLarge ? 2.5 : 1.5;
+
+        compassCtx.beginPath();
+        compassCtx.moveTo(x, 0);
+        compassCtx.lineTo(x, tickHeight);
+        compassCtx.stroke();
+
+        /*
+         * 方位ラベル
+         */
+        if (isLarge) {
+            let label = `${Math.round(normalizedDirection)}°`;
+
+            if (isCardinal || isDiagonal) {
+                if (normalizedDirection === 0) {
+                    label = '北';
+                } else if (normalizedDirection === 45) {
+                    label = '北東';
+                } else if (normalizedDirection === 90) {
+                    label = '東';
+                } else if (normalizedDirection === 135) {
+                    label = '南東';
+                } else if (normalizedDirection === 180) {
+                    label = '南';
+                } else if (normalizedDirection === 225) {
+                    label = '南西';
+                } else if (normalizedDirection === 270) {
+                    label = '西';
+                } else if (normalizedDirection === 315) {
+                    label = '北西';
+                }
+            }
+
+            compassCtx.font = isCardinal
+                ? '700 18px sans-serif'
+                : '600 14px sans-serif';
+
+            compassCtx.fillStyle = isCardinal
+                ? '#8B78B5'
+                : '#4F4268';
+
+            compassCtx.fillText(
+                label,
+                x,
+                height - 22
+            );
+        }
+    }
+
+    /*
+     * 下部の境界線
+     */
+    compassCtx.strokeStyle = 'rgba(139, 120, 181, 0.24)';
+    compassCtx.lineWidth = 1;
+
+    compassCtx.beginPath();
+    compassCtx.moveTo(0, height - 1);
+    compassCtx.lineTo(width, height - 1);
+    compassCtx.stroke();
 }
 
 /* ---- events (モバイル・マルチデバイス対応版) ---- */
@@ -701,7 +929,7 @@ function animate(now){
     camera.fov=fov;
     camera.updateProjectionMatrix();
     updateCamera();
-    updateCompass(yaw);
+    drawCompass(yaw);
 
     if (typeof applyMinimapTransform === 'function') {
       applyMinimapTransform();
@@ -732,7 +960,7 @@ function animate(now){
     camera.fov=fov;
     camera.updateProjectionMatrix();
     updateCamera();
-    updateCompass(yaw);
+    drawCompass(yaw);
 
     const fovSlider = $('fov-slider');
     const fovReadout = $('fov-readout');
