@@ -23,6 +23,11 @@ let edgeSourceId = null;  // リンク作成で「1つ目にクリックした�
 let draftNodeSeq = 1;
 let mmDragMoved = false;  // pointerdown〜upの間に実際に動いたか（クリックかドラッグかの判定用）
 
+// ダブルタップ判定用
+let mmLastTapTime = 0;
+let mmLastTapX = 0;
+let mmLastTapY = 0;
+
 /* --- ミニマップ構築 --- */
 function initMinimapLayout() {
   // グローバル変数 window.NODES がロード後であることを確認
@@ -435,6 +440,99 @@ function handleEditModeContextMenu(clientX, clientY) {
   }
 }
 
+// ミニマップ上の指定座標から、テレポート確認モーダルを表示する
+function handleMinimapTeleport(clientX, clientY) {
+
+    if (editMode) return;
+    if (walkPhase !== 'idle') return;
+
+    const svg = minimapClientToSvg(clientX, clientY);
+
+    const closestNodeId = findClosestNodeOnFloor(
+        svg.x,
+        svg.y,
+        100
+    );
+
+    if (!closestNodeId || closestNodeId === currentId) return;
+
+    const targetNode = NODES[closestNodeId];
+
+    if (!targetNode) return;
+
+    const oldModal = $('mm-tp-modal');
+
+    if (oldModal) oldModal.remove();
+
+    const modal = document.createElement('div');
+
+    modal.id = 'mm-tp-modal';
+
+    modal.style = `
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: #f1f5ff;
+        border: 1.5px solid #3a4e78;
+        border-radius: 8px;
+        padding: 16px;
+        color: #342C40;
+        font-family: 'Noto Sans JP', sans-serif;
+        font-size: 12px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        z-index: 10000;
+        min-width: 180px;
+    `;
+
+    modal.innerHTML = `
+        <div style="margin-bottom: 14px; font-weight: bold; letter-spacing: 0.04em;">
+            「${targetNode.name}」へ<br>移動しますか？
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="mm-tp-yes"
+                style="background: #43e8c8; color: #08302a; border: none; padding: 6px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">
+                はい
+            </button>
+
+            <button id="mm-tp-no"
+                style="background: #223154; color: #8b95b4; border: 1px solid #3a4e78; padding: 6px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">
+                いいえ
+            </button>
+        </div>
+    `;
+
+    const targetContainer =
+        $('hud-minimap-container') || document.body;
+
+    targetContainer.style.position = 'relative';
+
+    targetContainer.appendChild(modal);
+
+    $('mm-tp-yes').addEventListener('click', ev => {
+
+        ev.stopPropagation();
+
+        modal.remove();
+
+        if (typeof loadInitial === 'function') {
+            loadInitial(closestNodeId);
+        }
+
+    });
+
+    $('mm-tp-no').addEventListener('click', ev => {
+
+        ev.stopPropagation();
+
+        modal.remove();
+
+    });
+
+}
+
+
 function showNodeInfoPopup(nodeId) {
   const node = getNodeAnyPool(nodeId);
   if (!node) return;
@@ -718,106 +816,61 @@ function setupMinimapInteractions() {
     e.stopPropagation();
   });
   mmMask.addEventListener('pointerup', e => {
+
     isMMDragging = false;
+
     mmMask.style.cursor = editMode ? 'crosshair' : 'grab';
+
     if (editMode && !mmDragMoved) {
-      handleEditModeClick(e.clientX, e.clientY);
+
+        handleEditModeClick(
+            e.clientX,
+            e.clientY
+        );
+
     }
+
+    // 通常モードのダブルタップ判定
+    if (!editMode && walkPhase === 'idle' && !mmDragMoved) {
+
+        const now = Date.now();
+
+        const dx = e.clientX - mmLastTapX;
+        const dy = e.clientY - mmLastTapY;
+
+        const timeDiff = now - mmLastTapTime;
+
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (timeDiff < 400 && distance < 30) {
+
+            mmLastTapTime = 0;
+
+            handleMinimapTeleport(
+                e.clientX,
+                e.clientY
+            );
+
+        } else {
+
+            mmLastTapTime = now;
+
+            mmLastTapX = e.clientX;
+            mmLastTapY = e.clientY;
+
+        }
+
+    }
+
     e.stopPropagation();
-  });
+
+});
 
   mmMask.addEventListener('contextmenu', e => {
     if (!editMode) return;
     e.preventDefault();
     e.stopPropagation();
     handleEditModeContextMenu(e.clientX, e.clientY);
-  });
-
-  mmMask.addEventListener('dblclick', e => {
-    if (editMode) return; // 編集モード中は既存のテレポート確認モーダルを出さない
-    if (walkPhase !== 'idle') return; 
-    e.stopPropagation();
-
-    const rect = $('hud-minimap-svg').getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const scaleX = rect.width / 260;
-    const scaleY = rect.height / 160;
-
-    const clickSVGX = ((mouseX / scaleX) - mmPanX) / mmScale;
-    const clickSVGY = ((mouseY / scaleY) - mmPanY) / mmScale;
-
-    let closestNodeId = null;
-    let minDist = Infinity;
-
-    for (let id in NODES) {
-      const node = NODES[id];
-      if (node.floor !== currentMinimapFloor) continue;
-
-      // 💡 描画座標 (+25) とクリック逆シミュレート座標の距離を算出
-      const dx = (node.mmX + 25) - clickSVGX;
-      const dy = (node.mmY + 25) - clickSVGY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < minDist && dist < 100) { 
-        minDist = dist;
-        closestNodeId = id;
-      }
-    }
-
-    if (closestNodeId && closestNodeId !== currentId) {
-      const targetNode = NODES[closestNodeId];
-
-      const oldModal = $('mm-tp-modal');
-      if (oldModal) oldModal.remove();
-
-      const modal = document.createElement('div');
-      modal.id = 'mm-tp-modal';
-      modal.style = `
-        position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        background: #f1f5ff;
-        border: 1.5px solid #3a4e78;
-        border-radius: 8px;
-        padding: 16px;
-        color: #342C40;
-        font-family: 'Noto Sans JP', sans-serif;
-        font-size: 12px;
-        text-align: center;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        z-index: 10000;
-        min-width: 180px;
-      `;
-      
-      modal.innerHTML = `
-        <div style="margin-bottom: 14px; font-weight: bold; letter-spacing: 0.04em;">
-          「${targetNode.name}」へ<br>移動しますか？
-        </div>
-        <div style="display: flex; gap: 10px; justify-content: center;">
-          <button id="mm-tp-yes" style="background: #43e8c8; color: #08302a; border: none; padding: 6px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">はい</button>
-          <button id="mm-tp-no" style="background: #223154; color: #8b95b4; border: 1px solid #3a4e78; padding: 6px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">いいえ</button>
-        </div>
-      `;
-
-      const targetContainer = $('hud-minimap-container') || document.body;
-      targetContainer.style.position = 'relative'; 
-      targetContainer.appendChild(modal);
-
-      $('mm-tp-yes').addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        modal.remove();
-        if (typeof loadInitial === 'function') {
-          loadInitial(closestNodeId);
-        }
-      });
-
-      $('mm-tp-no').addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        modal.remove();
-      });
-    }
   });
 
   [1, 2, 3, 4].forEach(f => {
