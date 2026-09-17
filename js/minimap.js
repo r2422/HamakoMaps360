@@ -782,7 +782,7 @@ function setupMinimapInteractions() {
         border: 1.5px solid #3a4e78;
         border-radius: 8px;
         padding: 16px;
-        color: #e9edf7;
+        color: #342C40;
         font-family: 'Noto Sans JP', sans-serif;
         font-size: 12px;
         text-align: center;
