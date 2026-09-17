@@ -220,7 +220,7 @@
     },
     "21_corridor_0630,0680": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "保健室、昇降口前",
       "imageFile": "21_corridor_0630,0680.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -246,7 +246,7 @@
     },
     "21_corridor_0720,0680": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "昇降口前",
       "imageFile": "21_corridor_0720,0680.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -277,7 +277,7 @@
     },
     "21_corridor_0870,0680": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "女子更衣室前",
       "imageFile": "21_corridor_0870,0680.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -329,7 +329,7 @@
     },
     "21_corridor_1020,0720": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "購買前",
       "imageFile": "21_corridor_1020,0720.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -433,7 +433,7 @@
     },
     "21_corridor_1180,0720_食堂渡り廊下": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "食堂渡り廊下",
       "imageFile": "21_corridor_1180,0720_食堂渡り廊下.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -459,7 +459,7 @@
     },
     "21_corridor_1270,0720_食堂渡り廊下": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "食堂渡り廊下",
       "imageFile": "21_corridor_1270,0720_食堂渡り廊下.jpg",
       "initYaw": 0,
       "mmIdx": 0,

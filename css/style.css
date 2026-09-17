@@ -242,12 +242,12 @@ body {
 }
 .top-center-box {
     position: fixed;
-    top: 24px;
+    top: 80px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 30;
 
-    width: min(640px, calc(50vw - 48px));
+    width: min(640px, calc(60vw - 48px));
 
     display: flex;
     flex-direction: column;
