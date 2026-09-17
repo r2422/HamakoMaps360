@@ -8,14 +8,6 @@ const NODES = mapGraph.nodes;
 function $(id) { return document.getElementById(id); }
 function setLoadBar(p){ const bar = $('load-bar'); if(bar) bar.style.width = p+'%'; }
 
-function setLocationName(name) {
-    const locName = $('loc-name');
-    if (!locName) return;
-
-    locName.querySelector('.loc-outline').textContent = name;
-    locName.querySelector('.loc-fill').textContent = name;
-}
-
 /* ---- Main Three.js ---- */
 const canvas   = document.getElementById('sv-canvas');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
@@ -332,6 +324,15 @@ function startWalk(targetNodeId, hotspotPos){
       nextTextureReady = true;
     }
   );
+}
+
+/* ---- ロケーション名HUDの更新（loc-outline / loc-fill 両方に同じテキストを反映） ---- */
+function setLocationName(name) {
+  const locName = $('loc-name');
+  if (!locName) return;
+
+  locName.querySelector('.loc-outline').textContent = name;
+  locName.querySelector('.loc-fill').textContent = name;
 }
 
 function finishWalk(){
@@ -822,7 +823,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupToggle('tg-hud-loc', $('hud-location'));
   setupToggle('tg-hud-compass', $('hud-compass'));
-  setupToggle('tg-hud-map', $('hud-minimap'));
   setupToggle('tg-hud-debug', $('debug-container'), (visible) => {
     isDebugMonitorOn = visible;
     // FOVスライダー等のコントロールパネルは、通常時は非表示にし、デバッグ時のみ表示する
@@ -832,6 +832,13 @@ document.addEventListener('DOMContentLoaded', () => {
   setupToggle('tg-edit-mode', null, (visible) => {
     if (typeof setMinimapEditMode === 'function') setMinimapEditMode(visible);
   });
+
+  const mmLayoutSelect = $('mm-layout-select');
+  if (mmLayoutSelect) {
+    mmLayoutSelect.addEventListener('change', e => {
+      if (typeof setMinimapLayout === 'function') setMinimapLayout(e.target.value);
+    });
+  }
 
   setupToggle('tg-grid-edges', null, (visible) => {
     uiConfig.edges = visible;

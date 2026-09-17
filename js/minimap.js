@@ -10,6 +10,8 @@ let mmScale = 0.12;
 let isMMDragging = false;
 let mmStartX = 0;
 let mmStartY = 0;
+let mmDragScaleX = 1; // ドラッグ開始時に計測する「実描画px ÷ viewBox単位」の倍率
+let mmDragScaleY = 1;
 let currentMinimapFloor = null; 
 let mmPulseT = 0; // メインループからのdt蓄積用
 
@@ -34,7 +36,7 @@ function initMinimapLayout() {
   container.style.position = 'relative'; // 編集モードのポップアップ／ツールバーの位置基準
 
   container.innerHTML = `
-    <svg id="hud-minimap-svg" viewBox="0 0 260 160" width="520" height="320" xmlns="http://www.w3.org/2000/svg" style="user-select: none; touch-action: none; border-radius: 12px; display: block;">
+    <svg id="hud-minimap-svg" viewBox="0 0 260 160" width="520" height="320" xmlns="http://www.w3.org/2000/svg" style="user-select: none; touch-action: none; border-radius: 0px; display: block;">
       <defs>
         <clipPath id="mm-panel-clip">
           <rect width="260" height="160" rx="14"/>
@@ -110,13 +112,13 @@ function initMinimapLayout() {
         </g>
       </g>
     </svg>
-    <div id="mm-edit-toolbar" style="display:none; position:absolute; top:6px; left:6px; z-index:20; gap:6px; align-items:center; background:rgba(6,12,32,0.8); border:1px solid rgba(90,127,255,0.4); border-radius:8px; padding:5px 8px; font-family:'Noto Sans JP',sans-serif; font-size:10px; color:#c7d2f0; backdrop-filter:blur(6px);">
+    <div id="mm-edit-toolbar" style="display:none; position:absolute; top:6px; left:6px; z-index:20; gap:6px; align-items:center; background:rgba(6,12,32,0.8); border:1px solid rgba(90,127,255,0.4); border-radius:0px; padding:5px 8px; font-family:'Noto Sans JP',sans-serif; font-size:10px; color:#c7d2f0; backdrop-filter:blur(6px);">
       <span style="font-weight:700; color:#55ff7f; white-space:nowrap;">✎ 編集モード</span>
       <label style="display:flex; align-items:center; gap:3px; cursor:pointer; white-space:nowrap;">
         <input type="checkbox" id="mm-edit-oneway" style="margin:0;"> 片方向のみ
       </label>
-      <button id="mm-edit-export" style="background:#1a2c52; border:1px solid #3a4e78; color:#e9edf7; border-radius:4px; padding:3px 8px; cursor:pointer; font-size:10px;">書き出し</button>
-      <button id="mm-edit-clear" style="background:#3a1a1a; border:1px solid #7a3a3a; color:#e9edf7; border-radius:4px; padding:3px 8px; cursor:pointer; font-size:10px;">クリア</button>
+      <button id="mm-edit-export" style="background:#1a2c52; border:1px solid #3a4e78; color:#e9edf7; border-radius:0px; padding:3px 8px; cursor:pointer; font-size:10px;">書き出し</button>
+      <button id="mm-edit-clear" style="background:#3a1a1a; border:1px solid #7a3a3a; color:#e9edf7; border-radius:0px; padding:3px 8px; cursor:pointer; font-size:10px;">クリア</button>
     </div>
   `;
 
@@ -349,6 +351,22 @@ function getNodeAnyPool(id) {
 /* --- 編集モードの中核ロジック --- */
 
 // main.js の設定パネルから呼び出される、編集モードのON/OFF切り替え
+/* --- ミニマップのレイアウトモード切り替え --- */
+const MM_LAYOUT_MODES = ['split-v', 'split-h', 'fullscreen', 'hidden']; // 'corner'はクラス無しの初期状態
+
+function setMinimapLayout(mode) {
+  MM_LAYOUT_MODES.forEach(m => document.body.classList.remove(`mm-layout-${m}`));
+  if (mode !== 'corner') {
+    document.body.classList.add(`mm-layout-${mode}`);
+  }
+
+  // レイアウト変更でsv-containerのサイズが変わるため、3Dキャンバスのリサイズを反映
+  if (typeof updateRendererSize === 'function') updateRendererSize();
+
+  // ミニマップ自体のサイズも変わるので、現在地が中心に来るよう再フォーカス
+  if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
+}
+
 function setMinimapEditMode(on) {
   editMode = !!on;
   clearEdgeSourceHighlight();
@@ -431,7 +449,7 @@ function showNodeInfoPopup(nodeId) {
   modal.id = 'mm-node-info-popup';
   modal.style.cssText = `
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    background:#121c38; border:1.5px solid #3a4e78; border-radius:8px; padding:16px;
+    background:#121c38; border:1.5px solid #3a4e78; border-radius:0px; padding:16px;
     color:#e9edf7; font-family:'Noto Sans JP',sans-serif; font-size:12px; text-align:left;
     box-shadow:0 4px 20px rgba(0,0,0,0.5); z-index:10000; min-width:220px;
   `;
@@ -680,16 +698,19 @@ function setupMinimapInteractions() {
   mmMask.addEventListener('pointerdown', e => {
     isMMDragging = true;
     mmDragMoved = false;
-    mmStartX = e.clientX - mmPanX;
-    mmStartY = e.clientY - mmPanY;
+    const rect = $('hud-minimap-svg').getBoundingClientRect();
+    mmDragScaleX = rect.width / 260;
+    mmDragScaleY = rect.height / 160;
+    mmStartX = (e.clientX / mmDragScaleX) - mmPanX;
+    mmStartY = (e.clientY / mmDragScaleY) - mmPanY;
     mmMask.setPointerCapture(e.pointerId);
     mmMask.style.cursor = editMode ? 'crosshair' : 'grabbing';
     e.stopPropagation(); 
   });
   mmMask.addEventListener('pointermove', e => {
     if (!isMMDragging) return;
-    const newPanX = e.clientX - mmStartX;
-    const newPanY = e.clientY - mmStartY;
+    const newPanX = (e.clientX / mmDragScaleX) - mmStartX;
+    const newPanY = (e.clientY / mmDragScaleY) - mmStartY;
     if (Math.abs(newPanX - mmPanX) + Math.abs(newPanY - mmPanY) > 2) mmDragMoved = true;
     mmPanX = newPanX;
     mmPanY = newPanY;
@@ -757,7 +778,7 @@ function setupMinimapInteractions() {
         position: absolute;
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
-        background: #121c38;
+        background: #f1f5ff;
         border: 1.5px solid #3a4e78;
         border-radius: 8px;
         padding: 16px;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>浜工ストリートビュー360</title>
+  <title>3D Walkthrough System with Minimap</title>
   <link rel="stylesheet" href="../css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link rel="manifest" href="../pwa/manifest.json">
@@ -27,12 +27,12 @@
           <span class="loc-outline">loading</span>
           <span class="loc-fill">loading</span>
       </span>
-        <p id="loc-sub">システム初期化中</p>
+        <p id="loc-sub">SYSTEM INITIALIZING</p>
       </div>
     </div>
 
     <div id="hud-speed">
-      <div id="speed-inner">移動中</div>
+      <div id="speed-inner">WARPING</div>
     </div>
 
     <div class="top-right-box interactive">
@@ -97,10 +97,16 @@
       
       <div class="setting-row">
         <div>
-          <span class="setting-label">Navigation Minimap</span>
-          <span class="setting-sub">ミニマップの表示・非表示</span>
+          <span class="setting-label">Minimap Layout</span>
+          <span class="setting-sub">地図の表示レイアウトを切り替え</span>
         </div>
-        <label class="switch"><input type="checkbox" id="tg-hud-map" checked><span class="slider"></span></label>
+        <select id="mm-layout-select" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; padding: 5px 8px; font-size: 12px; font-family: 'Noto Sans JP', sans-serif;">
+          <option value="corner">右下ミニマップ</option>
+          <option value="split-v">上下2画面</option>
+          <option value="split-h">左右2画面</option>
+          <option value="fullscreen">フルスクリーン</option>
+          <option value="hidden">非表示</option>
+        </select>
       </div>
       
       <div class="setting-row">
