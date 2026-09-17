@@ -44,17 +44,17 @@ function initMinimapLayout() {
     <svg id="hud-minimap-svg" viewBox="0 0 260 160" width="520" height="320" xmlns="http://www.w3.org/2000/svg" style="user-select: none; touch-action: none; border-radius: 0px; display: block;">
       <defs>
         <clipPath id="mm-panel-clip">
-          <rect width="260" height="160" rx="14"/>
+          <rect width="260" height="160" rx="0"/>
         </clipPath>
         <clipPath id="mm-viewport-clip">
-          <rect x="0" y="0" width="260" height="160" rx="14"/>
+          <rect x="0" y="0" width="260" height="160" rx="0"/>
         </clipPath>
         <pattern id="mm-grid" width="10" height="10" patternUnits="userSpaceOnUse">
-          <path d="M10 0 L0 0 0 10" fill="none" stroke="#3A4E78" stroke-width="0.4" opacity="0.35"/>
+          <path d="M10 0 L0 0 0 10" fill="none" stroke="var(--color-border-secondary)" stroke-width="0.4" opacity="0.35"/>
         </pattern>
         <radialGradient id="mm-vignette" cx="35%" cy="35%" r="75%">
-          <stop offset="0%" stop-color="#000000"/>
-          <stop offset="100%" stop-color="#000000"/>
+          <stop offset="0%" stop-color="var(--color-bg)"/>
+          <stop offset="100%" stop-color="var(--color-bg)"/>
         </radialGradient>
       </defs>
 
@@ -80,39 +80,39 @@ function initMinimapLayout() {
           <polygon id="mm-arrow" points="0,-6.75 -4.5,5.25 0,2.25 4.5,5.25" fill="#FF6B4A" stroke="#FFFFFF" stroke-width="1.2" stroke-linejoin="round"/>
         </g>
 
-        <rect id="mm-drag-mask" width="260" height="160" fill="transparent" style="cursor: grab;"/>
+        <rect id="mm-drag-mask" x="0" y="0" width="260" height="160" fill="transparent" style="cursor: grab;"/>
 
-        <text id="mm-floor-title" x="14" y="15" text-anchor="start" font-size="8" font-family="'Noto Sans JP', sans-serif" font-weight="700" letter-spacing="0.04em" fill="#8B95B4" pointer-events="none">フロアマップ</text>
+        <text id="mm-floor-title" x="14" y="15" text-anchor="start" font-size="8" font-family="'Noto Sans JP', sans-serif" font-weight="700" letter-spacing="0.04em" fill="var(--color-text)" pointer-events="none">フロアマップ</text>
       </g>
 
       <g id="mm-zoom-controls" transform="translate(12, 132)">
-        <rect width="42" height="20" rx="6" fill="#121C38" stroke="#3A4E78" stroke-width="1"/>
-        <line x1="21" y1="3" x2="21" y2="17" stroke="#3A4E78" stroke-width="1"/>
+        <rect width="42" height="20" rx="6" fill="var(--color-primary-pale)" stroke="var(--color-primary-dark)" stroke-width="1"/>
+        <line x1="21" y1="3" x2="21" y2="17" stroke="var(--color-primary-dark)" stroke-width="1"/>
         <g id="mm-btn-zoom-in" style="cursor: pointer;">
           <rect x="1" y="1" width="20" height="18" rx="5" fill="transparent"/>
-          <path d="M11,6 L11,14 M7,10 L15,10" stroke="#E9EDF7" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M11,6 L11,14 M7,10 L15,10" stroke="var(--color-primary-dark)" stroke-width="1.4" stroke-linecap="round"/>
         </g>
         <g id="mm-btn-zoom-out" style="cursor: pointer;" transform="translate(21, 0)">
           <rect x="1" y="1" width="20" height="18" rx="5" fill="transparent"/>
-          <path d="M7,10 L15,10" stroke="#E9EDF7" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M7,10 L15,10" stroke="var(--color-primary-dark)" stroke-width="1.4" stroke-linecap="round"/>
         </g>
       </g>
 
       <g id="mm-floor-buttons" transform="translate(224, 64)" font-family="'Share Tech Mono', monospace" font-size="8">
         <g id="mm-btn-f4" style="cursor: pointer;">
-          <rect width="32" height="16" rx="4" fill="transparent" stroke="#3A4E78" stroke-width="1"/>
+          <rect width="32" height="16" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
           <text x="16" y="11" text-anchor="middle" fill="#8B95B4">4F</text>
         </g>
         <g id="mm-btn-f3" style="cursor: pointer;" transform="translate(0, 19)">
-          <rect width="32" height="16" rx="4" fill="transparent" stroke="#3A4E78" stroke-width="1"/>
+          <rect width="32" height="16" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
           <text x="16" y="11" text-anchor="middle" fill="#8B95B4">3F</text>
         </g>
         <g id="mm-btn-f2" style="cursor: pointer;" transform="translate(0, 38)">
-          <rect width="32" height="16" rx="4" fill="transparent" stroke="#3A4E78" stroke-width="1"/>
+          <rect width="32" height="16" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
           <text x="16" y="11" text-anchor="middle" fill="#8B95B4" font-weight="700">2F</text>
         </g>
         <g id="mm-btn-f1" style="cursor: pointer;" transform="translate(0, 57)">
-          <rect width="32" height="16" rx="4" fill="transparent" stroke="#3A4E78" stroke-width="1"/>
+          <rect width="32" height="16" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
           <text x="16" y="11" text-anchor="middle" fill="#8B95B4">1F</text>
         </g>
       </g>
@@ -177,6 +177,7 @@ function initMinimapLayout() {
     nodesGroup.appendChild(circle);
   }
 
+  resizeMinimapDragMask();
   setupMinimapInteractions();
   setupEditToolbar();
 }
@@ -235,13 +236,13 @@ function updateMinimapFloor(floorNumber) {
     const btnRect = $(`mm-btn-f${f}`).querySelector('rect');
     const btnText = $(`mm-btn-f${f}`).querySelector('text');
     if (f === floorNumber) {
-      btnRect.setAttribute('fill', '#43E8C8');
-      btnRect.setAttribute('stroke', '#fff');
-      btnText.setAttribute('fill', '#313131');
+      btnRect.setAttribute('fill', 'var(--color-secondary-dark)');
+      btnRect.setAttribute('stroke', 'var(--color-surface-soft)');
+      btnText.setAttribute('fill', 'var(--color-secondary-pale)');
     } else {
-      btnRect.setAttribute('fill', 'rgba(30, 45, 90, 0.8)');
-      btnRect.setAttribute('stroke', '#3A4E78');
-      btnText.setAttribute('fill', '#8B95B4');
+      btnRect.setAttribute('fill', 'var(--color-primary-dark)');
+      btnRect.setAttribute('stroke', 'var(--color-text-muted)');
+      btnText.setAttribute('fill', 'var(--color-primary)');
     }
   });
 
@@ -319,6 +320,22 @@ function focusCurrentNodeOnMinimap() {
 
 /* --- 編集モード共通ヘルパー --- */
 
+function resizeMinimapDragMask() {
+    const svg = $('hud-minimap-svg');
+    const mask = $('mm-drag-mask');
+
+    if (!svg || !mask) return;
+
+    const viewBox = svg.viewBox.baseVal;
+
+    if (viewBox.width <= 0 || viewBox.height <= 0) return;
+
+    mask.setAttribute('x', String(viewBox.x));
+    mask.setAttribute('y', String(viewBox.y));
+    mask.setAttribute('width', String(viewBox.width));
+    mask.setAttribute('height', String(viewBox.height));
+}
+
 // クライアント座標（clientX/Y）を、ミニマップSVGの描画座標系（pan/zoom適用後、+25オフセット込み）に変換
 function minimapClientToSvg(clientX, clientY) {
   const rect = $('hud-minimap-svg').getBoundingClientRect();
@@ -360,16 +377,24 @@ function getNodeAnyPool(id) {
 const MM_LAYOUT_MODES = ['split-v', 'split-h', 'fullscreen', 'hidden']; // 'corner'はクラス無しの初期状態
 
 function setMinimapLayout(mode) {
-  MM_LAYOUT_MODES.forEach(m => document.body.classList.remove(`mm-layout-${m}`));
-  if (mode !== 'corner') {
-    document.body.classList.add(`mm-layout-${mode}`);
-  }
+    MM_LAYOUT_MODES.forEach(m => document.body.classList.remove(`mm-layout-${m}`));
 
-  // レイアウト変更でsv-containerのサイズが変わるため、3Dキャンバスのリサイズを反映
-  if (typeof updateRendererSize === 'function') updateRendererSize();
+    if (mode !== 'corner') {
+        document.body.classList.add(`mm-layout-${mode}`);
+    }
 
-  // ミニマップ自体のサイズも変わるので、現在地が中心に来るよう再フォーカス
-  if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
+    // レイアウト変更でsv-containerのサイズが変わるため、3Dキャンバスのリサイズを反映
+    if (typeof updateRendererSize === 'function') {
+        updateRendererSize();
+    }
+
+    // ミニマップの表示サイズ変更後に、ドラッグ用マスクをviewBoxへ合わせる
+    resizeMinimapDragMask();
+
+    // ミニマップ自体のサイズも変わるので、現在地が中心に来るよう再フォーカス
+    if (typeof focusCurrentNodeOnMinimap === 'function') {
+        focusCurrentNodeOnMinimap();
+    }
 }
 
 function setMinimapEditMode(on) {
