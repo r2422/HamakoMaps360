@@ -418,47 +418,11 @@ function updateCamera(){
 const compassCanvas = document.getElementById('hud-compass');
 const compassCtx = compassCanvas.getContext('2d');
 
-const compassText = document.getElementById('compass-text');
-
 const COMPASS_FOV = 90;
 const COMPASS_STEP = 5;
 
 function normalizeDegrees(degrees) {
     return (degrees % 360 + 360) % 360;
-}
-
-function getDirectionLabel(degrees) {
-    degrees = normalizeDegrees(degrees);
-
-    if (degrees >= 337.5 || degrees < 22.5) {
-        return '北';
-    }
-
-    if (degrees < 67.5) {
-        return '北東';
-    }
-
-    if (degrees < 112.5) {
-        return '東';
-    }
-
-    if (degrees < 157.5) {
-        return '南東';
-    }
-
-    if (degrees < 202.5) {
-        return '南';
-    }
-
-    if (degrees < 247.5) {
-        return '南西';
-    }
-
-    if (degrees < 292.5) {
-        return '西';
-    }
-
-    return '北西';
 }
 
 function drawCompass(angle) {
@@ -467,9 +431,6 @@ function drawCompass(angle) {
     );
 
     const roundedDegrees = Math.round(degrees);
-
-    compassText.textContent =
-        `${roundedDegrees}°（${getDirectionLabel(degrees)}）`;
 
     const rect = compassCanvas.getBoundingClientRect();
 
@@ -523,8 +484,11 @@ function drawCompass(angle) {
     /*
      * 中央の縦線
      */
+    /*
+    * 中央の縦線
+    */
     compassCtx.strokeStyle = 'rgba(217, 87, 87, 0.9)';
-    compassCtx.lineWidth = 1.5;
+    compassCtx.lineWidth = 2;
 
     compassCtx.beginPath();
     compassCtx.moveTo(centerX, 11);
@@ -548,7 +512,7 @@ function drawCompass(angle) {
         direction <= endStep;
         direction += COMPASS_STEP
     ) {
-        const offsetDegrees = direction - degrees;
+        const offsetDegrees = degrees - direction;
         const x = centerX + offsetDegrees * pixelsPerDegree;
 
         if (x < -30 || x > width + 30) {
@@ -584,10 +548,16 @@ function drawCompass(angle) {
          * 目盛り
          */
         compassCtx.strokeStyle = isCardinal
-            ? '#8B78B5'
-            : 'rgba(79, 66, 104, 0.58)';
+            ? '#725B9F'
+            : 'rgba(79, 66, 104, 0.78)';
 
-        compassCtx.lineWidth = isLarge ? 2.5 : 1.5;
+        compassCtx.lineWidth = isLarge
+            ? 4.5
+            : isMedium
+                ? 3.5
+                : 2.5;
+
+        compassCtx.lineCap = 'butt';
 
         compassCtx.beginPath();
         compassCtx.moveTo(x, 0);
@@ -604,19 +574,19 @@ function drawCompass(angle) {
                 if (normalizedDirection === 0) {
                     label = '北';
                 } else if (normalizedDirection === 45) {
-                    label = '北東';
+                    label = '北西';
                 } else if (normalizedDirection === 90) {
-                    label = '東';
+                    label = '西';
                 } else if (normalizedDirection === 135) {
-                    label = '南東';
+                    label = '南西';
                 } else if (normalizedDirection === 180) {
                     label = '南';
                 } else if (normalizedDirection === 225) {
-                    label = '南西';
+                    label = '南東';
                 } else if (normalizedDirection === 270) {
-                    label = '西';
+                    label = '東';
                 } else if (normalizedDirection === 315) {
-                    label = '北西';
+                    label = '北東';
                 }
             }
 
@@ -624,8 +594,27 @@ function drawCompass(angle) {
                 ? '700 18px sans-serif'
                 : '600 14px sans-serif';
 
+            compassCtx.textAlign = 'center';
+            compassCtx.textBaseline = 'middle';
+
+            /*
+            * 1層目：外側の縁
+            */
+            compassCtx.lineJoin = 'round';
+            compassCtx.lineWidth = isCardinal ? 5 : 4;
+            compassCtx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+
+            compassCtx.strokeText(
+                label,
+                x,
+                height - 22
+            );
+
+            /*
+            * 2層目：内側の文字
+            */
             compassCtx.fillStyle = isCardinal
-                ? '#8B78B5'
+                ? '#725B9F'
                 : '#4F4268';
 
             compassCtx.fillText(
@@ -1050,7 +1039,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if(modal) modal.onclick = (e) => { if(e.target === modal) modal.classList.remove('open'); };
 
   setupToggle('tg-hud-loc', $('hud-location'));
-  setupToggle('tg-hud-compass', $('hud-compass'));
   setupToggle('tg-hud-debug', $('debug-container'), (visible) => {
     isDebugMonitorOn = visible;
     // FOVスライダー等のコントロールパネルは、通常時は非表示にし、デバッグ時のみ表示する

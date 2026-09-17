@@ -238,6 +238,7 @@ body {
   align-items: flex-end;
   gap: 12px;
   z-index: 30;
+  /* pointer-events: auto; */
 }
 .top-center-box {
     position: fixed;
@@ -246,7 +247,7 @@ body {
     transform: translateX(-50%);
     z-index: 30;
 
-    width: min(640px, calc(100vw - 48px));
+    width: min(640px, calc(50vw - 48px));
 
     display: flex;
     flex-direction: column;
@@ -255,90 +256,94 @@ body {
     pointer-events: none;
 }
 
-#compass-text {
-    margin-bottom: 6px;
-
-    color: #4F4268;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-
-    text-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.9),
-        0 0 8px rgba(255, 255, 255, 0.8);
-}
-
 #compass-wrapper {
     width: 100%;
-    height: 72px;
+    height: 54px;
 
     overflow: hidden;
 
-    background: rgba(255, 255, 255, 0.86);
-    border: 1px solid rgba(139, 120, 181, 0.42);
+    /* ガラスUI */
+    background: rgba(255, 255, 255, 0.32);
+
+    border: 1px solid rgba(255, 255, 255, 0.62);
     border-radius: 12px;
 
     box-shadow:
-        0 6px 18px rgba(79, 66, 104, 0.14),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        0 6px 18px rgba(79, 66, 104, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.65),
+        inset 0 -1px 0 rgba(139, 120, 181, 0.12);
 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(1px) saturate(145%);
+    -webkit-backdrop-filter: blur(1px) saturate(145%);
 }
 
 #hud-compass {
     display: block;
 
     width: 100%;
-    height: 72px;
+    height: 60px;
 
     pointer-events: none;
 }
 
-@media (max-width: 600px) {
-    .top-center-box {
-        top: 16px;
-        width: calc(100vw - 24px);
-    }
-
-    #compass-wrapper {
-        height: 64px;
-        border-radius: 10px;
-    }
-
-    #hud-compass {
-        height: 64px;
-    }
-
-    #compass-text {
-        font-size: 15px;
+@media (max-width: 480px) {
+    .top-right-box {
+        top: 105px;
+        right: 12px;
     }
 }
 
-/* 設定⚙ボタン */
+/* 設定ボタン：ハンバーガーメニュー */
 #btn-settings {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-panel);
-  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary-dark);
+
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    box-shadow: var(--shadow-panel);
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        transform 0.1s;
+
+    pointer-events: auto;
 }
+
+/* ハンバーガーの3本線 */
+#btn-settings span {
+    display: block;
+    width: 20px;
+    height: 2px;
+
+    background: currentColor;
+    border-radius: 2px;
+
+    transition:
+        transform 0.2s,
+        opacity 0.2s;
+}
+
+/* ホバー */
 #btn-settings:hover {
-  background: var(--color-surface-soft);
-  border-color: var(--color-border-strong);
-  color: var(--color-primary-dark);
+    background: var(--color-surface-soft);
+    border-color: var(--color-border-strong);
+    color: var(--color-primary-dark);
 }
+
+/* クリック時 */
 #btn-settings:active {
-  transform: scale(0.9);
+    transform: scale(0.9);
 }
 
 /* --- 右上2段目：TPS デバッグモニター --- */
