@@ -75,86 +75,95 @@
         <button id="btn-close-modal">✕</button>
       </div>
       
-      <div class="setting-row">
-        <div>
-          <span class="setting-label">Location Title HUD</span>
-          <span class="setting-sub">位置情報の表示・非表示</span>
-        </div>
-        <label class="switch"><input type="checkbox" id="tg-hud-loc" checked><span class="slider"></span></label>
-      </div>
-      
-      <div class="setting-row">
-        <div>
-          <span class="setting-label">Digital Compass</span>
-          <span class="setting-sub">コンパスの表示・非表示</span>
-        </div>
-        <label class="switch"><input type="checkbox" id="tg-hud-compass" checked><span class="slider"></span></label>
-      </div>
-      
-      <div class="setting-row">
-        <div>
-          <span class="setting-label">Minimap Layout</span>
-          <span class="setting-sub">地図の表示レイアウトを切り替え</span>
-        </div>
-        <select id="mm-layout-select" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; padding: 5px 8px; font-size: 12px; font-family: 'Noto Sans JP', sans-serif;">
-          <option value="corner">右下ミニマップ</option>
-          <option value="split-v">上下2画面</option>
-          <option value="split-h">左右2画面</option>
-          <option value="fullscreen">フルスクリーン</option>
-          <option value="hidden">非表示</option>
-        </select>
-      </div>
-      
-      <div class="setting-row">
-        <div>
-          <span class="setting-label">Orbital Debug Monitor</span>
-          <span class="setting-sub">TPSデバッグモニターの切り替え</span>
-        </div>
-        <label class="switch"><input type="checkbox" id="tg-hud-debug"><span class="slider"></span></label>
+      <div id="settings-mode-tabs" class="mode-tabs" style="display:none;">
+        <button type="button" id="tab-btn-user" class="mode-tab-btn is-active">ユーザー設定</button>
+        <button type="button" id="tab-btn-dev" class="mode-tab-btn">開発者モード設定</button>
       </div>
 
-      <div class="setting-row">
-        <div>
-          <span class="setting-label">Map Edit Mode</span>
-          <span class="setting-sub">ミニマップ上での頂点・辺の追加を有効化</span>
+      <div id="settings-user-section">
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Location Title HUD</span>
+            <span class="setting-sub">位置情報の表示・非表示</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-hud-loc" checked><span class="slider"></span></label>
         </div>
-        <label class="switch"><input type="checkbox" id="tg-edit-mode"><span class="slider"></span></label>
-      </div>
-      
-      <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:14px 0;">
-      
-      <div class="setting-row">
-        <div>
-          <span class="setting-label">Show Sphere Wireframe</span>
-          <span class="setting-sub">全球ワイヤーフレームの描画</span>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Digital Compass</span>
+            <span class="setting-sub">コンパスの表示・非表示</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-hud-compass" checked><span class="slider"></span></label>
         </div>
-        <label class="switch"><input type="checkbox" id="tg-grid-edges"><span class="slider"></span></label>
-      </div>
-      
-      <div class="setting-row">
-        <div>
-          <span class="setting-label">Show Vertex Points</span>
-          <span class="setting-sub">全球頂点粒子の描画</span>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Minimap Layout</span>
+            <span class="setting-sub">地図の表示レイアウトを切り替え</span>
+          </div>
+          <select id="mm-layout-select" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; padding: 5px 8px; font-size: 12px; font-family: 'Noto Sans JP', sans-serif;">
+            <option value="corner">右下ミニマップ</option>
+            <option value="split-v">上下2画面</option>
+            <option value="split-h">左右2画面</option>
+            <option value="fullscreen">フルスクリーン</option>
+            <option value="hidden">非表示</option>
+          </select>
         </div>
-        <label class="switch"><input type="checkbox" id="tg-grid-points"><span class="slider"></span></label>
-      </div>
-      
-      <div class="setting-row">
-        <div>
-          <span class="setting-label">Show Route Lines</span>
-          <span class="setting-sub">空間内の移動経路ガイドの描画</span>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Show Route Lines</span>
+            <span class="setting-sub">空間内の移動経路ガイドの描画</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-grid-routes" checked><span class="slider"></span></label>
         </div>
-        <label class="switch"><input type="checkbox" id="tg-grid-routes" checked><span class="slider"></span></label>
+
+        <div class="setting-row ui-row">
+          <div>
+            <span class="setting-label">Route Text Size Mode</span>
+            <span class="setting-sub">案内文字の大きさを設定（一定 / 距離依存）</span>
+          </div>
+          <button id="btn-text-size-mode" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #55ff7f; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 95px; transition: all 0.2s; font-family: sans-serif;">
+            Constant
+          </button>
+        </div>
       </div>
 
-      <div class="setting-row ui-row">
-        <div>
-          <span class="setting-label">Route Text Size Mode</span>
-          <span class="setting-sub">案内文字の大きさを設定（一定 / 距離依存）</span>
+      <div id="settings-dev-section" style="display:none;">
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Orbital Debug Monitor</span>
+            <span class="setting-sub">TPSデバッグモニターの切り替え</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-hud-debug"><span class="slider"></span></label>
         </div>
-        <button id="btn-text-size-mode" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #55ff7f; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 95px; transition: all 0.2s; font-family: sans-serif;">
-          Constant
-        </button>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Map Edit Mode</span>
+            <span class="setting-sub">ミニマップ上での頂点・辺の追加を有効化</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-edit-mode"><span class="slider"></span></label>
+        </div>
+
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:14px 0;">
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Show Sphere Wireframe</span>
+            <span class="setting-sub">全球ワイヤーフレームの描画</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-grid-edges"><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Show Vertex Points</span>
+            <span class="setting-sub">全球頂点粒子の描画</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-grid-points"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
   </div>

@@ -135,6 +135,73 @@ const uiConfig = {
   textSizeMode: 'constant' 
 };
 
+/* ---- ユーザー設定の永続化（localStorage） ----
+   保存対象はユーザー向け設定のみ。開発者向けのトグル（デバッグモニター等）は
+   意図的に対象外にしている（前回訪問時の状態が別の訪問者に持ち越されるのを避けるため）。 */
+const USER_SETTINGS_KEY = 'hamakoStreetView.userSettings.v1';
+
+function loadUserSettings() {
+  try {
+    const raw = localStorage.getItem(USER_SETTINGS_KEY);
+    return raw ? (JSON.parse(raw) || {}) : {};
+  } catch (e) {
+    console.warn('ユーザー設定の読み込みに失敗しました:', e);
+    return {};
+  }
+}
+
+function saveUserSettings(partial) {
+  try {
+    const merged = Object.assign(loadUserSettings(), partial);
+    localStorage.setItem(USER_SETTINGS_KEY, JSON.stringify(merged));
+  } catch (e) {
+    console.warn('ユーザー設定の保存に失敗しました:', e);
+  }
+}
+
+const savedUserSettings = loadUserSettings();
+if (savedUserSettings.textSizeMode === 'constant' || savedUserSettings.textSizeMode === 'distance') {
+  uiConfig.textSizeMode = savedUserSettings.textSizeMode;
+}
+
+/* ---- 開発者モード ----
+   一般ユーザーには「ユーザー設定」しか見せない。以下のいずれかでのみ開発者モードへ入れる：
+   - URL末尾に ?dev=1 を付けてアクセスする
+   - Alt+D で、リロードなしにその場でON/OFFを切り替える（この状態はセッション限りで保存しない） */
+let devModeUnlocked = new URLSearchParams(window.location.search).get('dev') === '1';
+let settingsActiveTab = 'user'; // 'user' | 'dev'（devModeUnlocked=falseの間は常に'user'扱い）
+
+function updateSettingsModeUI() {
+  const tabs = $('settings-mode-tabs');
+  const userSection = $('settings-user-section');
+  const devSection = $('settings-dev-section');
+  const tabUserBtn = $('tab-btn-user');
+  const tabDevBtn = $('tab-btn-dev');
+  if (!tabs || !userSection || !devSection) return;
+
+  if (!devModeUnlocked) {
+    // 一般ユーザー視点：切り替えタブ自体を表示しない。常にユーザー設定のみ見せる
+    tabs.style.display = 'none';
+    userSection.style.display = '';
+    devSection.style.display = 'none';
+    settingsActiveTab = 'user';
+    return;
+  }
+
+  // 開発者モード：切り替えタブを表示し、選択中のタブに応じて表示を切り替える
+  tabs.style.display = 'flex';
+  userSection.style.display = (settingsActiveTab === 'user') ? '' : 'none';
+  devSection.style.display = (settingsActiveTab === 'dev') ? '' : 'none';
+  if (tabUserBtn) tabUserBtn.classList.toggle('is-active', settingsActiveTab === 'user');
+  if (tabDevBtn) tabDevBtn.classList.toggle('is-active', settingsActiveTab === 'dev');
+}
+
+function setDevModeUnlocked(on) {
+  devModeUnlocked = on;
+  settingsActiveTab = 'user'; // 切り替わった瞬間に開発者設定がいきなり露出しないよう、常にユーザー設定から見せる
+  updateSettingsModeUI();
+}
+
 /* ---- 進路パス・先端テキスト・ピンの生成関数 ---- */
 function buildRouteLines(node) {
   // nodeが不正な場合は中断（データ読み込み待ち対応）
@@ -1038,7 +1105,26 @@ document.addEventListener('DOMContentLoaded', () => {
   if(btnCloseModal) btnCloseModal.onclick = () => modal.classList.remove('open');
   if(modal) modal.onclick = (e) => { if(e.target === modal) modal.classList.remove('open'); };
 
-  setupToggle('tg-hud-loc', $('hud-location'));
+  // 💡 保存済みのユーザー設定を、各コントロールを配線する前にDOMへ反映しておく。
+  //    setupToggle()はel.checkedを初期値として読み取ってコールバックへ渡すため、
+  //    ここで先にcheckedを書き換えておけば、初期化と同時に保存済みの状態が適用される。
+  const hudLocEl = $('tg-hud-loc');
+  if (hudLocEl && typeof savedUserSettings.hudLoc === 'boolean') hudLocEl.checked = savedUserSettings.hudLoc;
+  const hudCompassEl = $('tg-hud-compass');
+  if (hudCompassEl && typeof savedUserSettings.hudCompass === 'boolean') hudCompassEl.checked = savedUserSettings.hudCompass;
+  const routesEl = $('tg-grid-routes');
+  if (routesEl && typeof savedUserSettings.routeLines === 'boolean') routesEl.checked = savedUserSettings.routeLines;
+  const layoutSelectEl = $('mm-layout-select');
+  if (layoutSelectEl && savedUserSettings.minimapLayout) layoutSelectEl.value = savedUserSettings.minimapLayout;
+
+  setupToggle('tg-hud-loc', $('hud-location'), (visible) => {
+    saveUserSettings({ hudLoc: visible });
+  });
+  // 💡 修正: このトグルはHTML側にチェックボックスがあるだけでJSの配線が無く、
+  //    操作してもコンパスの表示/非表示が一切変わらないバグがあったため、ここで結線する。
+  setupToggle('tg-hud-compass', $('compass-wrapper'), (visible) => {
+    saveUserSettings({ hudCompass: visible });
+  });
   setupToggle('tg-hud-debug', $('debug-container'), (visible) => {
     isDebugMonitorOn = visible;
     // FOVスライダー等のコントロールパネルは、通常時は非表示にし、デバッグ時のみ表示する
@@ -1053,6 +1139,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (mmLayoutSelect) {
     mmLayoutSelect.addEventListener('change', e => {
       if (typeof setMinimapLayout === 'function') setMinimapLayout(e.target.value);
+      saveUserSettings({ minimapLayout: e.target.value });
     });
   }
 
@@ -1067,6 +1154,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupToggle('tg-grid-routes', null, (visible) => {
     uiConfig.routes = visible;
     buildRouteLines(NODES[currentId]);
+    saveUserSettings({ routeLines: visible });
   });
   
   const textSizeBtn = document.getElementById('btn-text-size-mode');
@@ -1089,8 +1177,19 @@ document.addEventListener('DOMContentLoaded', () => {
         textSizeBtn.textContent = 'Constant';
         textSizeBtn.style.color = '#55ff7f';
       }
+      saveUserSettings({ textSizeMode: uiConfig.textSizeMode });
     });
   }
+
+  // 💡 ユーザー設定/開発者モード設定の切り替えタブ。
+  //    ボタン自体はHTML側に常に存在するが、updateSettingsModeUI()が
+  //    devModeUnlocked=falseの間は#settings-mode-tabsをdisplay:noneにするため、
+  //    一般ユーザーの目には触れない。
+  const tabUserBtn = $('tab-btn-user');
+  const tabDevBtn = $('tab-btn-dev');
+  if (tabUserBtn) tabUserBtn.addEventListener('click', () => { settingsActiveTab = 'user'; updateSettingsModeUI(); });
+  if (tabDevBtn) tabDevBtn.addEventListener('click', () => { settingsActiveTab = 'dev'; updateSettingsModeUI(); });
+  updateSettingsModeUI(); // ?dev=1 付きでアクセスされていた場合、初期表示から開発者タブを見せる
 });
 
 window.addEventListener('keydown', (e) => {
