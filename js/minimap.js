@@ -15,6 +15,16 @@ let mmDragScaleY = 1;
 let currentMinimapFloor = null; 
 let mmPulseT = 0; // メインループからのdt蓄積用
 
+/* --- ピンチズーム（マルチタッチ）用の状態変数 --- */
+let mmActivePointers = new Map(); // pointerId -> {x, y} （現在押下中の全ポインタのclientX/Y）
+let isMMPinching = false;
+let mmPinchStartDist = 0;   // ピンチ開始時の2点間距離(px)
+let mmPinchStartScale = 1;  // ピンチ開始時のmmScale
+let mmPinchStartPanX = 0;   // ピンチ開始時のmmPanX
+let mmPinchStartPanY = 0;
+let mmPinchStartMidX = 0;   // ピンチ開始時の中点（SVG描画座標系、pan/zoom適用前）
+let mmPinchStartMidY = 0;
+
 /* --- 編集モード（頂点・辺の追加支援）用の状態変数 --- */
 let editMode = false;
 let draftNodes = {};      // id -> {id, name, sub, building, floor, pos3D:[x,y,z], mmX, mmY, links, isDraft:true}
@@ -819,18 +829,77 @@ function setupMinimapInteractions() {
   if (!mmMask) return;
 
   mmMask.addEventListener('pointerdown', e => {
-    isMMDragging = true;
-    mmDragMoved = false;
     const rect = $('hud-minimap-svg').getBoundingClientRect();
     mmDragScaleX = rect.width / 260;
     mmDragScaleY = rect.height / 160;
+
+    mmMask.setPointerCapture(e.pointerId);
+    mmActivePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    // 💡 修正: 2本指が触れた時点でピンチズームモードへ移行する。
+    //    Pointer Eventsは指ごとに別のpointerIdで発火するため、touchイベントの
+    //    e.touchesのように自動でまとめて渡ってこない → 自前でMapに集計する必要がある。
+    if (mmActivePointers.size === 2) {
+      isMMDragging = false; // パン中だった場合は解除し、ピンチへ切り替える
+      isMMPinching = true;
+      mmDragMoved = true;   // ピンチ操作の指離しをダブルタップ等と誤認しないようにする
+
+      const pts = Array.from(mmActivePointers.values());
+      mmPinchStartDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+      mmPinchStartScale = mmScale;
+      mmPinchStartPanX = mmPanX;
+      mmPinchStartPanY = mmPanY;
+
+      const midClientX = (pts[0].x + pts[1].x) / 2;
+      const midClientY = (pts[0].y + pts[1].y) / 2;
+      // 💡 修正: wheelハンドラと同様に、rect.left/topを引いてSVG要素のローカル座標系に
+      //    変換してから割る必要がある。ここが漏れていたため、ミニマップが画面の
+      //    左上から離れた位置（右下コーナー配置など）にあるほどズーム中心が
+      //    無関係な場所にズレていた。
+      mmPinchStartMidX = (midClientX - rect.left) / mmDragScaleX;
+      mmPinchStartMidY = (midClientY - rect.top) / mmDragScaleY;
+
+      mmMask.style.cursor = 'zoom-in';
+      e.stopPropagation();
+      return;
+    }
+
+    if (mmActivePointers.size > 2) {
+      // 3本目以降の指は無視（ピンチ状態を保つ）
+      e.stopPropagation();
+      return;
+    }
+
+    // ここに来るのは1本指の場合のみ：従来通りパン／クリック判定
+    isMMDragging = true;
+    mmDragMoved = false;
     mmStartX = (e.clientX / mmDragScaleX) - mmPanX;
     mmStartY = (e.clientY / mmDragScaleY) - mmPanY;
-    mmMask.setPointerCapture(e.pointerId);
     mmMask.style.cursor = editMode ? 'crosshair' : 'grabbing';
     e.stopPropagation(); 
   });
   mmMask.addEventListener('pointermove', e => {
+    if (mmActivePointers.has(e.pointerId)) {
+      mmActivePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+
+    if (isMMPinching) {
+      if (mmActivePointers.size < 2) return; // 片方が既に離れているがpointerup未処理の一瞬など
+      const pts = Array.from(mmActivePointers.values()).slice(0, 2);
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+      const ratio = dist / mmPinchStartDist;
+
+      // ピンチ開始時のスケール・パンを起点に毎回計算し直すことで、
+      // フレームごとの誤差が積み重なって指の動きとズレていくのを防ぐ
+      mmScale = Math.max(0.02, Math.min(2.0, mmPinchStartScale * ratio));
+      mmPanX = mmPinchStartMidX - (mmPinchStartMidX - mmPinchStartPanX) * (mmScale / mmPinchStartScale);
+      mmPanY = mmPinchStartMidY - (mmPinchStartMidY - mmPinchStartPanY) * (mmScale / mmPinchStartScale);
+
+      applyMinimapTransform();
+      e.stopPropagation();
+      return;
+    }
+
     if (!isMMDragging) return;
     const newPanX = (e.clientX / mmDragScaleX) - mmStartX;
     const newPanY = (e.clientY / mmDragScaleY) - mmStartY;
@@ -841,6 +910,19 @@ function setupMinimapInteractions() {
     e.stopPropagation();
   });
   mmMask.addEventListener('pointerup', e => {
+
+    mmActivePointers.delete(e.pointerId);
+
+    if (isMMPinching) {
+      if (mmActivePointers.size < 2) {
+        // 💡 指を1本以上離してピンチが終わったら、そのままジェスチャーを終了する
+        //    （残り1本でパンへ引き継ぐと指の位置ジャンプが起きるため、あえて終了させる）
+        isMMPinching = false;
+        mmMask.style.cursor = editMode ? 'crosshair' : 'grab';
+      }
+      e.stopPropagation();
+      return;
+    }
 
     isMMDragging = false;
 
@@ -891,6 +973,15 @@ function setupMinimapInteractions() {
 
 });
 
+  // 💡 追加: OS側のジェスチャー割り込みやポインタ消失時に isMMDragging / isMMPinching が
+  //    trueのまま固まって操作不能になるのを防ぐ（pointerupが来ないケースへの保険）
+  mmMask.addEventListener('pointercancel', e => {
+    mmActivePointers.delete(e.pointerId);
+    isMMDragging = false;
+    isMMPinching = false;
+    mmMask.style.cursor = editMode ? 'crosshair' : 'grab';
+  });
+
   mmMask.addEventListener('contextmenu', e => {
     if (!editMode) return;
     e.preventDefault();
@@ -905,18 +996,55 @@ function setupMinimapInteractions() {
     });
   });
 
-  function changeMMZoom(zoomIn, anchorX, anchorY) {
-    const zoomFactor = 1.2;
+  // anchorX/Y（SVG描画座標系）を中心に、mmScaleをfactor倍する共通ズーム処理。
+  // ホイール／ピンチ／ズームボタンの全てがこの1つを通ることで、アンカー計算のズレを防ぐ。
+  function zoomMinimapBy(factor, anchorX, anchorY) {
     const oldScale = mmScale;
-    if (zoomIn) {
-      mmScale = Math.min(2.0, mmScale * zoomFactor);
-    } else {
-      mmScale = Math.max(0.02, mmScale / zoomFactor);
-    }
+    mmScale = Math.max(0.02, Math.min(2.0, mmScale * factor));
     mmPanX = anchorX - (anchorX - mmPanX) * (mmScale / oldScale);
     mmPanY = anchorY - (anchorY - mmPanY) * (mmScale / oldScale);
     applyMinimapTransform();
   }
+
+  // +/-ボタン用：固定ステップ(20%)でズーム
+  function changeMMZoom(zoomIn, anchorX, anchorY) {
+    zoomMinimapBy(zoomIn ? 1.2 : 1 / 1.2, anchorX, anchorY);
+  }
+
+  /* --- ホイール入力の種類判定（マウスホイール / トラックパッド） ---
+   * 💡 注意: ブラウザには両者を確実に見分ける公式APIが無いため、あくまでヒューリスティックです。
+   * - Firefoxは物理マウスホイールを deltaMode=1（行単位）、トラックパッドを deltaMode=0（ピクセル単位）
+   *   ではっきり区別して送ってくるため、ここは確実に判定できる。
+   * - Chrome/Safari/Edgeはどちらも常に deltaMode=0 なので、deltaYの値の特徴から推測する：
+   *   ノッチ付きマウスホイールは「大きくキリのいい値が、間隔をあけて飛び飛びに」来るのに対し、
+   *   トラックパッドは「小さい値が高頻度で連続的に」来る。
+   */
+  let mmLastWheelTs = 0;
+  function classifyWheelInput(e) {
+    if (e.deltaMode === 1) return 'wheel'; // Firefox: 行単位 = 物理マウスホイール確定
+
+    const now = performance.now();
+    const msSinceLast = now - mmLastWheelTs;
+    mmLastWheelTs = now;
+
+    const absDelta = Math.abs(e.deltaY);
+    const looksLikeNotchedWheel =
+      absDelta >= 40 &&                 // マウスホイール1ノッチは大きめの値になりやすい
+      Number.isInteger(absDelta) &&     // トラックパッドの慣性スクロールは非整数になりやすい
+      msSinceLast > 45;                 // ノッチ付きホイールはイベント間隔が空きやすい
+
+    return looksLikeNotchedWheel ? 'wheel' : 'trackpad';
+  }
+
+  // 💡 修正: sv-canvas側のFOVホイールズーム（tFov += deltaY*0.05、可動域30〜110の80幅）は
+  //    マウス1ノッチ(deltaY≈100)あたり可動域の約6.25%しか動かない。またミニマップ自身の
+  //    +/-ボタン(changeMMZoom)も1クリック20%(1.2倍)というステップになっている。
+  //    このアプリ内での「ズーム操作1回分」の体感を揃えるため、ミニマップのホイールズームも
+  //    同程度（最大でもボタン1クリック分=1.2倍）に収める。
+  const WHEEL_ZOOM_BASE_MOUSE    = 1.0018; // マウスホイール1ノッチ(deltaY≈100)で約1.20倍（≒ズームボタン1回分）
+  const WHEEL_ZOOM_BASE_TRACKPAD = 1.02;   // トラックパッドでの操作感を優先した値
+  const WHEEL_ZOOM_MAX_STEP      = 1.2;    // 1イベントの変化量上限。sv-canvasの1ノッチ分／ミニマップの
+                                            // +/-ボタン1回分と同じ大きさに揃えた（判定ミス時の暴走防止も兼ねる）
 
   $('hud-minimap-svg').addEventListener('wheel', e => {
     e.preventDefault();
@@ -928,7 +1056,17 @@ function setupMinimapInteractions() {
     const scaleX = rect.width / 260;
     const scaleY = rect.height / 160;
 
-    changeMMZoom(e.deltaY < 0, mouseX / scaleX, mouseY / scaleY);
+    const inputType = classifyWheelInput(e);
+    const base = (inputType === 'trackpad') ? WHEEL_ZOOM_BASE_TRACKPAD : WHEEL_ZOOM_BASE_MOUSE;
+
+    const clampedDelta = Math.max(-100, Math.min(100, e.deltaY));
+    let factor = Math.pow(base, -clampedDelta);
+    // 判定ミス（例:notchなしの高速マウスホイールをtrackpad判定してしまう等）が起きても
+    // 一気に最大/最小ズームへ飛ばないよう、1イベントあたりの変化量に上限をかけておく
+    factor = Math.max(1 / WHEEL_ZOOM_MAX_STEP, Math.min(WHEEL_ZOOM_MAX_STEP, factor));
+
+
+    zoomMinimapBy(factor, mouseX / scaleX, mouseY / scaleY);
   }, { passive: false });
 
   $('mm-btn-zoom-in').addEventListener('click', e => {

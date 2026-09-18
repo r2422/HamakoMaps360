@@ -2,7 +2,7 @@
   "nodes": {
     "21_stairs_0330,0560": {
       "name": "本館 1階 階段",
-      "sub": "Main building - Floor 1",
+      "sub": "",
       "imageFile": "21_stairs_0330,0560.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -28,7 +28,7 @@
     },
     "21_stairs_0990,0560": {
       "name": "本館 1階 階段",
-      "sub": "Main building - Floor 1",
+      "sub": "",
       "imageFile": "21_stairs_0990,0560.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -59,7 +59,7 @@
     },
     "21_entrance_0120,0640_職員玄関": {
       "name": "本館 1階 職員玄関",
-      "sub": "Main building - Floor 1 Other Place",
+      "sub": "",
       "imageFile": "21_entrance_0120,0640_職員玄関.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -80,7 +80,7 @@
     },
     "21_entrance_0720,0640_昇降口": {
       "name": "本館 1階 昇降口",
-      "sub": "Main building - Floor 1 Other Place",
+      "sub": "",
       "imageFile": "21_entrance_0720,0640_昇降口.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -106,7 +106,7 @@
     },
     "21_corridor_0320,0560": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "",
       "imageFile": "21_corridor_0320,0560.jpg",
       "initYaw": 1.5707963267948966,
       "mmIdx": 0,
@@ -127,7 +127,7 @@
     },
     "21_corridor_0330,0680": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "",
       "imageFile": "21_corridor_0330,0680.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -153,7 +153,7 @@
     },
     "21_corridor_0330,0000": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "十字路",
       "imageFile": "21_corridor_0330,0000.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -168,7 +168,7 @@
     },
     "21_corridor_0450,0680": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "進路指導室前",
       "imageFile": "21_corridor_0450,0680.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -194,7 +194,7 @@
     },
     "21_corridor_0510,0680": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "定時制昇降口前",
       "imageFile": "21_corridor_0510,0680.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -308,7 +308,7 @@
     },
     "21_corridor_0990,0820": {
       "name": "本館 1階 廊下",
-      "sub": "Main building - Floor 1",
+      "sub": "",
       "imageFile": "21_corridor_0990,0820.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -365,7 +365,7 @@
     },
     "21_stairs_0990,0680": {
       "name": "本館 1階 階段",
-      "sub": "Main building - Floor 1",
+      "sub": "リサイクルボックス",
       "imageFile": "21_stairs_0990,0680.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -391,7 +391,7 @@
     },
     "21_outside_0720,0520_昇降口": {
       "name": "本館 1階 昇降口",
-      "sub": "Main building - Floor 1 Other Place",
+      "sub": "",
       "imageFile": "21_outside_0720,0520_昇降口.jpg",
       "initYaw": 0,
       "mmIdx": 0,
@@ -412,7 +412,7 @@
     },
     "21_outside_0120,0560_職員玄関": {
       "name": "本館 1階 職員玄関",
-      "sub": "Main building - Floor 1 Other Place",
+      "sub": "",
       "imageFile": "21_outside_0120,0560_職員玄関.jpg",
       "initYaw": 0,
       "mmIdx": 0,
