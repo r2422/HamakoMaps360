@@ -1202,6 +1202,14 @@ window.addEventListener('keydown', (e) => {
     }
     return;
   }
+  // 💡 修正: Alt+D 単体は Chrome/Edge/Firefox(Windows) で「アドレスバーへフォーカス」という
+  //    ブラウザ標準ショートカットに予約されており、e.preventDefault()では止められず
+  //    ページ側のキー入力として機能しなかった。Alt+Shift+D に変更して衝突を避ける。
+  if (e.altKey && e.shiftKey && (e.key === 'd' || e.key === 'D')) {
+    e.preventDefault();
+    setDevModeUnlocked(!devModeUnlocked);
+    return;
+  }
   if (e.key === '0') {
     isOrtho = !isOrtho;
     activeDebugCamera = isOrtho ? debugOrtho : debugPersp;

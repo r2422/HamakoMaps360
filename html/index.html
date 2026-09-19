@@ -2,15 +2,19 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <!-- なぜこのcontentなのか -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>浜工ストリートビュー360</title>
   <link rel="stylesheet" href="../css/style.css">
+  <!-- three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- PWA Manifest -->
   <link rel="manifest" href="../pwa/manifest.json">
   <link rel="icon" href="../pwa/favicon256.ico" type="image/x-icon">
 </head>
 <body>
 
+  <!-- ストリートビュー コンテナ -->
   <div class="sv-container">
     <canvas id="sv-canvas"></canvas>
     <div id="crosshair"></div>
@@ -18,6 +22,7 @@
 
   <div id="step-flash"></div>
 
+  <!-- HUD レイヤー -->
   <div class="hud-layer">
     <div id="load-container"><div id="load-bar"></div></div>
 
@@ -31,31 +36,37 @@
       </div>
     </div>
 
+    <!-- 速度表示 -->
     <div id="hud-speed">
       <div id="speed-inner">WARPING</div>
     </div>
 
+    <!-- コンパス -->
     <div class="top-center-box">
       <div id="compass-wrapper">
           <canvas id="hud-compass" width="640" height="72"></canvas>
       </div>
     </div>
 
+    <!-- 設定ボタン -->
     <div class="top-right-box">
         <button id="btn-settings" type="button">
             ...
         </button>
     </div>
 
+    <!-- デバッグコンテナ -->
     <div id="debug-container">
       <div id="debug-title">ORBITAL MONITOR (TPS)</div>
       <canvas id="debug-canvas"></canvas>
     </div>
 
+    <!-- ミニマップ -->
     <div id="hud-minimap" class="interactive">
       <div id="hud-minimap-container"></div>
     </div>
 
+    <!-- コントロールパネル -->
     <div id="hud-controls" class="interactive">
       <div id="ctrl-panel">
         <button id="btn-zm" class="hud-btn" title="Zoom In">+</button>
@@ -66,8 +77,10 @@
     </div>
   </div>
 
+  <!-- ツールチップ -->
   <div id="tooltip">Tooltip</div>
 
+  <!-- 設定モーダル -->
   <div id="settings-modal">
     <div id="modal-content">
       <div id="modal-header">
@@ -168,6 +181,7 @@
     </div>
   </div>
 
+  <!-- スクリプト -->
   <script src="../js/mapData.js"></script>
   <script src="../js/minimap.js"></script>
   <script src="../js/main.js"></script>

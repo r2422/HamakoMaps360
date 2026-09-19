@@ -5,7 +5,7 @@
 /* --- ミニマップ管理用の状態変数 --- */
 let mmSrcNode = null; // 💡 main.jsのwalkPhaseと連動して移動元ノードを記憶する変数
 let mmPanX = 0;      
-let mmPanY = 0;      
+let mmPanY = 0;
 let mmScale = 0.12; 
 let isMMDragging = false;
 let mmStartX = 0;
