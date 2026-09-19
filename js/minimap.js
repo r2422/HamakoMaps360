@@ -353,23 +353,40 @@ function resizeMinimapViewport() {
 
     if (!svg) return;
 
-    // ミニマップ全体の実際の表示領域を取得する
-    const minimap = $('hud-minimap');
-    const rect = minimap
-        ? minimap.getBoundingClientRect()
-        : svg.getBoundingClientRect();
-
-    if (rect.width <= 0 || rect.height <= 0) return;
-
     const VIEWBOX_HEIGHT = 160;
 
-    // 実際の表示領域の縦横比に合わせて
-    // viewBoxの「横幅だけ」を変更する
+    /*
+     * 実際のSVGサイズからviewBoxを決めるのではなく、
+     * 現在のレイアウトから表示領域の比率を決める。
+     */
+    let aspectRatio;
+
+    if (document.body.classList.contains('mm-layout-split-h')) {
+
+        // 左右分割
+        aspectRatio = (window.innerWidth * 0.5) / window.innerHeight;
+
+    } else if (document.body.classList.contains('mm-layout-split-v')) {
+
+        // 上下分割
+        aspectRatio = window.innerWidth / (window.innerHeight * 0.5);
+
+    } else if (document.body.classList.contains('mm-layout-fullscreen')) {
+
+        // 全画面
+        aspectRatio = window.innerWidth / window.innerHeight;
+
+    } else {
+
+        // 右下表示
+        aspectRatio = 520 / 320;
+    }
+
     const viewBoxWidth = Math.max(
         40,
         Math.min(
             1000,
-            VIEWBOX_HEIGHT * rect.width / rect.height
+            VIEWBOX_HEIGHT * aspectRatio
         )
     );
 
@@ -379,58 +396,41 @@ function resizeMinimapViewport() {
     );
 
     /*
-     * viewBoxの横幅が変わったので、
-     * ミニマップの背景・クリップ領域も追従させる
+     * viewBoxに合わせて背景・クリップ領域を更新
      */
     const panelClip = svg.querySelector('#mm-panel-clip rect');
     const viewportClip = svg.querySelector('#mm-viewport-clip rect');
+
+    if (panelClip) {
+        panelClip.setAttribute('width', viewBoxWidth);
+        panelClip.setAttribute('height', VIEWBOX_HEIGHT);
+    }
+
+    if (viewportClip) {
+        viewportClip.setAttribute('width', viewBoxWidth);
+        viewportClip.setAttribute('height', VIEWBOX_HEIGHT);
+    }
+
     const backgroundRects = svg.querySelectorAll(
         '#mm-panel-clip > rect'
     );
+
+    backgroundRects.forEach(rect => {
+        rect.setAttribute('width', viewBoxWidth);
+        rect.setAttribute('height', VIEWBOX_HEIGHT);
+    });
+
     const gridRect = svg.querySelector(
         '#mm-viewport-clip > rect'
     );
 
-    [panelClip, viewportClip].forEach(rectElement => {
-        if (!rectElement) return;
-
-        rectElement.setAttribute(
-            'width',
-            String(viewBoxWidth)
-        );
-
-        rectElement.setAttribute(
-            'height',
-            String(VIEWBOX_HEIGHT)
-        );
-    });
-
-    backgroundRects.forEach(rectElement => {
-        rectElement.setAttribute(
-            'width',
-            String(viewBoxWidth)
-        );
-
-        rectElement.setAttribute(
-            'height',
-            String(VIEWBOX_HEIGHT)
-        );
-    });
-
     if (gridRect) {
-        gridRect.setAttribute(
-            'width',
-            String(viewBoxWidth)
-        );
-
-        gridRect.setAttribute(
-            'height',
-            String(VIEWBOX_HEIGHT)
-        );
+        gridRect.setAttribute('width', viewBoxWidth);
+        gridRect.setAttribute('height', VIEWBOX_HEIGHT);
     }
 
     /*
-     * フロアボタンをviewBox右端に追従させる
+     * フロアボタンを右端へ追従
      */
     const floorButtons = $('mm-floor-buttons');
 
@@ -503,24 +503,26 @@ function getNodeAnyPool(id) {
 const MM_LAYOUT_MODES = ['split-v', 'split-h', 'fullscreen', 'hidden']; // 'corner'はクラス無しの初期状態
 
 function setMinimapLayout(mode) {
-    MM_LAYOUT_MODES.forEach(m => document.body.classList.remove(`mm-layout-${m}`));
+    MM_LAYOUT_MODES.forEach(m => {
+        document.body.classList.remove(`mm-layout-${m}`);
+    });
 
     if (mode !== 'corner') {
         document.body.classList.add(`mm-layout-${mode}`);
     }
 
-    // レイアウト変更でsv-containerのサイズが変わるため、3Dキャンバスのリサイズを反映
+    // 1. 3D側のサイズを更新
     if (typeof updateRendererSize === 'function') {
         updateRendererSize();
     }
 
-    // レイアウト変更後の表示領域に合わせてviewBox幅を更新する
+    // 2. レイアウトからviewBoxを決定
     resizeMinimapViewport();
 
-    // ドラッグ用マスクも新しいviewBoxへ合わせる
+    // 3. 新しいviewBoxにマスクを合わせる
     resizeMinimapDragMask();
 
-    // ミニマップ自体のサイズも変わるので、現在地が中心に来るよう再フォーカス
+    // 4. 新しいviewBoxの中心へ現在地を移動
     if (typeof focusCurrentNodeOnMinimap === 'function') {
         focusCurrentNodeOnMinimap();
     }
