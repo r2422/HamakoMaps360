@@ -1114,8 +1114,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (hudCompassEl && typeof savedUserSettings.hudCompass === 'boolean') hudCompassEl.checked = savedUserSettings.hudCompass;
   const routesEl = $('tg-grid-routes');
   if (routesEl && typeof savedUserSettings.routeLines === 'boolean') routesEl.checked = savedUserSettings.routeLines;
-  const layoutSelectEl = $('mm-layout-select');
-  if (layoutSelectEl && savedUserSettings.minimapLayout) layoutSelectEl.value = savedUserSettings.minimapLayout;
 
   setupToggle('tg-hud-loc', $('hud-location'), (visible) => {
     saveUserSettings({ hudLoc: visible });
@@ -1135,13 +1133,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof setMinimapEditMode === 'function') setMinimapEditMode(visible);
   });
 
-  const mmLayoutSelect = $('mm-layout-select');
-  if (mmLayoutSelect) {
-    mmLayoutSelect.addEventListener('change', e => {
-      if (typeof setMinimapLayout === 'function') setMinimapLayout(e.target.value);
-      saveUserSettings({ minimapLayout: e.target.value });
-    });
-  }
 
   setupToggle('tg-grid-edges', null, (visible) => {
     uiConfig.edges = visible;
@@ -1190,6 +1181,76 @@ document.addEventListener('DOMContentLoaded', () => {
   if (tabUserBtn) tabUserBtn.addEventListener('click', () => { settingsActiveTab = 'user'; updateSettingsModeUI(); });
   if (tabDevBtn) tabDevBtn.addEventListener('click', () => { settingsActiveTab = 'dev'; updateSettingsModeUI(); });
   updateSettingsModeUI(); // ?dev=1 付きでアクセスされていた場合、初期表示から開発者タブを見せる
+});
+
+/* ---- ミニマップレイアウトモーダル ---- */
+
+const minimapLayoutModal = $('minimap-layout-modal');
+const btnMinimapLayout = $('btn-minimap-layout');
+const btnCloseMinimapLayout = $('btn-close-minimap-layout');
+
+function updateMinimapLayoutUI(mode) {
+    document.querySelectorAll('.minimap-layout-option').forEach(button => {
+        button.classList.toggle(
+            'is-active',
+            button.dataset.layout === mode
+        );
+    });
+}
+
+function openMinimapLayoutModal() {
+    if (!minimapLayoutModal) return;
+
+    const currentLayout =
+        savedUserSettings.minimapLayout || 'corner';
+
+    updateMinimapLayoutUI(currentLayout);
+
+    minimapLayoutModal.classList.add('open');
+}
+
+function closeMinimapLayoutModal() {
+    if (!minimapLayoutModal) return;
+
+    minimapLayoutModal.classList.remove('open');
+}
+
+if (btnMinimapLayout) {
+    btnMinimapLayout.onclick = () => {
+        openMinimapLayoutModal();
+    };
+}
+
+if (btnCloseMinimapLayout) {
+    btnCloseMinimapLayout.onclick = () => {
+        closeMinimapLayoutModal();
+    };
+}
+
+if (minimapLayoutModal) {
+    minimapLayoutModal.onclick = (e) => {
+        if (e.target === minimapLayoutModal) {
+            closeMinimapLayoutModal();
+        }
+    };
+}
+
+document.querySelectorAll('.minimap-layout-option').forEach(button => {
+    button.addEventListener('click', () => {
+        const mode = button.dataset.layout;
+
+        if (typeof setMinimapLayout === 'function') {
+            setMinimapLayout(mode);
+        }
+
+        saveUserSettings({
+            minimapLayout: mode
+        });
+
+        updateMinimapLayoutUI(mode);
+
+        closeMinimapLayoutModal();
+    });
 });
 
 window.addEventListener('keydown', (e) => {
@@ -1253,6 +1314,13 @@ async function initMapData() {
 document.addEventListener('DOMContentLoaded', async () => {
     await initMapData();
     initMinimapLayout();
+
+    if (typeof setMinimapLayout === 'function') {
+        setMinimapLayout(
+            savedUserSettings.minimapLayout || 'corner'
+        );
+    }
+
     loadInitial('21_entrance_0720,0640_昇降口');
     requestAnimationFrame(animate);
 });

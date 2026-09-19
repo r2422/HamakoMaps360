@@ -237,8 +237,7 @@ body {
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
-  z-index: 30;
-  /* pointer-events: auto; */
+  z-index: 110;
 }
 .top-center-box {
     position: fixed;
@@ -344,6 +343,194 @@ body {
 /* クリック時 */
 #btn-settings:active {
     transform: scale(0.9);
+}
+
+/* --- ミニマップレイアウトボタン --- */
+
+#btn-minimap-layout {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary-dark);
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: var(--shadow-panel);
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        transform 0.1s;
+
+    pointer-events: auto;
+}
+
+#btn-minimap-layout svg {
+    width: 22px;
+    height: 22px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#btn-minimap-layout:hover {
+    background: var(--color-surface-soft);
+    border-color: var(--color-border-strong);
+}
+
+#btn-minimap-layout:active {
+    transform: scale(0.9);
+}
+
+/* ============================================================
+   ミニマップレイアウト専用モーダル
+============================================================ */
+
+#minimap-layout-modal {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(52, 44, 64, 0.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 100;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity 0.25s ease;
+}
+
+#minimap-layout-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#minimap-layout-content {
+    width: 340px;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+
+    padding: 24px;
+
+    box-shadow:
+        0 20px 50px rgba(79, 66, 104, 0.28);
+}
+
+#minimap-layout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 12px;
+}
+
+#minimap-layout-header h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+
+    color: var(--color-primary);
+    letter-spacing: 0.08em;
+}
+
+#btn-close-minimap-layout {
+    background: none;
+    border: none;
+
+    color: var(--color-text-muted);
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+#btn-close-minimap-layout:hover {
+    color: var(--color-text);
+}
+
+/* レイアウト選択 */
+
+#minimap-layout-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.minimap-layout-option {
+    min-height: 92px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+
+    color: var(--color-text-muted);
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        color 0.15s,
+        transform 0.1s;
+}
+
+.minimap-layout-option:hover {
+    background: var(--color-surface-soft);
+    border-color: var(--color-border-strong);
+    color: var(--color-primary);
+}
+
+.minimap-layout-option:active {
+    transform: scale(0.96);
+}
+
+.minimap-layout-option.is-active {
+    background: var(--color-primary-pale);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
+}
+
+.minimap-layout-option svg {
+    width: 40px;
+    height: 40px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.minimap-layout-option span {
+    font-size: 11px;
+    font-weight: 600;
 }
 
 /* --- 右上2段目：TPS デバッグモニター --- */
