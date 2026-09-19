@@ -511,18 +511,26 @@ function setMinimapLayout(mode) {
         document.body.classList.add(`mm-layout-${mode}`);
     }
 
+    // レイアウトボタンのactive状態を更新
+    if (typeof updateMinimapLayoutUI === 'function') {
+        updateMinimapLayoutUI(mode);
+    }
+
     // 1. 3D側のサイズを更新
     if (typeof updateRendererSize === 'function') {
         updateRendererSize();
     }
 
-    // 2. レイアウトからviewBoxを決定
+    // 2. sv-canvasの新しいサイズ・位置にコンパスを合わせる
+    updateCompassLayout();
+
+    // 3. ミニマップのviewBoxを更新
     resizeMinimapViewport();
 
-    // 3. 新しいviewBoxにマスクを合わせる
+    // 4. 新しいviewBoxにマスクを合わせる
     resizeMinimapDragMask();
 
-    // 4. 新しいviewBoxの中心へ現在地を移動
+    // 5. 新しいviewBoxの中心へ現在地を移動
     if (typeof focusCurrentNodeOnMinimap === 'function') {
         focusCurrentNodeOnMinimap();
     }

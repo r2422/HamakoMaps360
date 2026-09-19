@@ -14,15 +14,19 @@ const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 
 function updateRendererSize() {
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
 
-  renderer.setSize(width, height, false);
-  
-  if (typeof camera !== 'undefined' && camera) {
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-  }
+    if (width <= 0 || height <= 0) {
+        return;
+    }
+
+    renderer.setSize(width, height, false);
+
+    if (typeof camera !== 'undefined' && camera) {
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    }
 }
 
 const scene  = new THREE.Scene();
@@ -482,6 +486,32 @@ function updateCamera(){
   camera.lookAt(camera.position.x+x, camera.position.y+y, camera.position.z+z);
 }
 
+function updateCompassLayout() {
+    const canvas = document.getElementById('sv-canvas');
+    const compass = document.querySelector('.top-center-box');
+
+    if (!canvas || !compass) return;
+
+    const rect = canvas.getBoundingClientRect();
+
+    /*
+     * sv-canvas の中央をコンパスの中央にする
+     */
+    const centerX = rect.left + rect.width / 2;
+
+    /*
+     * sv-canvas の幅を基準にコンパス幅を決める
+     */
+    const compassWidth = Math.min(
+        640,
+        Math.max(0, rect.width * 0.6 - 48)
+    );
+
+    compass.style.left = `${centerX}px`;
+    compass.style.width = `${compassWidth}px`;
+    compass.style.transform = 'translateX(-50%)';
+}
+
 const compassCanvas = document.getElementById('hud-compass');
 const compassCtx = compassCanvas.getContext('2d');
 
@@ -862,7 +892,10 @@ let lastPinch=0;
 canvas.addEventListener('touchstart',e=>{ if(e.touches.length===2) lastPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); });
 canvas.addEventListener('touchmove',e=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); tFov=Math.max(30,Math.min(110,tFov-(d-lastPinch)*0.3)); lastPinch=d; } },{passive:true});
 
-window.addEventListener('resize', updateRendererSize);
+window.addEventListener('resize', () => {
+    updateRendererSize();
+    updateCompassLayout();
+});
 
 /* ---- Helpers ---- */
 function setupToggle(id, targetEl, callback) {
@@ -1201,8 +1234,10 @@ function updateMinimapLayoutUI(mode) {
 function openMinimapLayoutModal() {
     if (!minimapLayoutModal) return;
 
+    const currentSettings = loadUserSettings();
+
     const currentLayout =
-        savedUserSettings.minimapLayout || 'corner';
+        currentSettings.minimapLayout || 'corner';
 
     updateMinimapLayoutUI(currentLayout);
 

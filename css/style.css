@@ -78,16 +78,30 @@ body {
 }
 
 @media (max-width: 780px) {
-  /* 💡 モバイル時は、Canvasの親コンテナ自体の高さを計算して削ります */
-  .sv-container {
-    width: 100vw;
-    height: calc(100dvh - (160 / 260 * 100dvw));
-  }
 
-  #sv-canvas {
-    width: 100%;
-    height: 100%;
-  }
+    /* 左右分割 */
+    body.mm-layout-split-h .sv-container {
+        width: 50%;
+        height: 100dvh;
+    }
+
+    /* 上下分割 */
+    body.mm-layout-split-v .sv-container {
+        width: 100%;
+        height: 50dvh;
+    }
+
+    /* ミニマップ非表示 */
+    body.mm-layout-hidden .sv-container {
+        width: 100%;
+        height: 100dvh;
+    }
+
+    /* 全画面地図 */
+    body.mm-layout-fullscreen .sv-container {
+        width: 100%;
+        height: 0;
+    }
 }
 
 /* ミニマップのコンテナやSVGマスク */
@@ -242,11 +256,7 @@ body {
 .top-center-box {
     position: fixed;
     top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 30;
-
-    width: min(640px, calc(60vw - 48px));
 
     display: flex;
     flex-direction: column;
@@ -677,18 +687,44 @@ body.mm-layout-hidden #hud-minimap {
 }
 
 @media (max-width: 780px) {
-  #hud-minimap {
-    right: auto;
-    left: 0px;
-    bottom: 0px;
-    right: 0px;
-    width: calc(100vw);
-  }
 
-  #hud-controls {
-    left: 24px;
-    bottom: calc(6px + (calc(100vw) * 160 / 260) + 16px); 
-  }
+    /* 通常の右下表示 */
+    body:not(.mm-layout-split-h):not(.mm-layout-split-v):not(.mm-layout-fullscreen):not(.mm-layout-hidden) #hud-minimap {
+        right: 24px;
+        left: auto;
+        bottom: 24px;
+        width: 260px;
+    }
+
+    /* 右下表示時の操作パネル */
+    body:not(.mm-layout-split-h):not(.mm-layout-split-v):not(.mm-layout-fullscreen):not(.mm-layout-hidden) #hud-controls {
+        left: 24px;
+        bottom: calc(24px + (260px * 160 / 260) + 16px);
+    }
+
+    /* 左右分割 */
+    body.mm-layout-split-h .sv-container {
+        width: 50%;
+        height: 100dvh;
+    }
+
+    /* 上下分割 */
+    body.mm-layout-split-v .sv-container {
+        width: 100%;
+        height: 50dvh;
+    }
+
+    /* ミニマップ非表示 */
+    body.mm-layout-hidden .sv-container {
+        width: 100%;
+        height: 100dvh;
+    }
+
+    /* 全画面地図 */
+    body.mm-layout-fullscreen .sv-container {
+        width: 100%;
+        height: 0;
+    }
 }
 
 /* --- コントロール群のボタン装飾 --- */
