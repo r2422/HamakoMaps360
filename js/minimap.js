@@ -319,13 +319,127 @@ function applyMinimapTransform() {
   }
 }
 
+
+/* 元々、
+260 / 2 - 35
+= 130 - 35
+= 95
+なので、元の 95 を単純に消すのではなく、viewBoxの幅に応じて95相当の位置を計算しています。 */
 function focusCurrentNodeOnMinimap() {
-  const currentNode = NODES[currentId];
-  if (!currentNode) return;
-  // 💡 +25px されたノードの中心に追従フォーカスさせる計算
-  mmPanX = 95 - (currentNode.mmX + 25) * mmScale; 
-  mmPanY = 80 - (currentNode.mmY + 25) * mmScale;
-  applyMinimapTransform();
+    const currentNode = NODES[currentId];
+    if (!currentNode) return;
+
+    const svg = $('hud-minimap-svg');
+    const viewBox = svg
+        ? svg.viewBox.baseVal
+        : { width: 260, height: 160 };
+
+    // 元の95pxという位置関係を維持しつつ、
+    // viewBoxの横幅に合わせて追従位置を変更する
+    mmPanX =
+        (viewBox.width / 2 - 35)
+        - (currentNode.mmX + 25) * mmScale;
+
+    mmPanY =
+        (viewBox.height / 2)
+        - (currentNode.mmY + 25) * mmScale;
+
+    applyMinimapTransform();
+}
+
+/* --- ミニマップ表示領域の動的調整 --- */
+function resizeMinimapViewport() {
+    const svg = $('hud-minimap-svg');
+
+    if (!svg) return;
+
+    // ミニマップ全体の実際の表示領域を取得する
+    const minimap = $('hud-minimap');
+    const rect = minimap
+        ? minimap.getBoundingClientRect()
+        : svg.getBoundingClientRect();
+
+    if (rect.width <= 0 || rect.height <= 0) return;
+
+    const VIEWBOX_HEIGHT = 160;
+
+    // 実際の表示領域の縦横比に合わせて
+    // viewBoxの「横幅だけ」を変更する
+    const viewBoxWidth = Math.max(
+        40,
+        Math.min(
+            1000,
+            VIEWBOX_HEIGHT * rect.width / rect.height
+        )
+    );
+
+    svg.setAttribute(
+        'viewBox',
+        `0 0 ${viewBoxWidth} ${VIEWBOX_HEIGHT}`
+    );
+
+    /*
+     * viewBoxの横幅が変わったので、
+     * ミニマップの背景・クリップ領域も追従させる
+     */
+    const panelClip = svg.querySelector('#mm-panel-clip rect');
+    const viewportClip = svg.querySelector('#mm-viewport-clip rect');
+    const backgroundRects = svg.querySelectorAll(
+        '#mm-panel-clip > rect'
+    );
+    const gridRect = svg.querySelector(
+        '#mm-viewport-clip > rect'
+    );
+
+    [panelClip, viewportClip].forEach(rectElement => {
+        if (!rectElement) return;
+
+        rectElement.setAttribute(
+            'width',
+            String(viewBoxWidth)
+        );
+
+        rectElement.setAttribute(
+            'height',
+            String(VIEWBOX_HEIGHT)
+        );
+    });
+
+    backgroundRects.forEach(rectElement => {
+        rectElement.setAttribute(
+            'width',
+            String(viewBoxWidth)
+        );
+
+        rectElement.setAttribute(
+            'height',
+            String(VIEWBOX_HEIGHT)
+        );
+    });
+
+    if (gridRect) {
+        gridRect.setAttribute(
+            'width',
+            String(viewBoxWidth)
+        );
+
+        gridRect.setAttribute(
+            'height',
+            String(VIEWBOX_HEIGHT)
+        );
+    }
+
+    /*
+     * フロアボタンをviewBox右端に追従させる
+     */
+    const floorButtons = $('mm-floor-buttons');
+
+    if (floorButtons) {
+        floorButtons.setAttribute(
+            'transform',
+            `translate(${viewBoxWidth - 36}, 64)`
+        );
+    }
 }
 
 /* --- 編集モード共通ヘルパー --- */
@@ -349,8 +463,10 @@ function resizeMinimapDragMask() {
 // クライアント座標（clientX/Y）を、ミニマップSVGの描画座標系（pan/zoom適用後、+25オフセット込み）に変換
 function minimapClientToSvg(clientX, clientY) {
   const rect = $('hud-minimap-svg').getBoundingClientRect();
-  const scaleX = rect.width / 260;
-  const scaleY = rect.height / 160;
+  const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+
+  const scaleX = rect.width / viewBox.width;
+  const scaleY = rect.height / viewBox.height;
   const mouseX = (clientX - rect.left) / scaleX;
   const mouseY = (clientY - rect.top) / scaleY;
   return {
@@ -398,7 +514,10 @@ function setMinimapLayout(mode) {
         updateRendererSize();
     }
 
-    // ミニマップの表示サイズ変更後に、ドラッグ用マスクをviewBoxへ合わせる
+    // レイアウト変更後の表示領域に合わせてviewBox幅を更新する
+    resizeMinimapViewport();
+
+    // ドラッグ用マスクも新しいviewBoxへ合わせる
     resizeMinimapDragMask();
 
     // ミニマップ自体のサイズも変わるので、現在地が中心に来るよう再フォーカス
@@ -830,8 +949,10 @@ function setupMinimapInteractions() {
 
   mmMask.addEventListener('pointerdown', e => {
     const rect = $('hud-minimap-svg').getBoundingClientRect();
-    mmDragScaleX = rect.width / 260;
-    mmDragScaleY = rect.height / 160;
+    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+
+    mmDragScaleX = rect.width / viewBox.width;
+    mmDragScaleY = rect.height / viewBox.height;
 
     mmMask.setPointerCapture(e.pointerId);
     mmActivePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1053,8 +1174,10 @@ function setupMinimapInteractions() {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     
-    const scaleX = rect.width / 260;
-    const scaleY = rect.height / 160;
+    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+
+    const scaleX = rect.width / viewBox.width;
+    const scaleY = rect.height / viewBox.height;
 
     const inputType = classifyWheelInput(e);
     const base = (inputType === 'trackpad') ? WHEEL_ZOOM_BASE_TRACKPAD : WHEEL_ZOOM_BASE_MOUSE;
@@ -1071,14 +1194,34 @@ function setupMinimapInteractions() {
 
   $('mm-btn-zoom-in').addEventListener('click', e => {
     e.stopPropagation();
-    changeMMZoom(true, 92, 80);
+    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+    changeMMZoom(
+        true,
+        viewBox.width / 2 - 38,
+        viewBox.height / 2
+    );
   });
 
   $('mm-btn-zoom-out').addEventListener('click', e => {
     e.stopPropagation();
-    changeMMZoom(false, 92, 80);
+    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+    changeMMZoom(
+        false,
+        viewBox.width / 2 - 38,
+        viewBox.height / 2
+    );
   });
 }
+
+/* --- 画面サイズ変更時もミニマップを追従させる --- */
+window.addEventListener('resize', () => {
+    resizeMinimapViewport();
+    resizeMinimapDragMask();
+
+    if (typeof focusCurrentNodeOnMinimap === 'function') {
+        focusCurrentNodeOnMinimap();
+    }
+});
 
 /**
  * メインループ（animate内）から呼び出されるパルス表現用アップデート
