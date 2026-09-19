@@ -69,12 +69,12 @@ function initMinimapLayout() {
       </defs>
 
       <g clip-path="url(#mm-panel-clip)">
-        <rect width="260" height="160" fill="url(#mm-vignette)"/>
-        <rect width="260" height="160" stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none"/>
+        <rect id="mm-panel-bg-fill" width="260" height="160" fill="url(#mm-vignette)"/>
+        <rect id="mm-panel-bg-border" width="260" height="160" stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none"/>
       </g>
 
       <g clip-path="url(#mm-viewport-clip)">
-        <rect width="260" height="160" fill="url(#mm-grid)"/>
+        <rect id="mm-viewport-bg-grid" width="260" height="160" fill="url(#mm-grid)"/>
 
         <g id="mm-transform-group">
           <image id="mm-bg-map" href="" width="5690" height="4370" x="0" y="0" opacity="0.7" pointer-events="none" />
@@ -363,13 +363,17 @@ function resizeMinimapViewport() {
 
     if (document.body.classList.contains('mm-layout-split-h')) {
 
-        // 左右分割
-        aspectRatio = (window.innerWidth * 0.5) / window.innerHeight;
+        // 左右分割：sv-canvas側の割合(window.splitRatios)から、ミニマップ側の実際の幅比率を逆算する
+        // 💡 修正: 分割線をドラッグして比率を変えられるようになったため、0.5固定では
+        //    ミニマップの実表示サイズとviewBoxのアスペクト比がズレてしまう
+        const minimapFraction = 1 - (window.splitRatios ? window.splitRatios['split-h'] : 0.5);
+        aspectRatio = (window.innerWidth * minimapFraction) / window.innerHeight;
 
     } else if (document.body.classList.contains('mm-layout-split-v')) {
 
-        // 上下分割
-        aspectRatio = window.innerWidth / (window.innerHeight * 0.5);
+        // 上下分割：同様にミニマップ側の実際の高さ比率を使う
+        const minimapFraction = 1 - (window.splitRatios ? window.splitRatios['split-v'] : 0.5);
+        aspectRatio = window.innerWidth / (window.innerHeight * minimapFraction);
 
     } else if (document.body.classList.contains('mm-layout-fullscreen')) {
 
@@ -411,23 +415,20 @@ function resizeMinimapViewport() {
         viewportClip.setAttribute('height', VIEWBOX_HEIGHT);
     }
 
-    const backgroundRects = svg.querySelectorAll(
-        '#mm-panel-clip > rect'
-    );
-
-    backgroundRects.forEach(rect => {
-        rect.setAttribute('width', viewBoxWidth);
-        rect.setAttribute('height', VIEWBOX_HEIGHT);
+    // 💡 修正: 従来の '#mm-panel-clip > rect' / '#mm-viewport-clip > rect' は
+    //    <clipPath>要素自身の直下（＝上のpanelClip/viewportClipと同じ非表示rect）しか
+    //    ヒットしておらず、実際に見えているパネル背景・枠線・グリッドのrect
+    //    （clip-pathを"参照する側"の<g>の中にあり、idを持っていなかった）は
+    //    幅260のまま更新されていなかった。widthの広いレイアウト（フルスクリーン等）で
+    //    260px より右側に背景・グリッドが描画されない不具合になっていたため、
+    //    対象のrectに直接idを振って明示的に指定する。
+    ['mm-panel-bg-fill', 'mm-panel-bg-border', 'mm-viewport-bg-grid'].forEach(id => {
+        const rect = svg.querySelector(`#${id}`);
+        if (rect) {
+            rect.setAttribute('width', viewBoxWidth);
+            rect.setAttribute('height', VIEWBOX_HEIGHT);
+        }
     });
-
-    const gridRect = svg.querySelector(
-        '#mm-viewport-clip > rect'
-    );
-
-    if (gridRect) {
-        gridRect.setAttribute('width', viewBoxWidth);
-        gridRect.setAttribute('height', VIEWBOX_HEIGHT);
-    }
 
     /*
      * フロアボタンを右端へ追従
@@ -511,6 +512,18 @@ function setMinimapLayout(mode) {
         document.body.classList.add(`mm-layout-${mode}`);
     }
 
+    // 分割線(#split-divider)のaria-orientationをモードに合わせて更新
+    const splitDivider = $('split-divider');
+    if (splitDivider) {
+        if (mode === 'split-v') {
+            splitDivider.setAttribute('aria-orientation', 'horizontal');
+        } else if (mode === 'split-h') {
+            splitDivider.setAttribute('aria-orientation', 'vertical');
+        } else {
+            splitDivider.removeAttribute('aria-orientation');
+        }
+    }
+
     // レイアウトボタンのactive状態を更新
     if (typeof updateMinimapLayoutUI === 'function') {
         updateMinimapLayoutUI(mode);
@@ -533,6 +546,12 @@ function setMinimapLayout(mode) {
     // 5. 新しいviewBoxの中心へ現在地を移動
     if (typeof focusCurrentNodeOnMinimap === 'function') {
         focusCurrentNodeOnMinimap();
+    }
+
+    // 6. モード切り替え時にも、境界線/端ボタンの表示状態を最新化しておく
+    //    （保存済みの比率が既に0や1の状態で split-v/split-h に切り替わるケースに対応）
+    if (typeof updateSplitDividerVisibility === 'function') {
+        updateSplitDividerVisibility();
     }
 }
 

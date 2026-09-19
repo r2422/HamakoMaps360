@@ -168,10 +168,122 @@ if (savedUserSettings.textSizeMode === 'constant' || savedUserSettings.textSizeM
   uiConfig.textSizeMode = savedUserSettings.textSizeMode;
 }
 
+/* ---- 上下/左右分割レイアウトの分割比率 ----
+   sv-canvas側の割合(0〜1)を保持する。0:1・1:2・1:1・2:1・1:0 の5段階にのみ収束させる。
+   minimap.js側（resizeMinimapViewport）からも参照するため window に公開しておく
+   （window.NODESなど、このコードベースの既存の共有方法に合わせている）。 */
+const SPLIT_RATIO_STOPS = [0, 1 / 3, 0.5, 2 / 3, 1];
+window.splitRatios = {
+  'split-v': (typeof savedUserSettings.splitRatioV === 'number') ? savedUserSettings.splitRatioV : 0.5,
+  'split-h': (typeof savedUserSettings.splitRatioH === 'number') ? savedUserSettings.splitRatioH : 0.5,
+};
+
+function applySplitRatio(mode, ratio) {
+  const clamped = Math.max(0, Math.min(1, ratio));
+  window.splitRatios[mode] = clamped;
+  document.documentElement.style.setProperty(`--${mode}-ratio`, clamped);
+}
+
+function snapSplitRatio(value) {
+  let closest = SPLIT_RATIO_STOPS[0];
+  let minDiff = Infinity;
+  for (const stop of SPLIT_RATIO_STOPS) {
+    const diff = Math.abs(stop - value);
+    if (diff < minDiff) { minDiff = diff; closest = stop; }
+  }
+  return closest;
+}
+
+// 分割比率が変わった後、3Dビュー・コンパス・ミニマップの各サイズを画面に反映する
+// 💡 端ボタンへの切り替え(updateSplitDividerVisibility)はここに含めない。
+//    ドラッグ中(pointermove)は #split-divider がポインタキャプチャを持ったままなので、
+//    途中で指が画面端ちょうどに到達した瞬間にラインをdisplay:noneにしてしまうと
+//    ドラッグが不自然に中断されてしまう。ドラッグ確定後にだけ呼び出す。
+function refreshSplitDependentLayout() {
+  updateRendererSize();
+  updateCompassLayout();
+  if (typeof resizeMinimapViewport === 'function') resizeMinimapViewport();
+  if (typeof resizeMinimapDragMask === 'function') resizeMinimapDragMask();
+}
+
+const SPLIT_EDGE_MARGIN = '16px'; // 端(画面の物理エッジ)からボタンをどれだけ離すか
+
+// 比率が0または1（端まで到達）かどうかで、ドラッグ用ライン(#split-divider)と
+// ドロワー風ボタン(#split-edge-handle)の表示を切り替える。
+// 💡 端ぴったりにドラッグ用の当たり判定を置くと、モバイルの戻る/進む/ホームへの
+//    スワイプジェスチャーと競合してしまうため、端まで到達した状態では
+//    ラインを隠し、少し内側にオフセットした独立ボタンに切り替える。
+function updateSplitDividerVisibility() {
+  const splitDivider = $('split-divider');
+  const edgeHandle = $('split-edge-handle');
+  if (!splitDivider || !edgeHandle) return;
+
+  const mode = getCurrentSplitMode();
+  if (!mode) {
+    splitDivider.style.display = 'none';
+    edgeHandle.style.display = 'none';
+    return;
+  }
+
+  const ratio = window.splitRatios[mode];
+  const collapsedToStart = (ratio <= 0); // sv-canvas側が0（ミニマップが画面いっぱい）
+  const collapsedToEnd = (ratio >= 1);   // ミニマップ側が0（3Dビューが画面いっぱい）
+
+  if (!collapsedToStart && !collapsedToEnd) {
+    // 通常時：ドラッグ可能なラインを表示。ボタンは隠す
+    splitDivider.style.display = '';
+    edgeHandle.style.display = 'none';
+    return;
+  }
+
+  // 端まで到達している：ラインを隠し、端から少し離した位置にボタンを表示する
+  splitDivider.style.display = 'none';
+  edgeHandle.style.display = 'flex';
+  edgeHandle.style.top = edgeHandle.style.bottom = '';
+  edgeHandle.style.left = edgeHandle.style.right = '';
+
+  if (mode === 'split-v') {
+    edgeHandle.classList.remove('is-vertical-grip');
+    edgeHandle.classList.add('is-horizontal-grip');
+    edgeHandle.style.width = '56px';
+    edgeHandle.style.height = '26px';
+    edgeHandle.style.left = '50%';
+    edgeHandle.style.transform = 'translateX(-50%)';
+    if (collapsedToStart) {
+      // sv-canvasが0＝ミニマップが上端まで占有 → ボタンは上端寄りに置く
+      edgeHandle.style.top = SPLIT_EDGE_MARGIN;
+      edgeHandle.setAttribute('aria-label', 'ストリートビューを表示');
+    } else {
+      // ミニマップが0＝3Dビューが下端まで占有 → ボタンは下端寄りに置く
+      edgeHandle.style.bottom = SPLIT_EDGE_MARGIN;
+      edgeHandle.setAttribute('aria-label', 'ミニマップを表示');
+    }
+  } else {
+    // split-h
+    edgeHandle.classList.remove('is-horizontal-grip');
+    edgeHandle.classList.add('is-vertical-grip');
+    edgeHandle.style.width = '26px';
+    edgeHandle.style.height = '56px';
+    edgeHandle.style.top = '50%';
+    edgeHandle.style.transform = 'translateY(-50%)';
+    if (collapsedToStart) {
+      edgeHandle.style.left = SPLIT_EDGE_MARGIN;
+      edgeHandle.setAttribute('aria-label', 'ストリートビューを表示');
+    } else {
+      edgeHandle.style.right = SPLIT_EDGE_MARGIN;
+      edgeHandle.setAttribute('aria-label', 'ミニマップを表示');
+    }
+  }
+}
+
+// 起動時に保存済みの比率をCSSへ反映（初回訪問時はデフォルトの0.5のまま）
+applySplitRatio('split-v', window.splitRatios['split-v']);
+applySplitRatio('split-h', window.splitRatios['split-h']);
+
 /* ---- 開発者モード ----
    一般ユーザーには「ユーザー設定」しか見せない。以下のいずれかでのみ開発者モードへ入れる：
    - URL末尾に ?dev=1 を付けてアクセスする
-   - Alt+D で、リロードなしにその場でON/OFFを切り替える（この状態はセッション限りで保存しない） */
+   - Alt+Shift+D で、リロードなしにその場でON/OFFを切り替える（この状態はセッション限りで保存しない） */
 let devModeUnlocked = new URLSearchParams(window.location.search).get('dev') === '1';
 let settingsActiveTab = 'user'; // 'user' | 'dev'（devModeUnlocked=falseの間は常に'user'扱い）
 
@@ -204,6 +316,95 @@ function setDevModeUnlocked(on) {
   devModeUnlocked = on;
   settingsActiveTab = 'user'; // 切り替わった瞬間に開発者設定がいきなり露出しないよう、常にユーザー設定から見せる
   updateSettingsModeUI();
+}
+
+/* ---- 分割レイアウトの境界線ドラッグ ---- */
+function getCurrentSplitMode() {
+  if (document.body.classList.contains('mm-layout-split-v')) return 'split-v';
+  if (document.body.classList.contains('mm-layout-split-h')) return 'split-h';
+  return null;
+}
+
+function setupSplitDivider() {
+  const splitDivider = $('split-divider');
+  if (!splitDivider) return;
+
+  let dragMode = null; // 'split-v' | 'split-h' | null（ドラッグ中のみ設定される）
+
+  function pointerToRatio(e, mode) {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    return (mode === 'split-v') ? (e.clientY / h) : (e.clientX / w);
+  }
+
+  function finishDrag() {
+    if (!dragMode) return;
+    const mode = dragMode;
+    const snapped = snapSplitRatio(window.splitRatios[mode]);
+    applySplitRatio(mode, snapped);
+    refreshSplitDependentLayout();
+    updateSplitDividerVisibility();
+    if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
+    saveUserSettings(mode === 'split-v' ? { splitRatioV: snapped } : { splitRatioH: snapped });
+    document.body.classList.remove('split-dragging');
+    dragMode = null;
+  }
+
+  splitDivider.addEventListener('pointerdown', (e) => {
+    const mode = getCurrentSplitMode();
+    if (!mode) return;
+    dragMode = mode;
+    splitDivider.setPointerCapture(e.pointerId);
+    document.body.classList.add('split-dragging');
+    e.preventDefault();
+  });
+
+  splitDivider.addEventListener('pointermove', (e) => {
+    if (!dragMode) return;
+    // 💡 ドラッグ中は指の動きにリアルタイム追従させ、離した瞬間だけ5段階にスナップする
+    applySplitRatio(dragMode, pointerToRatio(e, dragMode));
+    refreshSplitDependentLayout();
+  });
+
+  splitDivider.addEventListener('pointerup', finishDrag);
+  splitDivider.addEventListener('pointercancel', finishDrag);
+
+  // キーボード操作（矢印キーで段階移動）
+  splitDivider.addEventListener('keydown', (e) => {
+    const mode = getCurrentSplitMode();
+    if (!mode) return;
+    const decreaseKey = (mode === 'split-v') ? 'ArrowUp' : 'ArrowLeft';
+    const increaseKey = (mode === 'split-v') ? 'ArrowDown' : 'ArrowRight';
+    if (e.key !== decreaseKey && e.key !== increaseKey) return;
+
+    e.preventDefault();
+    const currentIdx = SPLIT_RATIO_STOPS.indexOf(snapSplitRatio(window.splitRatios[mode]));
+    const nextIdx = Math.max(0, Math.min(SPLIT_RATIO_STOPS.length - 1, currentIdx + (e.key === increaseKey ? 1 : -1)));
+    const snapped = SPLIT_RATIO_STOPS[nextIdx];
+    applySplitRatio(mode, snapped);
+    refreshSplitDependentLayout();
+    updateSplitDividerVisibility();
+    if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
+    saveUserSettings(mode === 'split-v' ? { splitRatioV: snapped } : { splitRatioH: snapped });
+  });
+
+  // 端(0または1)まで到達した状態から戻すためのボタン。1:2 / 2:1 へジャンプする
+  const edgeHandle = $('split-edge-handle');
+  if (edgeHandle) {
+    edgeHandle.addEventListener('click', () => {
+      const mode = getCurrentSplitMode();
+      if (!mode) return;
+      const ratio = window.splitRatios[mode];
+      const target = (ratio <= 0) ? (1 / 3) : (2 / 3); // 0→1:2、1→2:1
+      applySplitRatio(mode, target);
+      refreshSplitDependentLayout();
+      updateSplitDividerVisibility();
+      if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
+      saveUserSettings(mode === 'split-v' ? { splitRatioV: target } : { splitRatioH: target });
+    });
+  }
+
+  updateSplitDividerVisibility(); // 初期状態(ページ読み込み時点の保存済み比率)を反映
 }
 
 /* ---- 進路パス・先端テキスト・ピンの生成関数 ---- */
@@ -1117,6 +1318,7 @@ function animate(now){
 
 document.addEventListener('DOMContentLoaded', () => {
   updateRendererSize();
+  setupSplitDivider();
 
   const slider = $('fov-slider');
   if(slider) slider.addEventListener('input', e=>{ tFov=+e.target.value; });

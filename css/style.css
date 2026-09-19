@@ -81,14 +81,14 @@ body {
 
     /* 左右分割 */
     body.mm-layout-split-h .sv-container {
-        width: 50%;
+        width: calc(var(--split-h-ratio, 0.5) * 100%);
         height: 100dvh;
     }
 
     /* 上下分割 */
     body.mm-layout-split-v .sv-container {
         width: 100%;
-        height: 50dvh;
+        height: calc(var(--split-v-ratio, 0.5) * 100dvh);
     }
 
     /* ミニマップ非表示 */
@@ -416,6 +416,8 @@ body {
     align-items: center;
     justify-content: center;
 
+    /* .hud-layer(z-index:10)がスタッキングコンテキストを作るため、
+       内部の.top-right-box(z-index:110)は外に影響しない。100のままで最前面に来る */
     z-index: 100;
 
     opacity: 0;
@@ -599,19 +601,18 @@ body {
 
 /* --- ミニマップ・レイアウトモード（設定パネルの「Minimap Layout」で切替） --- */
 
-/* 上下2画面：3Dビューを上半分、地図を下半分に配置 */
+/* 上下2画面：3Dビューを上、地図を下に配置（比率は#split-diverでドラッグ調整可能） */
 body.mm-layout-split-v .sv-container {
-  height: 50%;
+  height: calc(var(--split-v-ratio, 0.5) * 100%);
 }
 body.mm-layout-split-v #hud-minimap {
   position: fixed;
-  top: 50%;
+  top: calc(var(--split-v-ratio, 0.5) * 100%);
   left: 0;
   right: 0;
   bottom: 0;
   width: 100%;
-  height: 50%;
-  border-top: 1px solid var(--color-border);
+  height: calc((1 - var(--split-v-ratio, 0.5)) * 100%);
 }
 body.mm-layout-split-v #hud-minimap-container,
 body.mm-layout-split-v #hud-minimap-svg {
@@ -620,25 +621,139 @@ body.mm-layout-split-v #hud-minimap-svg {
   border-radius: 0;
 }
 
-/* 左右2画面：3Dビューを左半分、地図を右半分に配置 */
+/* 左右2画面：3Dビューを左、地図を右に配置（比率は#split-diverでドラッグ調整可能） */
 body.mm-layout-split-h .sv-container {
-  width: 50%;
+  width: calc(var(--split-h-ratio, 0.5) * 100%);
 }
 body.mm-layout-split-h #hud-minimap {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 50%;
+  left: calc(var(--split-h-ratio, 0.5) * 100%);
   right: 0;
-  width: 50%;
+  width: calc((1 - var(--split-h-ratio, 0.5)) * 100%);
   height: 100%;
-  border-left: 1px solid var(--color-border);
 }
 body.mm-layout-split-h #hud-minimap-container,
 body.mm-layout-split-h #hud-minimap-svg {
   width: 100%;
   height: 100%;
   border-radius: 0;
+}
+
+/* 上下・左右分割の境界線（ドラッグでsv-canvas:hud-minimapの比率を変更） */
+#split-divider {
+  display: none;
+  position: fixed;
+  z-index: 35; /* .hud-layer内で#hud-minimap(30)より上 */
+  background: transparent;
+  touch-action: none;
+}
+#split-divider::before {
+  content: '';
+  position: absolute;
+  background: var(--color-border-strong, var(--color-border));
+}
+#split-divider::after {
+  content: '';
+  position: absolute;
+  background: var(--color-primary-dark, var(--color-primary));
+  border-radius: 3px;
+  opacity: 0.85;
+  transition: opacity 0.15s, background 0.15s;
+}
+#split-divider:hover::after,
+body.split-dragging #split-divider::after {
+  opacity: 1;
+  background: var(--color-primary);
+}
+
+body.mm-layout-split-v #split-divider {
+  display: block;
+  left: 0;
+  right: 0;
+  top: calc(var(--split-v-ratio, 0.5) * 100%);
+  height: 16px;
+  transform: translateY(-50%);
+  cursor: row-resize;
+}
+body.mm-layout-split-v #split-divider::before {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  transform: translateY(-50%);
+}
+body.mm-layout-split-v #split-divider::after {
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+}
+
+body.mm-layout-split-h #split-divider {
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--split-h-ratio, 0.5) * 100%);
+  width: 16px;
+  transform: translateX(-50%);
+  cursor: col-resize;
+}
+body.mm-layout-split-h #split-divider::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+}
+body.mm-layout-split-h #split-divider::after {
+  top: 50%;
+  left: 50%;
+  height: 44px;
+  width: 4px;
+  transform: translate(-50%, -50%);
+}
+
+body.split-dragging {
+  user-select: none;
+}
+
+/* 分割比率が0または1（端まで到達）のとき、#split-divider の代わりに表示するボタン。
+   位置(上下左右)とサイズはモード・畳んだ方向によって変わるため main.js 側でJSから
+   直接styleを設定する。ここでは見た目（形・グリップ表現）だけを定義する。 */
+#split-edge-handle {
+  display: none;
+  position: fixed;
+  z-index: 36; /* #split-divider(35)/#hud-minimap(30)より上 */
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-panel);
+  padding: 0;
+  cursor: pointer;
+  touch-action: manipulation; /* タップの反応を軽くする */
+}
+#split-edge-handle::after {
+  content: '';
+  background: var(--color-border-strong, var(--color-border));
+  border-radius: 3px;
+  transition: background 0.15s;
+}
+#split-edge-handle.is-horizontal-grip::after {
+  width: 22px;
+  height: 3px;
+}
+#split-edge-handle.is-vertical-grip::after {
+  width: 3px;
+  height: 22px;
+}
+#split-edge-handle:hover::after,
+#split-edge-handle:active::after {
+  background: var(--color-primary);
 }
 
 /* フルスクリーン：地図が画面全体を覆う */
@@ -704,14 +819,14 @@ body.mm-layout-hidden #hud-minimap {
 
     /* 左右分割 */
     body.mm-layout-split-h .sv-container {
-        width: 50%;
+        width: calc(var(--split-h-ratio, 0.5) * 100%);
         height: 100dvh;
     }
 
     /* 上下分割 */
     body.mm-layout-split-v .sv-container {
         width: 100%;
-        height: 50dvh;
+        height: calc(var(--split-v-ratio, 0.5) * 100dvh);
     }
 
     /* ミニマップ非表示 */

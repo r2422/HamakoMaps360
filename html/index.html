@@ -84,6 +84,25 @@
         <span id="fov-readout">75°</span>
       </div>
     </div>
+
+    <!-- 上下/左右分割レイアウトの境界線（ドラッグでsv-canvas:hud-minimapの比率を変更） -->
+    <div
+      id="split-divider"
+      class="interactive"
+      role="separator"
+      tabindex="0"
+      aria-label="ストリートビューとミニマップの分割比率"
+    ></div>
+
+    <!-- 比率が0:1/1:0（端まで到達）のときだけ、境界線の代わりに表示するドロワー風ボタン。
+         端ぴったりにドラッグ用UIを置くと、モバイルの戻る/進む/ホームのスワイプ操作と
+         衝突するため、少し内側に離した独立ボタンにしている -->
+    <button
+      type="button"
+      id="split-edge-handle"
+      class="interactive"
+      aria-label="表示を戻す"
+    ></button>
   </div>
 
   <!-- ツールチップ -->
