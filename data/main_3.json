@@ -23,6 +23,11 @@
           "targetId": "13_passageway_mid_0330,0350",
           "label": "空中廊下(北館方面)",
           "hint": "To Bridge"
+        },
+        {
+          "targetId": "23_stairs_0330,0680",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -49,6 +54,11 @@
           "targetId": "13_passageway_mid_0990,0350",
           "label": "空中廊下(北館方面)",
           "hint": "To Bridge"
+        },
+        {
+          "targetId": "23_stairs_0990,0680",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -65,7 +75,23 @@
       ],
       "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "23_corrider_0240,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_corrider_0390,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_stairs_0330,0560",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "23_stairs_0990,0680": {
       "name": "本館 3階 階段",
@@ -80,7 +106,23 @@
       ],
       "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "23_corrider_0760,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_stairs_0990,0560",
+          "label": "",
+          "hint": ""
+        },
+        {
+    "targetId": "23_classroom_0920,0620_建築研究部",
+    "label": "",
+    "hint": ""
+  }
+      ]
     },
     "23_classroom_0520,0620_第1製図": {
       "name": "",
@@ -95,7 +137,13 @@
       ],
       "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "23_corrider_0520,0680",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "23_classroom_0760,0620_第2製図": {
       "name": "",
@@ -110,7 +158,13 @@
       ],
       "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "23_corrider_0760,0680",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "23_classroom_0920,0620_建築研究部": {
       "name": "",
@@ -123,9 +177,18 @@
         0,
         620
       ],
-      "floor": 4,
+      "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "23_stairs_0990,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_corrider_0760,0680",
+    "label": "",
+    "hint": ""
+  }]
     },
     "23_corrider_0240,0680": {
       "name": "本館 3階 廊下",
@@ -140,7 +203,13 @@
       ],
       "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "23_stairs_0330,0680",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "23_corrider_0330,0680": {
       "name": "本館 3階 廊下",
@@ -170,7 +239,18 @@
       ],
       "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "23_stairs_0330,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_corrider_0520,0680",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "23_corrider_0520,0680": {
       "name": "本館 3階 廊下",
@@ -185,7 +265,23 @@
       ],
       "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "23_corrider_0760,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_classroom_0520,0620_第1製図",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_corrider_0390,0680",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "23_corrider_0760,0680": {
       "name": "本館 3階 廊下",
@@ -200,7 +296,28 @@
       ],
       "floor": 3,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "23_classroom_0760,0620_第2製図",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_stairs_0990,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_corrider_0520,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+    "targetId": "23_classroom_0920,0620_建築研究部",
+    "label": "",
+    "hint": ""
+  }
+      ]
     }
   }
 }

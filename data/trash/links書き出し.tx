@@ -1,0 +1,395 @@
+// ② 既存ノードの links 配列に、それぞれ追記してください
+// --- 23_corrider_0240,0680 ---
+[
+  {
+    "targetId": "23_stairs_0330,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_stairs_0330,0680 ---
+[
+  {
+    "targetId": "23_corrider_0240,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_corrider_0390,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_stairs_0330,0560",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_corrider_0390,0680 ---
+[
+  {
+    "targetId": "23_stairs_0330,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_corrider_0520,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_corrider_0760,0680 ---
+[
+  {
+    "targetId": "23_classroom_0760,0620_第2製図",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_stairs_0990,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_corrider_0520,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_classroom_0760,0620_第2製図 ---
+[
+  {
+    "targetId": "23_corrider_0760,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_stairs_0990,0680 ---
+[
+  {
+    "targetId": "23_corrider_0760,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_stairs_0990,0560",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_corrider_0520,0680 ---
+[
+  {
+    "targetId": "23_corrider_0760,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_classroom_0520,0620_第1製図",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_corrider_0390,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_classroom_0520,0620_第1製図 ---
+[
+  {
+    "targetId": "23_corrider_0520,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_stairs_0330,0560 ---
+[
+  {
+    "targetId": "23_stairs_0330,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_stairs_0990,0560 ---
+[
+  {
+    "targetId": "23_stairs_0990,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+/*
+=====
+=====
+=====*/
+
+// ② 既存ノードの links 配列に、それぞれ追記してください
+// --- 21_corridor_1270,0720_食堂渡り廊下 ---
+[
+  {
+    "targetId": "21_corridor_1380,0720_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corridor_1380,0720_食堂前 ---
+[
+  {
+    "targetId": "21_corridor_1270,0720_食堂渡り廊下",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "21_stairs_1370,0590_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_stairs_1370,0590_食堂前 ---
+[
+  {
+    "targetId": "21_corridor_1380,0720_食堂前",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "21_corridor_1390,0560_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corridor_1390,0560_食堂前 ---
+[
+  {
+    "targetId": "21_stairs_1370,0590_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+/*
+
+
+*/
+
+
+// ② 既存ノードの links 配列に、それぞれ追記してください
+// --- 22_corrider_0390,0680 ---
+[
+  {
+    "targetId": "22_corrider_0600,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_classroom_0430,0760_小会議室",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_classroom_0480,0600_大会議室",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_corrider_0600,0680 ---
+[
+  {
+    "targetId": "22_corrider_0390,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_corrider_0720,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_corrider_0720,0680 ---
+[
+  {
+    "targetId": "22_corrider_0600,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_stairs_0990,0660",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_stairs_0990,0660 ---
+[
+  {
+    "targetId": "22_corrider_0720,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_corridor_0990,0700",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_corridor_0990,0700 ---
+[
+  {
+    "targetId": "22_stairs_0990,0660",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_corridor_1370,0720_体育館前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_corridor_1370,0720_体育館前 ---
+[
+  {
+    "targetId": "22_corridor_0990,0700",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_stairs_1370,0540_体育館前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_stairs_1370,0540_体育館前 ---
+[
+  {
+    "targetId": "22_corridor_1370,0720_体育館前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_classroom_0430,0760_小会議室 ---
+[
+  {
+    "targetId": "22_corrider_0390,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_classroom_0480,0600_大会議室 ---
+[
+  {
+    "targetId": "22_corrider_0390,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+
+/*
+
+
+
+*/
+
+
+// ② 既存ノードの links 配列に、それぞれ追記してください
+// --- 24_stairs_0330,0560 ---
+[
+  {
+    "targetId": "24_stairs_0330,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "24_stairs_0990,0560",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 24_stairs_0330,0680 ---
+[
+  {
+    "targetId": "24_stairs_0330,0560",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 24_stairs_0990,0560 ---
+[
+  {
+    "targetId": "24_stairs_0330,0560",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "24_stairs_0990,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 24_stairs_0990,0680 ---
+[
+  {
+    "targetId": "24_stairs_0990,0560",
+    "label": "",
+    "hint": ""
+  }
+]
+
+
+// ② 既存ノードの links 配列に、それぞれ追記してください
+// --- 23_classroom_0920,0620_建築研究部 ---
+[
+  {
+    "targetId": "23_stairs_0990,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "23_corrider_0760,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_stairs_0990,0680 ---
+[
+  {
+    "targetId": "23_classroom_0920,0620_建築研究部",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 23_corrider_0760,0680 ---
+[
+  {
+    "targetId": "23_classroom_0920,0620_建築研究部",
+    "label": "",
+    "hint": ""
+  }
+]
+

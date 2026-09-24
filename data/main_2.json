@@ -75,7 +75,16 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_corrider_0720,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_corridor_0990,0700",
+    "label": "",
+    "hint": ""
+  }]
     },
     "22_stairs_1370,0540_体育館前": {
       "name": "",
@@ -90,7 +99,11 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_corridor_1370,0720_体育館前",
+    "label": "",
+    "hint": ""
+  }]
     },
     "22_classroom_0430,0760_小会議室": {
       "name": "",
@@ -105,7 +118,11 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_corrider_0390,0680",
+    "label": "",
+    "hint": ""
+  }]
     },
     "22_classroom_0480,0600_大会議室": {
       "name": "",
@@ -120,7 +137,11 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_corrider_0390,0680",
+    "label": "",
+    "hint": ""
+  }]
     },
     "22_corrider_0390,0680": {
       "name": "",
@@ -135,7 +156,21 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_corrider_0600,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_classroom_0430,0760_小会議室",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_classroom_0480,0600_大会議室",
+    "label": "",
+    "hint": ""
+  }]
     },
     "22_corrider_0600,0680": {
       "name": "",
@@ -150,7 +185,16 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_corrider_0390,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_corrider_0720,0680",
+    "label": "",
+    "hint": ""
+  }]
     },
     "22_corrider_0720,0680": {
       "name": "",
@@ -165,7 +209,16 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_corrider_0600,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_stairs_0990,0660",
+    "label": "",
+    "hint": ""
+  }]
     },
     "22_corridor_0990,0700": {
       "name": "",
@@ -180,7 +233,16 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_stairs_0990,0660",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_corridor_1370,0720_体育館前",
+    "label": "",
+    "hint": ""
+  }]
     },
     "22_corridor_1370,0720_体育館前": {
       "name": "",
@@ -195,7 +257,16 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": []
+      "links": [{
+    "targetId": "22_corridor_0990,0700",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "22_stairs_1370,0540_体育館前",
+    "label": "",
+    "hint": ""
+  }]
     }
   }
 }
