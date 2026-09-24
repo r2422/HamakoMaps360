@@ -1,0 +1,30 @@
+{
+  "nodes": {
+    "21_stairs_0330,0560": {
+      "name": "〇館 〇階 〇〇",
+      "sub": "",
+      "imageFile": "21_stairs_0330,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "22_stairs_0330,0560",
+          "label": "階段で2階へ",
+          "hint": "Up to 2F"
+        },
+        {
+          "targetId": "11_passageway_mid_0330,0350",
+          "label": "空中廊下(北館方面)",
+          "hint": "To North Bldg"
+        }
+      ]
+    }
+    }
+}

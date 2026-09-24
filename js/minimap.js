@@ -57,6 +57,15 @@ let mmLastTapY = 0;
 // 基準スケール：右下表示(corner)デフォルト時の実測値（幅520px ÷ viewBox幅260units = 2px/unit）
 const MM_UI_REFERENCE_PX_PER_UNIT = 2;
 
+// 💡 style.css の #hud-minimap { transition: all 0.3s ease; } と対応する値。
+//    レイアウト切り替え直後はこのトランジションの途中で#hud-minimapのサイズが
+//    まだ変化し続けているため、その瞬間にgetBoundingClientRect()で測ると
+//    古い(または中途半端な)サイズを拾ってしまい、UIパーツのサイズ計算が狂う。
+//    トランジション完了後にもう一度測り直すための待ち時間として使う。
+//    style.css側の秒数を変えたら、ここも合わせて変更すること。
+const MM_LAYOUT_TRANSITION_MS = 300;
+let mmLayoutSettleTimer = null;
+
 // サイズ段階（1.0 = 元のデザインサイズ）。画面サイズによる自動判定はせず、
 // ユーザーがサイズ設定ボタンで選んだ段階をそのまま使う
 const MM_UI_SIZE_TIERS = [
@@ -732,6 +741,19 @@ function setMinimapLayout(mode) {
     if (typeof updateSplitDividerVisibility === 'function') {
         updateSplitDividerVisibility();
     }
+
+    // 7. 💡 #hud-minimapのCSSトランジション(0.3s)が終わった後にもう一度測り直す。
+    //    切り替え直後の即時計算(3〜6)はトランジション開始前の古いサイズを拾って
+    //    しまうことがあり、それが「初期表示やレイアウト切り替え直後だけUIサイズが
+    //    おかしい（S/M/Lボタンを押すと直る＝再計算すれば直る）」という症状の原因だった。
+    clearTimeout(mmLayoutSettleTimer);
+    mmLayoutSettleTimer = setTimeout(() => {
+        resizeMinimapViewport();
+        resizeMinimapDragMask();
+        if (typeof focusCurrentNodeOnMinimap === 'function') {
+            focusCurrentNodeOnMinimap();
+        }
+    }, MM_LAYOUT_TRANSITION_MS + 30); // トランジション終了直後の描画ゆらぎを避けるための余裕分
 }
 
 function setMinimapEditMode(on) {
