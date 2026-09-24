@@ -40,6 +40,9 @@ let mmLastTapY = 0;
 
 let mmEditClickTimer = null;
 
+// 編集モードのドラフトデータを localStorage に保存する際のキー名
+const MM_EDIT_STORAGE_KEY = 'HamakoMaps360_mm_edit_draft';
+
 /* ============================================================
    ミニマップ内UI（ズームボタン・フロアボタン・サイズ設定ボタン）の
    サイズ・余白の定数
@@ -318,6 +321,8 @@ function initMinimapLayout() {
   resizeMinimapDragMask();
   setupMinimapInteractions();
   setupEditToolbar();
+  loadEditDraft();
+  restoreEditDraftVisuals();
 }
 
 function syncPlayerVisibility() {
@@ -1018,6 +1023,15 @@ function showNodeInfoPopup(nodeId) {
   removeEditPopups();
 
   const bMap = { 'North': '北館', 'Main': '本館', 'South': '南館' };
+  // 英語変換
+  // let buildingEN = null;
+  //   if (node.building === "本館") {
+  //       buildingEN = "Main";
+  //   } else if (node.building === "北館") {
+  //       buildingEN = "North";
+  //   } else if (node.building === "南館") {
+  //       buildingEN = "South";
+  //   }
   const buildingLabel = bMap[node.building] || node.building || '-';
   const [px, py, pz] = node.pos3D;
   const coordText = `[${px}, ${py}, ${pz}]`;
@@ -1038,7 +1052,7 @@ function showNodeInfoPopup(nodeId) {
       <div>pos3D: <code id="mm-info-coord" style="color:#fff;">${coordText}</code></div>
     </div>
         <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
-        <button id="mm-info-copy" style="background:#1a2c52; border:1px solid #3a4e78; color:#e9edf7; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px;">座標をコピー</button>
+        <button id="mm-info-copy" style="background:#1a2c52; border:1px solid #3a4e78; color:#e9edf7; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px;">頂点名をコピー</button>
 
         ${node.isDraft
             ? `<button id="mm-info-delete" style="background:#5a2430; border:1px solid #9b4a58; color:#ffd9de; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px;">頂点を削除</button>`
@@ -1055,7 +1069,8 @@ function showNodeInfoPopup(nodeId) {
 $('mm-info-copy').addEventListener('click', ev => {
     ev.stopPropagation();
 
-    const text = `[${px}, ${py}, ${pz}]`;
+    // const text = `[${px}, ${py}, ${pz}]`;
+    const text = `${node.id}`
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).catch(() => {});
@@ -1103,10 +1118,10 @@ $('mm-info-close').addEventListener('click', ev => {
 function deleteDraftNode(nodeId) {
     const node = draftNodes[nodeId];
 
-    // 下書きノード以外は削除しない
-    if (!node) return false;
+    if (!node) {
+        return false;
+    }
 
-    // この頂点に接続している下書き辺も削除
     draftLinks = draftLinks.filter(link =>
         link.from !== nodeId &&
         link.to !== nodeId
@@ -1114,13 +1129,12 @@ function deleteDraftNode(nodeId) {
 
     delete draftNodes[nodeId];
 
-    // SVG上の頂点を削除
     const dot = $(`mm-dot-${nodeId}`);
+
     if (dot) {
         dot.remove();
     }
 
-    // 辺を描き直す
     const edgesGroup = $('mm-edges-group');
 
     if (edgesGroup) {
@@ -1139,11 +1153,12 @@ function deleteDraftNode(nodeId) {
         });
     }
 
-    // 選択状態も解除
     if (edgeSourceId === nodeId) {
         clearEdgeSourceHighlight();
         edgeSourceId = null;
     }
+
+    saveEditDraft();
 
     updateExportPanelIfOpen();
 
@@ -1151,45 +1166,68 @@ function deleteDraftNode(nodeId) {
 }
 
 function createDraftNodeAt(svgX, svgY) {
-  const rawMMX = svgX - 25;
-  const rawMMY = svgY - 25;
-  const worldX = (rawMMX - MINIMAP_OFFSET_X) / MINIMAP_SCALE;
-  const worldZ = (rawMMY - MINIMAP_OFFSET_Y) / MINIMAP_SCALE;
+    const rawMMX = svgX - 25;
+    const rawMMY = svgY - 25;
 
-  const yBaseByFloor = {
-    1: (typeof Y_BASE_1 !== 'undefined' ? Y_BASE_1 : 0),
-    2: (typeof Y_BASE_2 !== 'undefined' ? Y_BASE_2 : 80),
-    3: (typeof Y_BASE_3 !== 'undefined' ? Y_BASE_3 : 160),
-    4: (typeof Y_BASE_4 !== 'undefined' ? Y_BASE_4 : 240)
-  };
-  const worldY = yBaseByFloor[currentMinimapFloor] || 0;
+    const building = getBuildingAt(
+        rawMMX,
+        rawMMY,
+        currentMinimapFloor
+    );
 
-  const defaultName = `新規ノード${draftNodeSeq}`;
-  const inputName = window.prompt('新しいノードの名前を入力してください（キャンセルで中止）', defaultName);
-  if (inputName === null) return;
+    const worldX =
+        (rawMMX - MINIMAP_OFFSET_X) / MINIMAP_SCALE;
 
-  const id = `draft_${currentMinimapFloor}_${draftNodeSeq}`;
-  draftNodeSeq++;
+    const worldZ =
+        (rawMMY - MINIMAP_OFFSET_Y) / MINIMAP_SCALE;
 
-  const refNode = NODES[currentId];
-  const building = refNode ? refNode.building : 'North';
+    const yBaseByFloor = {
+        1: (typeof Y_BASE_1 !== 'undefined' ? Y_BASE_1 : 0),
+        2: (typeof Y_BASE_2 !== 'undefined' ? Y_BASE_2 : 80),
+        3: (typeof Y_BASE_3 !== 'undefined' ? Y_BASE_3 : 160),
+        4: (typeof Y_BASE_4 !== 'undefined' ? Y_BASE_4 : 240)
+    };
 
-  const node = {
-    id,
-    name: inputName || defaultName,
-    sub: '',
-    building,
-    floor: currentMinimapFloor,
-    pos3D: [Math.round(worldX * 100) / 100, worldY, Math.round(worldZ * 100) / 100],
-    mmX: rawMMX,
-    mmY: rawMMY,
-    links: [],
-    isDraft: true
-  };
-  draftNodes[id] = node;
+    const worldY =
+        yBaseByFloor[currentMinimapFloor] || 0;
 
-  addDraftNodeVisual(node);
-  updateExportPanelIfOpen();
+    const defaultName =
+        `新規ノード${draftNodeSeq}`;
+
+    const inputName = window.prompt(
+        '新しいノードの名前を入力してください（キャンセルで中止）',
+        defaultName
+    );
+
+    if (inputName === null) return;
+
+    const id =
+        `draft_${currentMinimapFloor}_${draftNodeSeq}`;
+
+    draftNodeSeq++;
+
+    const node = {
+        id,
+        name: inputName || defaultName,
+        sub: '',
+        building,
+        floor: currentMinimapFloor,
+        pos3D: [
+            Math.round(worldX * 100) / 100,
+            worldY,
+            Math.round(worldZ * 100) / 100
+        ],
+        mmX: rawMMX,
+        mmY: rawMMY,
+        links: [],
+        isDraft: true
+    };
+
+    draftNodes[id] = node;
+
+    addDraftNodeVisual(node);
+    updateExportPanelIfOpen();
+    saveEditDraft();
 }
 
 function addDraftNodeVisual(node) {
@@ -1235,21 +1273,158 @@ function removeDraftLink(fromId, toId) {
         });
     }
 
+    saveEditDraft();
+
     updateExportPanelIfOpen();
     return true;
 }
 
-function createDraftLink(fromId, toId) {
-  const onewayEl = $('mm-edit-oneway');
-  const oneway = !!(onewayEl && onewayEl.checked);
-  const already = draftLinks.some(l =>
-    (l.from === fromId && l.to === toId) || (!l.oneway && l.from === toId && l.to === fromId)
-  );
-  if (already) return;
+function saveEditDraft() {
+    const data = {
+        draftNodes,
+        draftLinks
+    };
 
-  draftLinks.push({ from: fromId, to: toId, oneway });
-  addDraftLinkVisual(fromId, toId, draftLinks.length - 1);
-  updateExportPanelIfOpen();
+    try {
+        localStorage.setItem(
+            MM_EDIT_STORAGE_KEY,
+            JSON.stringify(data)
+        );
+    } catch (error) {
+        console.error(
+            '編集データの保存に失敗しました:',
+            error
+        );
+    }
+}
+
+function loadEditDraft() {
+    try {
+        const saved = localStorage.getItem(
+            MM_EDIT_STORAGE_KEY
+        );
+
+        if (!saved) {
+            return;
+        }
+
+        const data = JSON.parse(saved);
+
+        if (
+            !data ||
+            typeof data !== 'object'
+        ) {
+            return;
+        }
+
+        if (
+            data.draftNodes &&
+            typeof data.draftNodes === 'object'
+        ) {
+            draftNodes = data.draftNodes;
+        }
+
+        if (Array.isArray(data.draftLinks)) {
+            draftLinks = data.draftLinks;
+        }
+
+        // draftNodeSeqを復元データから再計算
+        let maxSeq = 0;
+
+        Object.values(draftNodes).forEach(node => {
+            const match = String(node.id).match(
+                /^draft_\d+_(\d+)$/
+            );
+
+            if (match) {
+                maxSeq = Math.max(
+                    maxSeq,
+                    Number(match[1])
+                );
+            }
+        });
+
+        draftNodeSeq = maxSeq + 1;
+
+    } catch (error) {
+        console.error(
+            '編集データの復元に失敗しました:',
+            error
+        );
+    }
+}
+
+function restoreEditDraftVisuals() {
+    const nodesGroup = $('mm-nodes-group');
+    const edgesGroup = $('mm-edges-group');
+
+    if (!nodesGroup || !edgesGroup) {
+        return;
+    }
+
+    // 念のため既存の下書き表示を削除
+    Array.from(nodesGroup.children).forEach(el => {
+        if (el.dataset.draft === '1') {
+            el.remove();
+        }
+    });
+
+    Array.from(edgesGroup.children).forEach(el => {
+        if (el.dataset.draft === '1') {
+            el.remove();
+        }
+    });
+
+    // 下書き頂点を復元
+    Object.values(draftNodes).forEach(node => {
+        // ここは既存の「頂点をSVGに追加する処理」を
+        // 関数化できているなら、それを呼び出す
+        addDraftNodeVisual(node);
+    });
+
+    // 下書き辺を復元
+    draftLinks.forEach((link, index) => {
+        addDraftLinkVisual(
+            link.from,
+            link.to,
+            index
+        );
+    });
+}
+
+function createDraftLink(fromId, toId) {
+    const onewayEl = $('mm-edit-oneway');
+    const oneway = !!(
+        onewayEl &&
+        onewayEl.checked
+    );
+
+    const already = draftLinks.some(l =>
+        (l.from === fromId && l.to === toId) ||
+        (
+            !l.oneway &&
+            l.from === toId &&
+            l.to === fromId
+        )
+    );
+
+    if (already) return;
+
+    draftLinks.push({
+        from: fromId,
+        to: toId,
+        oneway
+    });
+
+    addDraftLinkVisual(
+        fromId,
+        toId,
+        draftLinks.length - 1
+    );
+
+    saveEditDraft();
+
+    updateExportPanelIfOpen();
 }
 
 function addDraftLinkVisual(fromId, toId, index) {
@@ -1275,18 +1450,39 @@ function addDraftLinkVisual(fromId, toId, index) {
 }
 
 function clearDrafts() {
-  if (!window.confirm('下書きの頂点・辺をすべて削除します。よろしいですか？')) return;
-  draftNodes = {};
-  draftLinks = [];
-  edgeSourceId = null;
-  draftNodeSeq = 1;
+    if (!window.confirm(
+        '下書きの頂点・辺をすべて削除します。よろしいですか？'
+    )) {
+        return;
+    }
 
-  const nodesGroup = $('mm-nodes-group');
-  const edgesGroup = $('mm-edges-group');
-  if (nodesGroup) Array.from(nodesGroup.children).forEach(el => { if (el.dataset.draft === '1') el.remove(); });
-  if (edgesGroup) Array.from(edgesGroup.children).forEach(el => { if (el.dataset.draft === '1') el.remove(); });
+    draftNodes = {};
+    draftLinks = [];
+    edgeSourceId = null;
+    draftNodeSeq = 1;
 
-  updateExportPanelIfOpen();
+    const nodesGroup = $('mm-nodes-group');
+    const edgesGroup = $('mm-edges-group');
+
+    if (nodesGroup) {
+        Array.from(nodesGroup.children).forEach(el => {
+            if (el.dataset.draft === '1') {
+                el.remove();
+            }
+        });
+    }
+
+    if (edgesGroup) {
+        Array.from(edgesGroup.children).forEach(el => {
+            if (el.dataset.draft === '1') {
+                el.remove();
+            }
+        });
+    }
+
+    localStorage.removeItem(MM_EDIT_STORAGE_KEY);
+
+    updateExportPanelIfOpen();
 }
 
 // 追加した下書き（頂点・辺）を、既存のJSONスキーマに沿ったテキストとして書き出す
