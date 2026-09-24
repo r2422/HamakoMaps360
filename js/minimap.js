@@ -38,6 +38,77 @@ let mmLastTapTime = 0;
 let mmLastTapX = 0;
 let mmLastTapY = 0;
 
+/* ============================================================
+   ミニマップ内UI（ズームボタン・フロアボタン・サイズ設定ボタン）の
+   サイズ・余白の定数
+   ------------------------------------------------------------
+   これらはSVGの viewBox 座標系での「単位」で表す。viewBoxの幅は
+   レイアウト比率（上下/左右分割のドラッグ）によって可変になるため、
+   何も対策しないとviewBox全体が拡大縮小するのと一緒にこのUIパーツの
+   実際の画面上のサイズも一緒に変わってしまう。
+
+   💡 画面サイズに関係なく、常に固定の画面ピクセルサイズにする方式：
+   ユーザーが選んだ段階(S/M/L)の倍率と、実際の描画スケール(px/unit)を
+   打ち消す係数(MM_UI_REFERENCE_PX_PER_UNIT分)を掛け合わせることで、
+   レイアウト比率や画面サイズが何であっても同じ大きさ・同じ余白で
+   表示されるようにしている（詳細は resizeMinimapViewport() 内のコメント参照）。
+============================================================ */
+
+// 基準スケール：右下表示(corner)デフォルト時の実測値（幅520px ÷ viewBox幅260units = 2px/unit）
+const MM_UI_REFERENCE_PX_PER_UNIT = 2;
+
+// サイズ段階（1.0 = 元のデザインサイズ）。画面サイズによる自動判定はせず、
+// ユーザーがサイズ設定ボタンで選んだ段階をそのまま使う
+const MM_UI_SIZE_TIERS = [
+  { id: 'S', label: 'S', scale: 0.8 },
+  { id: 'M', label: 'M', scale: 1.0 },
+  { id: 'L', label: 'L', scale: 1.25 },
+];
+
+// サイズ設定ボタンをクリックした時に巡回する順番
+const MM_UI_SIZE_CYCLE = ['S', 'M', 'L'];
+
+// 'S' | 'M' | 'L'。起動時にmain.js側の保存設定があれば
+// initMinimapLayout()内で上書きする（minimap.jsはmain.jsより先に読み込まれるため、
+// この時点ではまだ savedUserSettings は参照できない）
+let mmUiSizeLevel = 'M';
+
+// ズームボタン（左下に配置。マージンは常に固定pxになるよう、基準スケールでの値を持つ）
+const MM_ZOOM_BTN_WIDTH = 42;
+const MM_ZOOM_BTN_HEIGHT = 20;
+const MM_ZOOM_BTN_MARGIN_LEFT = 12;   // 左端からの余白（基準スケールでのunits）
+const MM_ZOOM_BTN_MARGIN_BOTTOM = 8;  // 下端からの余白（基準スケールでのunits）
+
+// フロアボタン（右端・縦方向中央に配置。マージンは常に固定pxになるよう、基準スケールでの値を持つ）
+const MM_FLOOR_BTN_WIDTH = 32;
+const MM_FLOOR_BTN_HEIGHT = 16;
+const MM_FLOOR_BTN_GAP = 3;               // ボタン同士の隙間
+const MM_FLOOR_BTN_STEP = MM_FLOOR_BTN_HEIGHT + MM_FLOOR_BTN_GAP; // 1つ分の送り幅
+const MM_FLOOR_BTN_MARGIN_RIGHT = 12;     // 右端からの余白（基準スケールでのunits）
+const MM_FLOOR_LEVELS = [4, 3, 2, 1];     // 上から表示する順（表示ラベルは常に「N階」）
+// フロアボタン群全体の高さ（基準スケールでのunits）。縦方向中央寄せの計算に使う
+const MM_FLOOR_BTN_GROUP_HEIGHT = (MM_FLOOR_LEVELS.length - 1) * MM_FLOOR_BTN_STEP + MM_FLOOR_BTN_HEIGHT;
+
+// UIサイズ設定ボタン（右下に配置。大きさ・余白ともに常に固定で、S/M/L段階の影響を受けない）
+const MM_UI_SIZE_BTN_WIDTH = 34;
+const MM_UI_SIZE_BTN_HEIGHT = 16;
+const MM_UI_SIZE_BTN_MARGIN_RIGHT = 12;  // 右端からの余白（基準スケールでのunits）
+const MM_UI_SIZE_BTN_MARGIN_BOTTOM = 12; // 下端からの余白（基準スケールでのunits）
+
+// フロアボタン group の中身（<g id="mm-btn-fN">...）をまとめて生成する。
+// 💡 以前は同じ構造の<g>を4階分そのままコピペしていたため、ボタン幅・高さ・間隔が
+//    複数箇所に散らばって重複していた。ここで一括生成することで、サイズ変更は
+//    上の定数を直すだけで済むようにしてある。
+//    ボタンの id (mm-btn-fN) と中身の構造(rect→text)は、クリック処理・アクティブ状態の
+//    ハイライト処理(updateMinimapFloor)が参照しているため変更していない。
+function buildFloorButtonsMarkup() {
+  return MM_FLOOR_LEVELS.map((floor, i) => `
+        <g id="mm-btn-f${floor}" style="cursor: pointer;" transform="translate(0, ${i * MM_FLOOR_BTN_STEP})">
+          <rect width="${MM_FLOOR_BTN_WIDTH}" height="${MM_FLOOR_BTN_HEIGHT}" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
+          <text x="${MM_FLOOR_BTN_WIDTH / 2}" y="11" text-anchor="middle" fill="#8B95B4">${floor}F</text>
+        </g>`).join('');
+}
+
 /* --- ミニマップ構築 --- */
 function initMinimapLayout() {
   // グローバル変数 window.NODES がロード後であることを確認
@@ -95,36 +166,27 @@ function initMinimapLayout() {
         <text id="mm-floor-title" x="14" y="15" text-anchor="start" font-size="8" font-family="'Noto Sans JP', sans-serif" font-weight="700" letter-spacing="0.04em" fill="var(--color-text)" pointer-events="none">フロアマップ</text>
       </g>
 
-      <g id="mm-zoom-controls" transform="translate(12, 132)">
-        <rect width="42" height="20" rx="6" fill="var(--color-primary-pale)" stroke="var(--color-primary-dark)" stroke-width="1"/>
-        <line x1="21" y1="3" x2="21" y2="17" stroke="var(--color-primary-dark)" stroke-width="1"/>
+      <g id="mm-zoom-controls" transform="translate(${MM_ZOOM_BTN_MARGIN_LEFT}, ${160 - MM_ZOOM_BTN_MARGIN_BOTTOM - MM_ZOOM_BTN_HEIGHT})">
+        <rect width="${MM_ZOOM_BTN_WIDTH}" height="${MM_ZOOM_BTN_HEIGHT}" rx="6" fill="var(--color-primary-pale)" stroke="var(--color-primary-dark)" stroke-width="1"/>
+        <line x1="${MM_ZOOM_BTN_WIDTH / 2}" y1="3" x2="${MM_ZOOM_BTN_WIDTH / 2}" y2="${MM_ZOOM_BTN_HEIGHT - 3}" stroke="var(--color-primary-dark)" stroke-width="1"/>
         <g id="mm-btn-zoom-in" style="cursor: pointer;">
-          <rect x="1" y="1" width="20" height="18" rx="5" fill="transparent"/>
+          <rect x="1" y="1" width="${MM_ZOOM_BTN_WIDTH / 2 - 1}" height="${MM_ZOOM_BTN_HEIGHT - 2}" rx="5" fill="transparent"/>
           <path d="M11,6 L11,14 M7,10 L15,10" stroke="var(--color-primary-dark)" stroke-width="1.4" stroke-linecap="round"/>
         </g>
-        <g id="mm-btn-zoom-out" style="cursor: pointer;" transform="translate(21, 0)">
-          <rect x="1" y="1" width="20" height="18" rx="5" fill="transparent"/>
+        <g id="mm-btn-zoom-out" style="cursor: pointer;" transform="translate(${MM_ZOOM_BTN_WIDTH / 2}, 0)">
+          <rect x="1" y="1" width="${MM_ZOOM_BTN_WIDTH / 2 - 1}" height="${MM_ZOOM_BTN_HEIGHT - 2}" rx="5" fill="transparent"/>
           <path d="M7,10 L15,10" stroke="var(--color-primary-dark)" stroke-width="1.4" stroke-linecap="round"/>
         </g>
       </g>
 
-      <g id="mm-floor-buttons" transform="translate(224, 64)" font-family="'Share Tech Mono', monospace" font-size="8">
-        <g id="mm-btn-f4" style="cursor: pointer;">
-          <rect width="32" height="16" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
-          <text x="16" y="11" text-anchor="middle" fill="#8B95B4">4F</text>
-        </g>
-        <g id="mm-btn-f3" style="cursor: pointer;" transform="translate(0, 19)">
-          <rect width="32" height="16" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
-          <text x="16" y="11" text-anchor="middle" fill="#8B95B4">3F</text>
-        </g>
-        <g id="mm-btn-f2" style="cursor: pointer;" transform="translate(0, 38)">
-          <rect width="32" height="16" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
-          <text x="16" y="11" text-anchor="middle" fill="#8B95B4" font-weight="700">2F</text>
-        </g>
-        <g id="mm-btn-f1" style="cursor: pointer;" transform="translate(0, 57)">
-          <rect width="32" height="16" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
-          <text x="16" y="11" text-anchor="middle" fill="#8B95B4">1F</text>
-        </g>
+      <g id="mm-floor-buttons" transform="translate(${260 - MM_FLOOR_BTN_MARGIN_RIGHT - MM_FLOOR_BTN_WIDTH}, ${(160 - MM_FLOOR_BTN_GROUP_HEIGHT) / 2})" font-family="'Share Tech Mono', monospace" font-size="8">${buildFloorButtonsMarkup()}
+      </g>
+
+      <!-- ミニマップUI(ズーム/フロアボタン)の表示サイズを手動で切り替えるボタン。
+           右下に配置。クリックで S→M→L→S... と巡回する -->
+      <g id="mm-btn-ui-size" style="cursor: pointer;" transform="translate(${260 - MM_UI_SIZE_BTN_MARGIN_RIGHT - MM_UI_SIZE_BTN_WIDTH}, ${160 - MM_UI_SIZE_BTN_MARGIN_BOTTOM - MM_UI_SIZE_BTN_HEIGHT})">
+        <rect width="${MM_UI_SIZE_BTN_WIDTH}" height="${MM_UI_SIZE_BTN_HEIGHT}" rx="4" fill="var(--color-surface-soft)" stroke="var(--color-border)" stroke-width="1"/>
+        <text id="mm-ui-size-label" x="${MM_UI_SIZE_BTN_WIDTH / 2}" y="11" text-anchor="middle" font-size="7" font-family="'Share Tech Mono', monospace" fill="var(--color-text-muted)" pointer-events="none">M</text>
       </g>
     </svg>
     <div id="mm-edit-toolbar" style="display:none; position:absolute; top:6px; left:6px; z-index:20; gap:6px; align-items:center; background:rgba(6,12,32,0.8); border:1px solid rgba(90,127,255,0.4); border-radius:0px; padding:5px 8px; font-family:'Noto Sans JP',sans-serif; font-size:10px; color:#c7d2f0; backdrop-filter:blur(6px);">
@@ -187,6 +249,14 @@ function initMinimapLayout() {
     nodesGroup.appendChild(circle);
   }
 
+  // 💡 minimap.jsはmain.jsより先に読み込まれるため、ここで初めて
+  //    savedUserSettings（main.js側で定義）を安全に参照できる
+  if (typeof savedUserSettings !== 'undefined' && MM_UI_SIZE_CYCLE.includes(savedUserSettings.mmUiSizeLevel)) {
+    mmUiSizeLevel = savedUserSettings.mmUiSizeLevel;
+    const label = $('mm-ui-size-label');
+    if (label) label.textContent = mmUiSizeLevel;
+  }
+
   resizeMinimapDragMask();
   setupMinimapInteractions();
   setupEditToolbar();
@@ -199,13 +269,68 @@ function syncPlayerVisibility() {
   if (player) player.style.display = isCurrentFloor ? 'block' : 'none';
 }
 
+/* ============================================================
+   現在ミニマップの中心が見ている座標から、どの棟にいるかを判定する
+   ------------------------------------------------------------
+   MM_BUILDING_ZONES の座標は mmX/mmY（= pos3D[0]/pos3D[2] を
+   MINIMAP_SCALE(3.0)倍したミニマップ上の絶対座標。mm-bg-mapとして
+   使っている1F.svg等の平面図と同じ座標系）の単位。
+   1F.svg（5690×4370、上が北）から実測した値を初期値として置いて
+   いるが、あくまで仮の値。実際の校舎の位置に合わせて微調整が必要
+   （特に2F以上は1Fと形状が異なる可能性が高いため要調整）。
+============================================================ */
+const MM_BUILDING_ZONES = [
+  // 北館・本館・南館（メインの3棟）
+  { name: '北館', xMin: 20,   xMax: 3630, yMin: 20,   yMax: 510  },
+  { name: '本館', xMin: 20,   xMax: 3090, yMin: 1640, yMax: 2490 },
+  { name: '南館', xMin: 20,   xMax: 3090, yMin: 3500, yMax: 4350 },
+  { name: '南館', xMin: 3140, xMax: 3600, yMin: 3500, yMax: 4350 }, // 南館 東側の別棟部分
+
+  // 体育館（本館の東側、渡り廊下で接続）
+  { name: '体育館', xMin: 4040, xMax: 5670, yMin: 800,  yMax: 2130 },
+
+  // 連絡通路（棟と棟をつなぐ渡り廊下）
+  { name: '連絡通路', xMin: 925,  xMax: 1105, yMin: 505,  yMax: 1645 }, // 北館-本館 西側
+  { name: '連絡通路', xMin: 2905, xMax: 3085, yMin: 505,  yMax: 1645 }, // 北館-本館 東側
+  { name: '連絡通路', xMin: 925,  xMax: 1105, yMin: 2485, yMax: 3505 }, // 本館-南館 西側
+  { name: '連絡通路', xMin: 2905, xMax: 3085, yMin: 2485, yMax: 3505 }, // 本館-南館 東側
+  { name: '連絡通路', xMin: 3085, xMax: 5665, yMin: 2125, yMax: 2245 }, // 本館-体育館
+];
+const MM_BUILDING_FALLBACK = '外';
+
+// mmX/mmY（ワールド座標）が属する棟名を返す。
+// floor引数は今は使っていないが、将来フロアごとにゾーンを切り替えたくなった
+// ときにMM_BUILDING_ZONESをフロア別のテーブルに拡張しやすいよう残してある。
+function getBuildingAt(mmX, mmY, floor) {
+  for (const zone of MM_BUILDING_ZONES) {
+    if (mmX >= zone.xMin && mmX <= zone.xMax && mmY >= zone.yMin && mmY <= zone.yMax) {
+      return zone.name;
+    }
+  }
+  return MM_BUILDING_FALLBACK;
+}
+
+// ミニマップの表示中心（パン・ズーム後）が、ワールド座標(mmX/mmY)でどこに
+// 当たるかを逆算する。mm-transform-group の transform（translate→scale）の逆変換。
+function getMinimapViewportCenterWorld() {
+  const svg = $('hud-minimap-svg');
+  const viewBox = svg ? svg.viewBox.baseVal : { width: 260, height: 160 };
+  const screenCenterX = viewBox.width / 2;
+  const screenCenterY = viewBox.height / 2;
+  return {
+    x: (screenCenterX - mmPanX) / mmScale,
+    y: (screenCenterY - mmPanY) / mmScale,
+  };
+}
+
 function syncFloorTitle() {
-  // 💡 現在地ノードの building プロパティから館名を判定する。
-  //    フロア番号そのものが変わらない移動（同フロア内で別棟へ渡る等）でも
-  //    必ず再評価されるよう、updateMinimapFloor から独立させている。
-  const bMap = { 'North': '北館', 'Main': '本館', 'South': '南館' };
-  const locatedNode = NODES[currentId];
-  const buildingName = (locatedNode && bMap[locatedNode.building]) || '本館';
+  // 💡 以前は現在地ノードの building プロパティ（＝自分が実際に立っている棟）を
+  //    表示していたが、ミニマップをパン/ズームして別の場所を見ているときも
+  //    実態に合わせたいので、「今ミニマップの中心に映っている座標」から
+  //    棟名を判定するように変更した。
+  if (currentMinimapFloor == null) return;
+  const center = getMinimapViewportCenterWorld();
+  const buildingName = getBuildingAt(center.x, center.y, currentMinimapFloor);
   const floorTitle = $('mm-floor-title');
   if (floorTitle) floorTitle.textContent = `${buildingName}${currentMinimapFloor}F`;
 }
@@ -286,7 +411,10 @@ function applyMinimapTransform() {
   if (group) {
     group.setAttribute('transform', `translate(${mmPanX}, ${mmPanY}) scale(${mmScale})`);
   }
-  
+
+  // パン・ズームのたびに、ミニマップの中心に今映っている棟名も追従させる
+  syncFloorTitle();
+
   const player = $('mm-player');
   const arrow = $('mm-arrow');
   
@@ -435,11 +563,62 @@ function resizeMinimapViewport() {
      */
     const floorButtons = $('mm-floor-buttons');
 
+    /*
+     * ズームボタン・フロアボタン・サイズ設定ボタンの位置とサイズを、
+     * 画面サイズやレイアウト比率に関係なく常に一定に保つ。
+     * 💡 SVGはviewBox基準で内部の要素すべてが一緒に拡大縮小されるため、
+     *    何もしないとレイアウト比率や画面サイズが変わるたびにこのUIパーツも
+     *    一緒に拡大縮小されてしまう。そこで実際の描画スケール(px/unit)から
+     *    逆算した係数(pxCancelScale)でそれを打ち消す。
+     *
+     *    余白(端からのマージン)は常に固定pxにしたいので pxCancelScale のみを掛ける。
+     *    ボタン本体の大きさは、pxCancelScaleに加えてユーザーが選んだ段階(S/M/L)の
+     *    倍率も掛けた uiScale を使う → 段階を変えても余白は動かず、ボタンだけ
+     *    大きくなる/小さくなる。
+     *    ただしサイズ設定ボタン自身(mm-btn-ui-size)は、段階を切り替えている
+     *    最中でも自分を見失わないよう、常にpxCancelScaleのみ（=段階の影響を受けない
+     *    固定サイズ）を使う。
+     */
+    const svgRect = svg.getBoundingClientRect();
+    const pxPerUnit = svgRect.height > 0
+        ? (svgRect.height / VIEWBOX_HEIGHT)
+        : MM_UI_REFERENCE_PX_PER_UNIT;
+    const pxCancelScale = MM_UI_REFERENCE_PX_PER_UNIT / pxPerUnit;
+
+    const activeTier = MM_UI_SIZE_TIERS.find(t => t.id === mmUiSizeLevel) || MM_UI_SIZE_TIERS[1];
+    const uiScale = activeTier.scale * pxCancelScale;
+
+    const zoomControls = $('mm-zoom-controls');
+    if (zoomControls) {
+        // 左下アンカー：左・下の余白は pxCancelScale のみ（段階に関係なく固定px）、
+        // ボタン本体は uiScale（段階に応じて拡大縮小）
+        const zx = MM_ZOOM_BTN_MARGIN_LEFT * pxCancelScale;
+        const zy = VIEWBOX_HEIGHT
+            - (MM_ZOOM_BTN_MARGIN_BOTTOM * pxCancelScale)
+            - (MM_ZOOM_BTN_HEIGHT * uiScale);
+        zoomControls.setAttribute('transform', `translate(${zx}, ${zy}) scale(${uiScale})`);
+    }
+
     if (floorButtons) {
-        floorButtons.setAttribute(
-            'transform',
-            `translate(${viewBoxWidth - 36}, 64)`
-        );
+        // 右端・縦方向中央アンカー：右の余白は pxCancelScale のみ、
+        // 縦位置はボタン群全体の高さ(段階で変わる)をもとに中央寄せし直す
+        const fx = viewBoxWidth
+            - (MM_FLOOR_BTN_MARGIN_RIGHT * pxCancelScale)
+            - (MM_FLOOR_BTN_WIDTH * uiScale);
+        const fy = (VIEWBOX_HEIGHT - MM_FLOOR_BTN_GROUP_HEIGHT * uiScale) / 2;
+        floorButtons.setAttribute('transform', `translate(${fx}, ${fy}) scale(${uiScale})`);
+    }
+
+    const uiSizeBtn = $('mm-btn-ui-size');
+    if (uiSizeBtn) {
+        // 右下アンカー：大きさ・余白とも常に pxCancelScale のみ（S/M/L段階の影響を受けない）
+        const sx = viewBoxWidth
+            - (MM_UI_SIZE_BTN_MARGIN_RIGHT * pxCancelScale)
+            - (MM_UI_SIZE_BTN_WIDTH * pxCancelScale);
+        const sy = VIEWBOX_HEIGHT
+            - (MM_UI_SIZE_BTN_MARGIN_BOTTOM * pxCancelScale)
+            - (MM_UI_SIZE_BTN_HEIGHT * pxCancelScale);
+        uiSizeBtn.setAttribute('transform', `translate(${sx}, ${sy}) scale(${pxCancelScale})`);
     }
 }
 
@@ -1240,6 +1419,24 @@ function setupMinimapInteractions() {
         viewBox.height / 2
     );
   });
+
+  // UIサイズ設定ボタン：クリックのたびに S→M→L→S... と巡回する
+  const uiSizeBtn = $('mm-btn-ui-size');
+  if (uiSizeBtn) {
+    uiSizeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const idx = MM_UI_SIZE_CYCLE.indexOf(mmUiSizeLevel);
+      mmUiSizeLevel = MM_UI_SIZE_CYCLE[(idx + 1) % MM_UI_SIZE_CYCLE.length];
+
+      const label = $('mm-ui-size-label');
+      if (label) label.textContent = mmUiSizeLevel;
+
+      resizeMinimapViewport(); // 新しい段階をすぐに反映
+      if (typeof saveUserSettings === 'function') {
+        saveUserSettings({ mmUiSizeLevel });
+      }
+    });
+  }
 }
 
 /* --- 画面サイズ変更時もミニマップを追従させる --- */
