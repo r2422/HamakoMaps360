@@ -28,3 +28,22 @@
     }
     }
 }
+
+{
+  "todo_X,Y": {
+    "name": "",
+    "sub": "",
+    "imageFile": "todo_X,Y.jpg",
+    "building": "Main",
+    "floor": 1,
+    "initYaw": 0,
+    "mmIdx": null,
+    "pos3D": [
+      X,
+      0,
+      Y
+    ],
+    "links": []
+  }
+}
+

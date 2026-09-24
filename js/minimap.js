@@ -38,6 +38,8 @@ let mmLastTapTime = 0;
 let mmLastTapX = 0;
 let mmLastTapY = 0;
 
+let mmEditClickTimer = null;
+
 /* ============================================================
    ミニマップ内UI（ズームボタン・フロアボタン・サイズ設定ボタン）の
    サイズ・余白の定数
@@ -828,28 +830,81 @@ function clearEdgeSourceHighlight() {
   }
 }
 
+function removeDraftLink(fromId, toId) {
+    const index = draftLinks.findIndex(l =>
+        (l.from === fromId && l.to === toId) ||
+        (!l.oneway && l.from === toId && l.to === fromId)
+    );
+
+    if (index === -1) return false;
+
+    draftLinks.splice(index, 1);
+
+    const edgesGroup = $('mm-edges-group');
+
+    if (edgesGroup) {
+        Array.from(edgesGroup.children).forEach(el => {
+            if (el.dataset.draft === '1') {
+                el.remove();
+            }
+        });
+
+        draftLinks.forEach((link, i) => {
+            addDraftLinkVisual(
+                link.from,
+                link.to,
+                i
+            );
+        });
+    }
+
+    updateExportPanelIfOpen();
+
+    return true;
+}
+
 // 編集モード中の「クリックのみ（ドラッグではない）」操作：ノード選択→2個目クリックでリンク作成
 function handleEditModeClick(clientX, clientY) {
-  const svg = minimapClientToSvg(clientX, clientY);
-  const hitId = findClosestNodeOnFloor(svg.x, svg.y, 20);
+    const svg = minimapClientToSvg(clientX, clientY);
+    const hitId = findClosestNodeOnFloor(
+        svg.x,
+        svg.y,
+        20
+    );
 
-  if (!hitId) {
-    clearEdgeSourceHighlight();
-    edgeSourceId = null;
-    return;
-  }
+    if (!hitId) {
+        clearEdgeSourceHighlight();
+        edgeSourceId = null;
+        return;
+    }
 
-  if (edgeSourceId === null) {
-    edgeSourceId = hitId;
-    highlightEdgeSource(hitId);
-  } else if (edgeSourceId === hitId) {
+    if (edgeSourceId === null) {
+        edgeSourceId = hitId;
+        highlightEdgeSource(hitId);
+        return;
+    }
+
+    if (edgeSourceId === hitId) {
+        clearEdgeSourceHighlight();
+        edgeSourceId = null;
+        return;
+    }
+
+    // 既に存在する辺なら削除
+    if (removeDraftLink(edgeSourceId, hitId)) {
+        clearEdgeSourceHighlight();
+        edgeSourceId = null;
+        return;
+    }
+
+    // 存在しなければ新規作成
+    createDraftLink(
+        edgeSourceId,
+        hitId
+    );
+
     clearEdgeSourceHighlight();
     edgeSourceId = null;
-  } else {
-    createDraftLink(edgeSourceId, hitId);
-    clearEdgeSourceHighlight();
-    edgeSourceId = null;
-  }
 }
 
 // 編集モード中の右クリック：既存ノード上→座標情報、空白→新規下書きノード作成
@@ -982,29 +1037,117 @@ function showNodeInfoPopup(nodeId) {
       <div>棟・階: ${buildingLabel} ${node.floor}F</div>
       <div>pos3D: <code id="mm-info-coord" style="color:#fff;">${coordText}</code></div>
     </div>
-    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
-      <button id="mm-info-copy" style="background:#1a2c52; border:1px solid #3a4e78; color:#e9edf7; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px;">座標をコピー</button>
-      <button id="mm-info-close" style="background:#223154; border:1px solid #3a4e78; color:#8b95b4; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px;">閉じる</button>
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+        <button id="mm-info-copy" style="background:#1a2c52; border:1px solid #3a4e78; color:#e9edf7; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px;">座標をコピー</button>
+
+        ${node.isDraft
+            ? `<button id="mm-info-delete" style="background:#5a2430; border:1px solid #9b4a58; color:#ffd9de; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px;">頂点を削除</button>`
+            : ''
+        }
+
+        <button id="mm-info-close" style="background:#223154; border:1px solid #3a4e78; color:#8b95b4; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:11px;">閉じる</button>
     </div>
   `;
 
   const targetContainer = $('hud-minimap-container') || document.body;
   targetContainer.appendChild(modal);
 
-  $('mm-info-copy').addEventListener('click', ev => {
+$('mm-info-copy').addEventListener('click', ev => {
     ev.stopPropagation();
+
     const text = `[${px}, ${py}, ${pz}]`;
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).catch(() => {});
+        navigator.clipboard.writeText(text).catch(() => {});
     }
+
     const btn = $('mm-info-copy');
+
     if (btn) {
-      const orig = btn.textContent;
-      btn.textContent = 'コピーしました';
-      setTimeout(() => { const b = $('mm-info-copy'); if (b) b.textContent = orig; }, 1200);
+        const orig = btn.textContent;
+        btn.textContent = 'コピーしました';
+
+        setTimeout(() => {
+            const b = $('mm-info-copy');
+
+            if (b) {
+                b.textContent = orig;
+            }
+        }, 1200);
     }
-  });
-  $('mm-info-close').addEventListener('click', ev => { ev.stopPropagation(); modal.remove(); });
+});
+
+const deleteBtn = $('mm-info-delete');
+
+if (deleteBtn) {
+    deleteBtn.addEventListener('click', ev => {
+        ev.stopPropagation();
+
+        const ok = window.confirm(
+            'この頂点を削除しますか？\n接続している辺も削除されます。'
+        );
+
+        if (!ok) return;
+
+        deleteDraftNode(nodeId);
+        modal.remove();
+    });
+}
+
+$('mm-info-close').addEventListener('click', ev => {
+    ev.stopPropagation();
+    modal.remove();
+});
+}
+
+function deleteDraftNode(nodeId) {
+    const node = draftNodes[nodeId];
+
+    // 下書きノード以外は削除しない
+    if (!node) return false;
+
+    // この頂点に接続している下書き辺も削除
+    draftLinks = draftLinks.filter(link =>
+        link.from !== nodeId &&
+        link.to !== nodeId
+    );
+
+    delete draftNodes[nodeId];
+
+    // SVG上の頂点を削除
+    const dot = $(`mm-dot-${nodeId}`);
+    if (dot) {
+        dot.remove();
+    }
+
+    // 辺を描き直す
+    const edgesGroup = $('mm-edges-group');
+
+    if (edgesGroup) {
+        Array.from(edgesGroup.children).forEach(el => {
+            if (el.dataset.draft === '1') {
+                el.remove();
+            }
+        });
+
+        draftLinks.forEach((link, index) => {
+            addDraftLinkVisual(
+                link.from,
+                link.to,
+                index
+            );
+        });
+    }
+
+    // 選択状態も解除
+    if (edgeSourceId === nodeId) {
+        clearEdgeSourceHighlight();
+        edgeSourceId = null;
+    }
+
+    updateExportPanelIfOpen();
+
+    return true;
 }
 
 function createDraftNodeAt(svgX, svgY) {
@@ -1067,6 +1210,35 @@ function addDraftNodeVisual(node) {
   nodesGroup.appendChild(circle);
 }
 
+function removeDraftLink(fromId, toId) {
+    const index = draftLinks.findIndex(l =>
+        (l.from === fromId && l.to === toId) ||
+        (!l.oneway && l.from === toId && l.to === fromId)
+    );
+
+    if (index === -1) return false;
+
+    draftLinks.splice(index, 1);
+
+    // 下書き辺を一度すべて描き直す
+    const edgesGroup = $('mm-edges-group');
+
+    if (edgesGroup) {
+        Array.from(edgesGroup.children).forEach(el => {
+            if (el.dataset.draft === '1') {
+                el.remove();
+            }
+        });
+
+        draftLinks.forEach((link, i) => {
+            addDraftLinkVisual(link.from, link.to, i);
+        });
+    }
+
+    updateExportPanelIfOpen();
+    return true;
+}
+
 function createDraftLink(fromId, toId) {
   const onewayEl = $('mm-edit-oneway');
   const oneway = !!(onewayEl && onewayEl.checked);
@@ -1119,44 +1291,117 @@ function clearDrafts() {
 
 // 追加した下書き（頂点・辺）を、既存のJSONスキーマに沿ったテキストとして書き出す
 function buildExportText() {
-  const directedEdges = [];
-  draftLinks.forEach(l => {
-    directedEdges.push({ from: l.from, to: l.to });
-    if (!l.oneway) directedEdges.push({ from: l.to, to: l.from });
-  });
+    const directedEdges = [];
 
-  const newNodesObj = {};
-  Object.values(draftNodes).forEach(n => {
-    newNodesObj[n.id] = {
-      name: n.name, sub: n.sub || '', imageFile: '__TODO__.jpg',
-      building: n.building, floor: n.floor, initYaw: 0, mmIdx: null,
-      pos3D: n.pos3D, links: []
-    };
-  });
+    draftLinks.forEach(l => {
+        directedEdges.push({
+            from: l.from,
+            to: l.to
+        });
 
-  const appendToExisting = {};
-  directedEdges.forEach(e => {
-    const entry = { targetId: e.to, label: '', hint: '' };
-    if (newNodesObj[e.from]) {
-      if (!newNodesObj[e.from].links.some(x => x.targetId === e.to)) newNodesObj[e.from].links.push(entry);
-    } else if (NODES[e.from]) {
-      if (!appendToExisting[e.from]) appendToExisting[e.from] = [];
-      if (!appendToExisting[e.from].some(x => x.targetId === e.to)) appendToExisting[e.from].push(entry);
+        if (!l.oneway) {
+            directedEdges.push({
+                from: l.to,
+                to: l.from
+            });
+        }
+    });
+
+    // 内部ID → 書き出し用ID の対応表
+    const exportIdMap = {};
+
+    Object.values(draftNodes).forEach(n => {
+        const x = n.pos3D[0];
+        const y = n.pos3D[2];
+
+        exportIdMap[n.id] = `todo_${x},${y}`;
+    });
+
+    const newNodesObj = {};
+
+    Object.values(draftNodes).forEach(n => {
+        const exportId = exportIdMap[n.id];
+
+        newNodesObj[exportId] = {
+            name: n.name,
+            sub: n.sub || '',
+            imageFile: `${exportId}.jpg`,
+            building: n.building,
+            floor: n.floor,
+            initYaw: 0,
+            mmIdx: null,
+            pos3D: n.pos3D,
+            links: []
+        };
+    });
+
+    const appendToExisting = {};
+
+    directedEdges.forEach(e => {
+        const targetId =
+            exportIdMap[e.to] || e.to;
+
+        const entry = {
+            targetId,
+            label: '',
+            hint: ''
+        };
+
+        if (newNodesObj[exportIdMap[e.from]]) {
+
+            const fromNode =
+                newNodesObj[exportIdMap[e.from]];
+
+            if (!fromNode.links.some(
+                x => x.targetId === targetId
+            )) {
+                fromNode.links.push(entry);
+            }
+
+        } else if (NODES[e.from]) {
+
+            if (!appendToExisting[e.from]) {
+                appendToExisting[e.from] = [];
+            }
+
+            if (!appendToExisting[e.from].some(
+                x => x.targetId === targetId
+            )) {
+                appendToExisting[e.from].push(entry);
+            }
+        }
+    });
+
+    let text = '';
+
+    if (Object.keys(newNodesObj).length) {
+
+        text +=
+            '// ① 新規ノード：該当フロアのJSONファイルの "nodes" オブジェクトへ追加してください\n';
+
+        text +=
+            JSON.stringify(newNodesObj, null, 2) + '\n\n';
     }
-  });
 
-  let text = '';
-  if (Object.keys(newNodesObj).length) {
-    text += '// ① 新規ノード：該当フロアのJSONファイルの "nodes" オブジェクトへ追加してください\n';
-    text += JSON.stringify(newNodesObj, null, 2) + '\n\n';
-  }
-  if (Object.keys(appendToExisting).length) {
-    text += '// ② 既存ノードの links 配列に、それぞれ追記してください\n';
-    for (const id in appendToExisting) {
-      text += `// --- ${id} ---\n` + JSON.stringify(appendToExisting[id], null, 2) + '\n\n';
+    if (Object.keys(appendToExisting).length) {
+
+        text +=
+            '// ② 既存ノードの links 配列に、それぞれ追記してください\n';
+
+        for (const id in appendToExisting) {
+            text +=
+                `// --- ${id} ---\n` +
+                JSON.stringify(
+                    appendToExisting[id],
+                    null,
+                    2
+                ) +
+                '\n\n';
+        }
     }
-  }
-  return text || '（まだ下書きの頂点・辺がありません）';
+
+    return text ||
+        '（まだ下書きの頂点・辺がありません）';
 }
 
 function toggleExportPanel() {
@@ -1321,12 +1566,76 @@ function setupMinimapInteractions() {
 
     if (editMode && !mmDragMoved) {
 
-        handleEditModeClick(
+    const now = Date.now();
+
+    const dx = e.clientX - mmLastTapX;
+    const dy = e.clientY - mmLastTapY;
+
+    const timeDiff = now - mmLastTapTime;
+    const distance = Math.hypot(dx, dy);
+
+    const isDoubleTap =
+        timeDiff < 400 &&
+        distance < 30;
+
+    if (isDoubleTap) {
+
+        // ダブルタップ成立
+        mmLastTapTime = 0;
+
+        if (mmEditClickTimer) {
+            clearTimeout(mmEditClickTimer);
+            mmEditClickTimer = null;
+        }
+
+        const svg = minimapClientToSvg(
             e.clientX,
             e.clientY
         );
 
+        const hitId = findClosestNodeOnFloor(
+            svg.x,
+            svg.y,
+            20
+        );
+
+        if (hitId) {
+
+            // 頂点をダブルタップ
+            showNodeInfoPopup(hitId);
+
+        } else {
+
+            // 空白をダブルタップ
+            createDraftNodeAt(
+                svg.x,
+                svg.y
+            );
+        }
+
+    } else {
+
+        // 1回目のタップ
+        mmLastTapTime = now;
+        mmLastTapX = e.clientX;
+        mmLastTapY = e.clientY;
+
+        if (mmEditClickTimer) {
+            clearTimeout(mmEditClickTimer);
+        }
+
+        mmEditClickTimer = setTimeout(() => {
+
+            mmEditClickTimer = null;
+
+            handleEditModeClick(
+                e.clientX,
+                e.clientY
+            );
+
+        }, 250);
     }
+}
 
     // 通常モードのダブルタップ判定
     if (!editMode && walkPhase === 'idle' && !mmDragMoved) {
