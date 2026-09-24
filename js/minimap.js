@@ -57,14 +57,61 @@ let mmLastTapY = 0;
 // 基準スケール：右下表示(corner)デフォルト時の実測値（幅520px ÷ viewBox幅260units = 2px/unit）
 const MM_UI_REFERENCE_PX_PER_UNIT = 2;
 
-// 💡 style.css の #hud-minimap { transition: all 0.3s ease; } と対応する値。
-//    レイアウト切り替え直後はこのトランジションの途中で#hud-minimapのサイズが
-//    まだ変化し続けているため、その瞬間にgetBoundingClientRect()で測ると
-//    古い(または中途半端な)サイズを拾ってしまい、UIパーツのサイズ計算が狂う。
-//    トランジション完了後にもう一度測り直すための待ち時間として使う。
-//    style.css側の秒数を変えたら、ここも合わせて変更すること。
+// 💡 style.css の #hud-minimap { transition: all 0.3s ease; } を検知するためのフォールバック時間。
+//    基本は transitionend イベントで「実際に完了した瞬間」を捉えるので、この値は
+//    あくまで transitionend が発火しなかった場合の保険（transitionが無効化されている環境や、
+//    サイズが実際には変わらず transitionend 自体が起きないケースなど）として使う。
 const MM_LAYOUT_TRANSITION_MS = 300;
 let mmLayoutSettleTimer = null;
+let mmMinimapResettlePending = false; // 二重登録防止
+
+// #hud-minimap のCSSトランジション（レイアウト比率・レイアウトモードの変更で発生）が
+// 実際に完了したタイミングで、ミニマップUIのサイズ・位置を測り直す。
+// 💡 以前は「だいたいこのくらいで終わるだろう」という固定時間のsetTimeoutで代用していたが、
+//    ブラウザの描画負荷や端末性能によっては0.3sぴったりに終わるとは限らず、安全とは言えなかった。
+//    split-dividerのドラッグ終了・minimap-layout-optionのクリックなど、#hud-minimapの
+//    サイズが変わりうるすべての操作の直後にこれを呼ぶことで、「実際に変化が完了した瞬間」に
+//    正確に合わせて再計算できる。
+function scheduleMinimapUiResettle() {
+    const hudMinimap = document.getElementById('hud-minimap');
+
+    const runResettle = () => {
+        mmMinimapResettlePending = false;
+        resizeMinimapViewport();
+        resizeMinimapDragMask();
+        if (typeof focusCurrentNodeOnMinimap === 'function') {
+            focusCurrentNodeOnMinimap();
+        }
+    };
+
+    if (!hudMinimap) {
+        // 要素が見つからない場合の保険（通常は起こらない）
+        clearTimeout(mmLayoutSettleTimer);
+        mmLayoutSettleTimer = setTimeout(runResettle, MM_LAYOUT_TRANSITION_MS + 50);
+        return;
+    }
+
+    if (mmMinimapResettlePending) return; // 既に待機中なら二重登録しない
+    mmMinimapResettlePending = true;
+
+    const onTransitionEnd = (e) => {
+        // width/height 以外のプロパティ(box-shadowなど)のtransitionendで暴発しないよう絞る
+        if (e.target !== hudMinimap) return;
+        if (e.propertyName !== 'width' && e.propertyName !== 'height') return;
+        hudMinimap.removeEventListener('transitionend', onTransitionEnd);
+        clearTimeout(mmLayoutSettleTimer);
+        runResettle();
+    };
+    hudMinimap.addEventListener('transitionend', onTransitionEnd);
+
+    // 保険：サイズが実際には変わらずtransitionend自体が発火しないケースや、
+    // OS設定等でtransitionが無効化されているケースに備えたフォールバック
+    clearTimeout(mmLayoutSettleTimer);
+    mmLayoutSettleTimer = setTimeout(() => {
+        hudMinimap.removeEventListener('transitionend', onTransitionEnd);
+        runResettle();
+    }, MM_LAYOUT_TRANSITION_MS + 100);
+}
 
 // サイズ段階（1.0 = 元のデザインサイズ）。画面サイズによる自動判定はせず、
 // ユーザーがサイズ設定ボタンで選んだ段階をそのまま使う
@@ -742,18 +789,11 @@ function setMinimapLayout(mode) {
         updateSplitDividerVisibility();
     }
 
-    // 7. 💡 #hud-minimapのCSSトランジション(0.3s)が終わった後にもう一度測り直す。
-    //    切り替え直後の即時計算(3〜6)はトランジション開始前の古いサイズを拾って
-    //    しまうことがあり、それが「初期表示やレイアウト切り替え直後だけUIサイズが
-    //    おかしい（S/M/Lボタンを押すと直る＝再計算すれば直る）」という症状の原因だった。
-    clearTimeout(mmLayoutSettleTimer);
-    mmLayoutSettleTimer = setTimeout(() => {
-        resizeMinimapViewport();
-        resizeMinimapDragMask();
-        if (typeof focusCurrentNodeOnMinimap === 'function') {
-            focusCurrentNodeOnMinimap();
-        }
-    }, MM_LAYOUT_TRANSITION_MS + 30); // トランジション終了直後の描画ゆらぎを避けるための余裕分
+    // 7. #hud-minimapのCSSトランジションが実際に完了したタイミングで測り直す
+    //    （切り替え直後の即時計算(3〜6)はトランジション開始前・途中の古いサイズを
+    //    拾ってしまうことがあり、それが「初期表示やレイアウト切り替え直後だけUIサイズが
+    //    おかしい（S/M/Lボタンを押すと直る＝再計算すれば直る）」という症状の原因だった）
+    scheduleMinimapUiResettle();
 }
 
 function setMinimapEditMode(on) {

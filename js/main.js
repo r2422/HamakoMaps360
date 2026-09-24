@@ -345,6 +345,9 @@ function setupSplitDivider() {
     refreshSplitDependentLayout();
     updateSplitDividerVisibility();
     if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
+    // 💡 スナップ先へのジャンプで#hud-minimapのCSSトランジションが再び走るため、
+    //    そのトランジションが実際に完了した瞬間にもUIサイズを測り直す
+    if (typeof scheduleMinimapUiResettle === 'function') scheduleMinimapUiResettle();
     saveUserSettings(mode === 'split-v' ? { splitRatioV: snapped } : { splitRatioH: snapped });
     document.body.classList.remove('split-dragging');
     dragMode = null;
@@ -385,6 +388,7 @@ function setupSplitDivider() {
     refreshSplitDependentLayout();
     updateSplitDividerVisibility();
     if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
+    if (typeof scheduleMinimapUiResettle === 'function') scheduleMinimapUiResettle();
     saveUserSettings(mode === 'split-v' ? { splitRatioV: snapped } : { splitRatioH: snapped });
   });
 
@@ -400,6 +404,7 @@ function setupSplitDivider() {
       refreshSplitDependentLayout();
       updateSplitDividerVisibility();
       if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
+      if (typeof scheduleMinimapUiResettle === 'function') scheduleMinimapUiResettle();
       saveUserSettings(mode === 'split-v' ? { splitRatioV: target } : { splitRatioH: target });
     });
   }
