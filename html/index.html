@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
-  <!-- なぜこのcontentなのか -->
+  <!-- TODOなぜこのcontentなのか　説明を追加 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>浜工ストリートビュー360</title>
   <link rel="stylesheet" href="../css/style.css">
@@ -12,6 +13,7 @@
   <link rel="manifest" href="../pwa/manifest.json">
   <link rel="icon" href="../pwa/favicon256.ico" type="image/x-icon">
 </head>
+
 <body>
 
   <!-- ストリートビュー コンテナ -->
@@ -24,14 +26,16 @@
 
   <!-- HUD レイヤー -->
   <div class="hud-layer">
-    <div id="load-container"><div id="load-bar"></div></div>
+    <div id="load-container">
+      <div id="load-bar"></div>
+    </div>
 
     <div id="hud-location">
       <div id="loc-badge">
         <span id="loc-name">
           <span class="loc-outline">loading</span>
           <span class="loc-fill">loading</span>
-      </span>
+        </span>
         <p id="loc-sub">SYSTEM INITIALIZING</p>
       </div>
     </div>
@@ -44,24 +48,24 @@
     <!-- コンパス -->
     <div class="top-center-box">
       <div id="compass-wrapper">
-          <canvas id="hud-compass" width="640" height="72"></canvas>
+        <canvas id="hud-compass" width="640" height="72"></canvas>
       </div>
     </div>
 
     <div class="top-right-box">
-        <!-- ミニマップレイアウト -->
-        <button id="btn-minimap-layout" type="button" aria-label="ミニマップレイアウト">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-                <line x1="10" y1="10" x2="10" y2="21"></line>
-            </svg>
-        </button>
+      <!-- ミニマップレイアウト -->
+      <button id="btn-minimap-layout" type="button" aria-label="ミニマップレイアウト">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+          <line x1="10" y1="10" x2="10" y2="21"></line>
+        </svg>
+      </button>
 
-        <!-- 設定 -->
-        <button id="btn-settings" type="button" aria-label="設定">
-            ...
-        </button>
+      <!-- 設定 -->
+      <button id="btn-settings" type="button" aria-label="設定">
+        ...
+      </button>
     </div>
 
     <!-- デバッグコンテナ -->
@@ -86,23 +90,12 @@
     </div>
 
     <!-- 上下/左右分割レイアウトの境界線（ドラッグでsv-canvas:hud-minimapの比率を変更） -->
-    <div
-      id="split-divider"
-      class="interactive"
-      role="separator"
-      tabindex="0"
-      aria-label="ストリートビューとミニマップの分割比率"
-    ></div>
+    <div id="split-divider" class="interactive" role="separator" tabindex="0" aria-label="ストリートビューとミニマップの分割比率"></div>
 
     <!-- 比率が0:1/1:0（端まで到達）のときだけ、境界線の代わりに表示するドロワー風ボタン。
          端ぴったりにドラッグ用UIを置くと、モバイルの戻る/進む/ホームのスワイプ操作と
          衝突するため、少し内側に離した独立ボタンにしている -->
-    <button
-      type="button"
-      id="split-edge-handle"
-      class="interactive"
-      aria-label="表示を戻す"
-    ></button>
+    <button type="button" id="split-edge-handle" class="interactive" aria-label="表示を戻す"></button>
   </div>
 
   <!-- ツールチップ -->
@@ -115,7 +108,7 @@
         <h2 id="modal-title">SYSTEM CONFIG</h2>
         <button id="btn-close-modal">✕</button>
       </div>
-      
+
       <div id="settings-mode-tabs" class="mode-tabs" style="display:none;">
         <button type="button" id="tab-btn-user" class="mode-tab-btn is-active">ユーザー設定</button>
         <button type="button" id="tab-btn-dev" class="mode-tab-btn">開発者モード設定</button>
@@ -151,7 +144,8 @@
             <span class="setting-label">Route Text Size Mode</span>
             <span class="setting-sub">案内文字の大きさを設定（一定 / 距離依存）</span>
           </div>
-          <button id="btn-text-size-mode" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #55ff7f; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 95px; transition: all 0.2s; font-family: sans-serif;">
+          <button id="btn-text-size-mode"
+            style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #55ff7f; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 95px; transition: all 0.2s; font-family: sans-serif;">
             Constant
           </button>
         </div>
@@ -197,78 +191,58 @@
 
   <!-- ミニマップレイアウトモーダル -->
   <div id="minimap-layout-modal">
-      <div id="minimap-layout-content">
+    <div id="minimap-layout-content">
 
-          <div id="minimap-layout-header">
-              <h2>MINIMAP LAYOUT</h2>
-              <button id="btn-close-minimap-layout" type="button">✕</button>
-          </div>
-
-          <div id="minimap-layout-options">
-
-              <button
-                  class="minimap-layout-option"
-                  data-layout="corner"
-                  type="button"
-              >
-                  <svg viewBox="0 0 48 48" aria-hidden="true">
-                      <rect x="4" y="4" width="40" height="40" rx="3"></rect>
-                      <rect x="28" y="28" width="12" height="12" rx="1"></rect>
-                  </svg>
-                  <span>右下</span>
-              </button>
-
-              <button
-                  class="minimap-layout-option"
-                  data-layout="split-v"
-                  type="button"
-              >
-                  <svg viewBox="0 0 48 48" aria-hidden="true">
-                      <rect x="4" y="4" width="40" height="40" rx="3"></rect>
-                      <line x1="4" y1="24" x2="44" y2="24"></line>
-                  </svg>
-                  <span>上下</span>
-              </button>
-
-              <button
-                  class="minimap-layout-option"
-                  data-layout="split-h"
-                  type="button"
-              >
-                  <svg viewBox="0 0 48 48" aria-hidden="true">
-                      <rect x="4" y="4" width="40" height="40" rx="3"></rect>
-                      <line x1="24" y1="4" x2="24" y2="44"></line>
-                  </svg>
-                  <span>左右</span>
-              </button>
-
-              <button
-                  class="minimap-layout-option"
-                  data-layout="fullscreen"
-                  type="button"
-              >
-                  <svg viewBox="0 0 48 48" aria-hidden="true">
-                      <rect x="5" y="5" width="38" height="38" rx="3"></rect>
-                      <polyline points="18,5 5,5 5,18"></polyline>
-                      <polyline points="30,43 43,43 43,30"></polyline>
-                  </svg>
-                  <span>全画面</span>
-              </button>
-
-              <button
-                  class="minimap-layout-option"
-                  data-layout="hidden"
-                  type="button"
-              >
-                  <svg viewBox="0 0 48 48" aria-hidden="true">
-                      <rect x="5" y="5" width="38" height="38" rx="3"></rect>
-                      <line x1="8" y1="8" x2="40" y2="40"></line>
-                  </svg>
-                  <span>非表示</span>
-              </button>
-
-          </div>
+      <div id="minimap-layout-header">
+        <h2>MINIMAP LAYOUT</h2>
+        <button id="btn-close-minimap-layout" type="button">✕</button>
       </div>
+
+      <div id="minimap-layout-options">
+
+        <button class="minimap-layout-option" data-layout="corner" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="4" y="4" width="40" height="40" rx="3"></rect>
+            <rect x="28" y="28" width="12" height="12" rx="1"></rect>
+          </svg>
+          <span>右下</span>
+        </button>
+
+        <button class="minimap-layout-option" data-layout="split-v" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="4" y="4" width="40" height="40" rx="3"></rect>
+            <line x1="4" y1="24" x2="44" y2="24"></line>
+          </svg>
+          <span>上下</span>
+        </button>
+
+        <button class="minimap-layout-option" data-layout="split-h" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="4" y="4" width="40" height="40" rx="3"></rect>
+            <line x1="24" y1="4" x2="24" y2="44"></line>
+          </svg>
+          <span>左右</span>
+        </button>
+
+        <button class="minimap-layout-option" data-layout="fullscreen" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="5" y="5" width="38" height="38" rx="3"></rect>
+            <polyline points="18,5 5,5 5,18"></polyline>
+            <polyline points="30,43 43,43 43,30"></polyline>
+          </svg>
+          <span>全画面</span>
+        </button>
+
+        <button class="minimap-layout-option" data-layout="hidden" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="5" y="5" width="38" height="38" rx="3"></rect>
+            <line x1="8" y1="8" x2="40" y2="40"></line>
+          </svg>
+          <span>非表示</span>
+        </button>
+
+      </div>
+    </div>
   </div>
 
   <!-- スクリプト -->
@@ -276,4 +250,5 @@
   <script src="../js/minimap.js"></script>
   <script src="../js/main.js"></script>
 </body>
+
 </html>

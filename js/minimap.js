@@ -4,15 +4,15 @@
 
 /* --- ミニマップ管理用の状態変数 --- */
 let mmSrcNode = null; // 💡 main.jsのwalkPhaseと連動して移動元ノードを記憶する変数
-let mmPanX = 0;      
+let mmPanX = 0;
 let mmPanY = 0;
-let mmScale = 0.12; 
+let mmScale = 0.12;
 let isMMDragging = false;
 let mmStartX = 0;
 let mmStartY = 0;
 let mmDragScaleX = 1; // ドラッグ開始時に計測する「実描画px ÷ viewBox単位」の倍率
 let mmDragScaleY = 1;
-let currentMinimapFloor = null; 
+let currentMinimapFloor = null;
 let mmPulseT = 0; // メインループからのdt蓄積用
 
 /* --- ピンチズーム（マルチタッチ）用の状態変数 --- */
@@ -121,9 +121,9 @@ function scheduleMinimapUiResettle() {
 // サイズ段階（1.0 = 元のデザインサイズ）。画面サイズによる自動判定はせず、
 // ユーザーがサイズ設定ボタンで選んだ段階をそのまま使う
 const MM_UI_SIZE_TIERS = [
-  { id: 'S', label: 'S', scale: 0.8 },
-  { id: 'M', label: 'M', scale: 1.0 },
-  { id: 'L', label: 'L', scale: 1.25 },
+    { id: 'S', label: 'S', scale: 0.8 },
+    { id: 'M', label: 'M', scale: 1.0 },
+    { id: 'L', label: 'L', scale: 1.25 },
 ];
 
 // サイズ設定ボタンをクリックした時に巡回する順番
@@ -163,7 +163,7 @@ const MM_UI_SIZE_BTN_MARGIN_BOTTOM = 12; // 下端からの余白（基準スケ
 //    ボタンの id (mm-btn-fN) と中身の構造(rect→text)は、クリック処理・アクティブ状態の
 //    ハイライト処理(updateMinimapFloor)が参照しているため変更していない。
 function buildFloorButtonsMarkup() {
-  return MM_FLOOR_LEVELS.map((floor, i) => `
+    return MM_FLOOR_LEVELS.map((floor, i) => `
         <g id="mm-btn-f${floor}" style="cursor: pointer;" transform="translate(0, ${i * MM_FLOOR_BTN_STEP})">
           <rect width="${MM_FLOOR_BTN_WIDTH}" height="${MM_FLOOR_BTN_HEIGHT}" rx="0" fill="transparent" stroke="var(--color-border-secondary)" stroke-width="1"/>
           <text x="${MM_FLOOR_BTN_WIDTH / 2}" y="11" text-anchor="middle" fill="#8B95B4">${floor}F</text>
@@ -172,17 +172,17 @@ function buildFloorButtonsMarkup() {
 
 /* --- ミニマップ構築 --- */
 function initMinimapLayout() {
-  // グローバル変数 window.NODES がロード後であることを確認
-  if (!window.NODES || Object.keys(window.NODES).length === 0) {
-    console.error("NODESがまだ準備できていません。初期化順序を見直してください。");
-    return;
-  }
-  
-  const container = $('hud-minimap-container');
-  if (!container) return;
-  container.style.position = 'relative'; // 編集モードのポップアップ／ツールバーの位置基準
+    // グローバル変数 window.NODES がロード後であることを確認
+    if (!window.NODES || Object.keys(window.NODES).length === 0) {
+        console.error("NODESがまだ準備できていません。初期化順序を見直してください。");
+        return;
+    }
 
-  container.innerHTML = `
+    const container = $('hud-minimap-container');
+    if (!container) return;
+    container.style.position = 'relative'; // 編集モードのポップアップ／ツールバーの位置基準
+
+    container.innerHTML = `
     <svg id="hud-minimap-svg" viewBox="0 0 260 160" width="520" height="320" xmlns="http://www.w3.org/2000/svg" style="user-select: none; touch-action: none; border-radius: 0px; display: block;">
       <defs>
         <clipPath id="mm-panel-clip">
@@ -260,76 +260,76 @@ function initMinimapLayout() {
     </div>
   `;
 
-  const nodesGroup = $('mm-nodes-group');
-  const edgesGroup = $('mm-edges-group');
-  
-  nodesGroup.innerHTML = ''; 
-  edgesGroup.innerHTML = ''; 
+    const nodesGroup = $('mm-nodes-group');
+    const edgesGroup = $('mm-edges-group');
 
-  const drawnEdges = new Set(); 
+    nodesGroup.innerHTML = '';
+    edgesGroup.innerHTML = '';
 
-  for (let id in NODES) {
-    const node = NODES[id];
+    const drawnEdges = new Set();
 
-    node.links.forEach(lk => {
-      const targetNode = NODES[lk.targetId];
-      if (targetNode) {
-        const edgeKey = [node.id, targetNode.id].sort().join('-');
-        if (!drawnEdges.has(edgeKey)) {
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('id', `mm-edge-${edgeKey}`);
-          // 💡 SVG端の25px余白に適合させるオフセット処理
-          line.setAttribute('x1', node.mmX + 25);
-          line.setAttribute('y1', node.mmY + 25);
-          line.setAttribute('x2', targetNode.mmX + 25);
-          line.setAttribute('y2', targetNode.mmY + 25);
-          line.setAttribute('stroke', 'rgba(90, 127, 255, 0.4)');
-          line.setAttribute('stroke-width', '4');
-          line.setAttribute('stroke-dasharray', '2,2');
-          
-          line.dataset.floor = Math.min(node.floor, targetNode.floor);
+    for (let id in NODES) {
+        const node = NODES[id];
 
-          edgesGroup.appendChild(line);
-          drawnEdges.add(edgeKey);
-        }
-      }
-    });
+        node.links.forEach(lk => {
+            const targetNode = NODES[lk.targetId];
+            if (targetNode) {
+                const edgeKey = [node.id, targetNode.id].sort().join('-');
+                if (!drawnEdges.has(edgeKey)) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('id', `mm-edge-${edgeKey}`);
+                    // 💡 SVG端の25px余白に適合させるオフセット処理
+                    line.setAttribute('x1', node.mmX + 25);
+                    line.setAttribute('y1', node.mmY + 25);
+                    line.setAttribute('x2', targetNode.mmX + 25);
+                    line.setAttribute('y2', targetNode.mmY + 25);
+                    line.setAttribute('stroke', 'rgba(90, 127, 255, 0.4)');
+                    line.setAttribute('stroke-width', '4');
+                    line.setAttribute('stroke-dasharray', '2,2');
 
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('id', `mm-dot-${node.id}`);
-    // 💡 SVG端の25px余白に適合させるオフセット処理
-    circle.setAttribute('cx', node.mmX + 25);
-    circle.setAttribute('cy', node.mmY + 25);
-    circle.setAttribute('r', '14'); 
-    circle.setAttribute('fill', 'rgba(30, 45, 90, 0.8)');
-    circle.setAttribute('stroke', 'rgba(90, 127, 255, 0.6)');
-    circle.setAttribute('stroke-width', '3');
-    
-    circle.dataset.floor = node.floor;
+                    line.dataset.floor = Math.min(node.floor, targetNode.floor);
 
-    nodesGroup.appendChild(circle);
-  }
+                    edgesGroup.appendChild(line);
+                    drawnEdges.add(edgeKey);
+                }
+            }
+        });
 
-  // 💡 minimap.jsはmain.jsより先に読み込まれるため、ここで初めて
-  //    savedUserSettings（main.js側で定義）を安全に参照できる
-  if (typeof savedUserSettings !== 'undefined' && MM_UI_SIZE_CYCLE.includes(savedUserSettings.mmUiSizeLevel)) {
-    mmUiSizeLevel = savedUserSettings.mmUiSizeLevel;
-    const label = $('mm-ui-size-label');
-    if (label) label.textContent = mmUiSizeLevel;
-  }
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('id', `mm-dot-${node.id}`);
+        // 💡 SVG端の25px余白に適合させるオフセット処理
+        circle.setAttribute('cx', node.mmX + 25);
+        circle.setAttribute('cy', node.mmY + 25);
+        circle.setAttribute('r', '14');
+        circle.setAttribute('fill', 'rgba(30, 45, 90, 0.8)');
+        circle.setAttribute('stroke', 'rgba(90, 127, 255, 0.6)');
+        circle.setAttribute('stroke-width', '3');
 
-  resizeMinimapDragMask();
-  setupMinimapInteractions();
-  setupEditToolbar();
-  loadEditDraft();
-  restoreEditDraftVisuals();
+        circle.dataset.floor = node.floor;
+
+        nodesGroup.appendChild(circle);
+    }
+
+    // 💡 minimap.jsはmain.jsより先に読み込まれるため、ここで初めて
+    //    savedUserSettings（main.js側で定義）を安全に参照できる
+    if (typeof savedUserSettings !== 'undefined' && MM_UI_SIZE_CYCLE.includes(savedUserSettings.mmUiSizeLevel)) {
+        mmUiSizeLevel = savedUserSettings.mmUiSizeLevel;
+        const label = $('mm-ui-size-label');
+        if (label) label.textContent = mmUiSizeLevel;
+    }
+
+    resizeMinimapDragMask();
+    setupMinimapInteractions();
+    setupEditToolbar();
+    loadEditDraft();
+    restoreEditDraftVisuals();
 }
 
 function syncPlayerVisibility() {
-  const currentNode = NODES[currentId];
-  const isCurrentFloor = currentNode && currentNode.floor === currentMinimapFloor;
-  const player = $('mm-player');
-  if (player) player.style.display = isCurrentFloor ? 'block' : 'none';
+    const currentNode = NODES[currentId];
+    const isCurrentFloor = currentNode && currentNode.floor === currentMinimapFloor;
+    const player = $('mm-player');
+    if (player) player.style.display = isCurrentFloor ? 'block' : 'none';
 }
 
 /* ============================================================
@@ -343,21 +343,21 @@ function syncPlayerVisibility() {
    （特に2F以上は1Fと形状が異なる可能性が高いため要調整）。
 ============================================================ */
 const MM_BUILDING_ZONES = [
-  // 北館・本館・南館（メインの3棟）
-  { name: '北館', xMin: 20,   xMax: 3630, yMin: 20,   yMax: 510  },
-  { name: '本館', xMin: 20,   xMax: 3090, yMin: 1640, yMax: 2490 },
-  { name: '南館', xMin: 20,   xMax: 3090, yMin: 3500, yMax: 4350 },
-  { name: '南館', xMin: 3140, xMax: 3600, yMin: 3500, yMax: 4350 }, // 南館 東側の別棟部分
+    // 北館・本館・南館（メインの3棟）
+    { name: '北館', xMin: 20, xMax: 3630, yMin: 20, yMax: 510 },
+    { name: '本館', xMin: 20, xMax: 3090, yMin: 1640, yMax: 2490 },
+    { name: '南館', xMin: 20, xMax: 3090, yMin: 3500, yMax: 4350 },
+    { name: '南館', xMin: 3140, xMax: 3600, yMin: 3500, yMax: 4350 }, // 南館 東側の別棟部分
 
-  // 体育館（本館の東側、渡り廊下で接続）
-  { name: '体育館', xMin: 4040, xMax: 5670, yMin: 800,  yMax: 2130 },
+    // 体育館（本館の東側、渡り廊下で接続）
+    { name: '体育館', xMin: 4040, xMax: 5670, yMin: 800, yMax: 2130 },
 
-  // 連絡通路（棟と棟をつなぐ渡り廊下）
-  { name: '連絡通路', xMin: 925,  xMax: 1105, yMin: 505,  yMax: 1645 }, // 北館-本館 西側
-  { name: '連絡通路', xMin: 2905, xMax: 3085, yMin: 505,  yMax: 1645 }, // 北館-本館 東側
-  { name: '連絡通路', xMin: 925,  xMax: 1105, yMin: 2485, yMax: 3505 }, // 本館-南館 西側
-  { name: '連絡通路', xMin: 2905, xMax: 3085, yMin: 2485, yMax: 3505 }, // 本館-南館 東側
-  { name: '連絡通路', xMin: 3085, xMax: 5665, yMin: 2125, yMax: 2245 }, // 本館-体育館
+    // 連絡通路（棟と棟をつなぐ渡り廊下）
+    { name: '連絡通路', xMin: 925, xMax: 1105, yMin: 505, yMax: 1645 }, // 北館-本館 西側
+    { name: '連絡通路', xMin: 2905, xMax: 3085, yMin: 505, yMax: 1645 }, // 北館-本館 東側
+    { name: '連絡通路', xMin: 925, xMax: 1105, yMin: 2485, yMax: 3505 }, // 本館-南館 西側
+    { name: '連絡通路', xMin: 2905, xMax: 3085, yMin: 2485, yMax: 3505 }, // 本館-南館 東側
+    { name: '連絡通路', xMin: 3085, xMax: 5665, yMin: 2125, yMax: 2245 }, // 本館-体育館
 ];
 const MM_BUILDING_FALLBACK = '外';
 
@@ -365,149 +365,149 @@ const MM_BUILDING_FALLBACK = '外';
 // floor引数は今は使っていないが、将来フロアごとにゾーンを切り替えたくなった
 // ときにMM_BUILDING_ZONESをフロア別のテーブルに拡張しやすいよう残してある。
 function getBuildingAt(mmX, mmY, floor) {
-  for (const zone of MM_BUILDING_ZONES) {
-    if (mmX >= zone.xMin && mmX <= zone.xMax && mmY >= zone.yMin && mmY <= zone.yMax) {
-      return zone.name;
+    for (const zone of MM_BUILDING_ZONES) {
+        if (mmX >= zone.xMin && mmX <= zone.xMax && mmY >= zone.yMin && mmY <= zone.yMax) {
+            return zone.name;
+        }
     }
-  }
-  return MM_BUILDING_FALLBACK;
+    return MM_BUILDING_FALLBACK;
 }
 
 // ミニマップの表示中心（パン・ズーム後）が、ワールド座標(mmX/mmY)でどこに
 // 当たるかを逆算する。mm-transform-group の transform（translate→scale）の逆変換。
 function getMinimapViewportCenterWorld() {
-  const svg = $('hud-minimap-svg');
-  const viewBox = svg ? svg.viewBox.baseVal : { width: 260, height: 160 };
-  const screenCenterX = viewBox.width / 2;
-  const screenCenterY = viewBox.height / 2;
-  return {
-    x: (screenCenterX - mmPanX) / mmScale,
-    y: (screenCenterY - mmPanY) / mmScale,
-  };
+    const svg = $('hud-minimap-svg');
+    const viewBox = svg ? svg.viewBox.baseVal : { width: 260, height: 160 };
+    const screenCenterX = viewBox.width / 2;
+    const screenCenterY = viewBox.height / 2;
+    return {
+        x: (screenCenterX - mmPanX) / mmScale,
+        y: (screenCenterY - mmPanY) / mmScale,
+    };
 }
 
 function syncFloorTitle() {
-  // 💡 以前は現在地ノードの building プロパティ（＝自分が実際に立っている棟）を
-  //    表示していたが、ミニマップをパン/ズームして別の場所を見ているときも
-  //    実態に合わせたいので、「今ミニマップの中心に映っている座標」から
-  //    棟名を判定するように変更した。
-  if (currentMinimapFloor == null) return;
-  const center = getMinimapViewportCenterWorld();
-  const buildingName = getBuildingAt(center.x, center.y, currentMinimapFloor);
-  const floorTitle = $('mm-floor-title');
-  if (floorTitle) floorTitle.textContent = `${buildingName}${currentMinimapFloor}F`;
+    // 💡 以前は現在地ノードの building プロパティ（＝自分が実際に立っている棟）を
+    //    表示していたが、ミニマップをパン/ズームして別の場所を見ているときも
+    //    実態に合わせたいので、「今ミニマップの中心に映っている座標」から
+    //    棟名を判定するように変更した。
+    if (currentMinimapFloor == null) return;
+    const center = getMinimapViewportCenterWorld();
+    const buildingName = getBuildingAt(center.x, center.y, currentMinimapFloor);
+    const floorTitle = $('mm-floor-title');
+    if (floorTitle) floorTitle.textContent = `${buildingName}${currentMinimapFloor}F`;
 }
 
 function updateMinimapFloor(floorNumber) {
-  if (floorNumber === currentMinimapFloor) {
-    // フロア番号自体は変わらなくても、実際にいる階・棟は
-    // 呼び出しタイミングによって変化しているため、表示同期だけは必ず行う
-    syncPlayerVisibility();
+    if (floorNumber === currentMinimapFloor) {
+        // フロア番号自体は変わらなくても、実際にいる階・棟は
+        // 呼び出しタイミングによって変化しているため、表示同期だけは必ず行う
+        syncPlayerVisibility();
+        syncFloorTitle();
+        return;
+    }
+    currentMinimapFloor = floorNumber;
+
+    const bgMap = $('mm-bg-map');
+    if (bgMap) bgMap.setAttribute('href', `../maps/${floorNumber}F.svg`);
     syncFloorTitle();
-    return;
-  }
-  currentMinimapFloor = floorNumber;
 
-  const bgMap = $('mm-bg-map');
-  if (bgMap) bgMap.setAttribute('href', `../maps/${floorNumber}F.svg`);
-  syncFloorTitle();
+    const dots = Array.from($('mm-nodes-group').children);
+    dots.forEach(dot => {
+        if (parseInt(dot.dataset.floor) === floorNumber) {
+            dot.style.display = 'block';
+        } else {
+            dot.style.display = 'none';
+        }
+    });
 
-  const dots = Array.from($('mm-nodes-group').children);
-  dots.forEach(dot => {
-    if (parseInt(dot.dataset.floor) === floorNumber) {
-      dot.style.display = 'block';
-    } else {
-      dot.style.display = 'none';
-    }
-  });
+    const edges = Array.from($('mm-edges-group').children);
+    edges.forEach(edge => {
+        if (parseInt(edge.dataset.floor) === floorNumber) {
+            edge.style.display = 'block';
+        } else {
+            edge.style.display = 'none';
+        }
+    });
 
-  const edges = Array.from($('mm-edges-group').children);
-  edges.forEach(edge => {
-    if (parseInt(edge.dataset.floor) === floorNumber) {
-      edge.style.display = 'block';
-    } else {
-      edge.style.display = 'none';
-    }
-  });
+    [1, 2, 3, 4].forEach(f => {
+        const btnRect = $(`mm-btn-f${f}`).querySelector('rect');
+        const btnText = $(`mm-btn-f${f}`).querySelector('text');
+        if (f === floorNumber) {
+            btnRect.setAttribute('fill', 'var(--color-secondary-dark)');
+            btnRect.setAttribute('stroke', 'var(--color-surface-soft)');
+            btnText.setAttribute('fill', 'var(--color-secondary-pale)');
+        } else {
+            btnRect.setAttribute('fill', 'var(--color-primary-dark)');
+            btnRect.setAttribute('stroke', 'var(--color-text-muted)');
+            btnText.setAttribute('fill', 'var(--color-primary)');
+        }
+    });
 
-  [1, 2, 3, 4].forEach(f => {
-    const btnRect = $(`mm-btn-f${f}`).querySelector('rect');
-    const btnText = $(`mm-btn-f${f}`).querySelector('text');
-    if (f === floorNumber) {
-      btnRect.setAttribute('fill', 'var(--color-secondary-dark)');
-      btnRect.setAttribute('stroke', 'var(--color-surface-soft)');
-      btnText.setAttribute('fill', 'var(--color-secondary-pale)');
-    } else {
-      btnRect.setAttribute('fill', 'var(--color-primary-dark)');
-      btnRect.setAttribute('stroke', 'var(--color-text-muted)');
-      btnText.setAttribute('fill', 'var(--color-primary)');
-    }
-  });
-
-  syncPlayerVisibility();
+    syncPlayerVisibility();
 }
 
-function updateMinimap(){
-  const currentNode = NODES[currentId];
-  if (!currentNode) return;
+function updateMinimap() {
+    const currentNode = NODES[currentId];
+    if (!currentNode) return;
 
-  updateMinimapFloor(currentNode.floor);
+    updateMinimapFloor(currentNode.floor);
 
-  for (let id in NODES) {
-    const dot = $(`mm-dot-${id}`);
-    if (dot) {
-      if (id === currentId) {
-        dot.setAttribute('fill', '#5a7fff');
-        dot.setAttribute('stroke', '#fff');
-      } else {
-        dot.setAttribute('fill', 'rgba(30, 45, 90, 0.8)');
-        dot.setAttribute('stroke', 'rgba(90, 127, 255, 0.6)');
-      }
+    for (let id in NODES) {
+        const dot = $(`mm-dot-${id}`);
+        if (dot) {
+            if (id === currentId) {
+                dot.setAttribute('fill', '#5a7fff');
+                dot.setAttribute('stroke', '#fff');
+            } else {
+                dot.setAttribute('fill', 'rgba(30, 45, 90, 0.8)');
+                dot.setAttribute('stroke', 'rgba(90, 127, 255, 0.6)');
+            }
+        }
     }
-  }
 
-  applyMinimapTransform();
+    applyMinimapTransform();
 }
 
 function applyMinimapTransform() {
-  const group = $('mm-transform-group');
-  if (group) {
-    group.setAttribute('transform', `translate(${mmPanX}, ${mmPanY}) scale(${mmScale})`);
-  }
-
-  // パン・ズームのたびに、ミニマップの中心に今映っている棟名も追従させる
-  syncFloorTitle();
-
-  const player = $('mm-player');
-  const arrow = $('mm-arrow');
-  
-  const activeNodeId = (typeof walkPhase !== 'undefined' && walkPhase === 'walk' && nextId) ? nextId : currentId;
-  const currentNode = NODES[activeNodeId];
-
-  if (player && currentNode) {
-    // 💡 プレイヤーピンも描画に合わせるため、基準座標に + 25 を付与する
-    let currentMMX = currentNode.mmX + 25;
-    let currentMMY = currentNode.mmY + 25;
-
-    if (typeof walkPhase !== 'undefined' && walkPhase === 'walk' && mmSrcNode) {
-      const srcX = mmSrcNode.mmX + 25;
-      const srcY = mmSrcNode.mmY + 25;
-      const dstX = currentNode.mmX + 25;
-      const dstY = currentNode.mmY + 25;
-      currentMMX = srcX + (dstX - srcX) * walkT;
-      currentMMY = srcY + (dstY - srcY) * walkT;
+    const group = $('mm-transform-group');
+    if (group) {
+        group.setAttribute('transform', `translate(${mmPanX}, ${mmPanY}) scale(${mmScale})`);
     }
 
-    const screenX = currentMMX * mmScale + mmPanX;
-    const screenY = currentMMY * mmScale + mmPanY;
-    
-    player.setAttribute('transform', `translate(${screenX}, ${screenY})`);
+    // パン・ズームのたびに、ミニマップの中心に今映っている棟名も追従させる
+    syncFloorTitle();
 
-    if (arrow && typeof yaw !== 'undefined') {
-      const deg = (yaw * 180) / Math.PI;
-      arrow.setAttribute('transform', `rotate(${deg}, 0, 0)`);
+    const player = $('mm-player');
+    const arrow = $('mm-arrow');
+
+    const activeNodeId = (typeof walkPhase !== 'undefined' && walkPhase === 'walk' && nextId) ? nextId : currentId;
+    const currentNode = NODES[activeNodeId];
+
+    if (player && currentNode) {
+        // 💡 プレイヤーピンも描画に合わせるため、基準座標に + 25 を付与する
+        let currentMMX = currentNode.mmX + 25;
+        let currentMMY = currentNode.mmY + 25;
+
+        if (typeof walkPhase !== 'undefined' && walkPhase === 'walk' && mmSrcNode) {
+            const srcX = mmSrcNode.mmX + 25;
+            const srcY = mmSrcNode.mmY + 25;
+            const dstX = currentNode.mmX + 25;
+            const dstY = currentNode.mmY + 25;
+            currentMMX = srcX + (dstX - srcX) * walkT;
+            currentMMY = srcY + (dstY - srcY) * walkT;
+        }
+
+        const screenX = currentMMX * mmScale + mmPanX;
+        const screenY = currentMMY * mmScale + mmPanY;
+
+        player.setAttribute('transform', `translate(${screenX}, ${screenY})`);
+
+        if (arrow && typeof yaw !== 'undefined') {
+            const deg = (yaw * 180) / Math.PI;
+            arrow.setAttribute('transform', `rotate(${deg}, 0, 0)`);
+        }
     }
-  }
 }
 
 
@@ -705,38 +705,38 @@ function resizeMinimapDragMask() {
 
 // クライアント座標（clientX/Y）を、ミニマップSVGの描画座標系（pan/zoom適用後、+25オフセット込み）に変換
 function minimapClientToSvg(clientX, clientY) {
-  const rect = $('hud-minimap-svg').getBoundingClientRect();
-  const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+    const rect = $('hud-minimap-svg').getBoundingClientRect();
+    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
 
-  const scaleX = rect.width / viewBox.width;
-  const scaleY = rect.height / viewBox.height;
-  const mouseX = (clientX - rect.left) / scaleX;
-  const mouseY = (clientY - rect.top) / scaleY;
-  return {
-    x: (mouseX - mmPanX) / mmScale,
-    y: (mouseY - mmPanY) / mmScale
-  };
+    const scaleX = rect.width / viewBox.width;
+    const scaleY = rect.height / viewBox.height;
+    const mouseX = (clientX - rect.left) / scaleX;
+    const mouseY = (clientY - rect.top) / scaleY;
+    return {
+        x: (mouseX - mmPanX) / mmScale,
+        y: (mouseY - mmPanY) / mmScale
+    };
 }
 
 // 現在表示中のフロア上で、指定座標に最も近いノード（実データ＋下書き）のIDを返す
 function findClosestNodeOnFloor(svgX, svgY, maxDist) {
-  let closestId = null, minDist = Infinity;
-  const pools = [NODES, draftNodes];
-  for (const pool of pools) {
-    for (const id in pool) {
-      const node = pool[id];
-      if (node.floor !== currentMinimapFloor) continue;
-      const dx = (node.mmX + 25) - svgX;
-      const dy = (node.mmY + 25) - svgY;
-      const dist = Math.hypot(dx, dy);
-      if (dist < minDist && dist < maxDist) { minDist = dist; closestId = id; }
+    let closestId = null, minDist = Infinity;
+    const pools = [NODES, draftNodes];
+    for (const pool of pools) {
+        for (const id in pool) {
+            const node = pool[id];
+            if (node.floor !== currentMinimapFloor) continue;
+            const dx = (node.mmX + 25) - svgX;
+            const dy = (node.mmY + 25) - svgY;
+            const dist = Math.hypot(dx, dy);
+            if (dist < minDist && dist < maxDist) { minDist = dist; closestId = id; }
+        }
     }
-  }
-  return closestId;
+    return closestId;
 }
 
 function getNodeAnyPool(id) {
-  return NODES[id] || draftNodes[id];
+    return NODES[id] || draftNodes[id];
 }
 
 /* --- 編集モードの中核ロジック --- */
@@ -804,35 +804,35 @@ function setMinimapLayout(mode) {
 }
 
 function setMinimapEditMode(on) {
-  editMode = !!on;
-  clearEdgeSourceHighlight();
-  edgeSourceId = null;
-  removeEditPopups();
+    editMode = !!on;
+    clearEdgeSourceHighlight();
+    edgeSourceId = null;
+    removeEditPopups();
 
-  const toolbar = $('mm-edit-toolbar');
-  if (toolbar) toolbar.style.display = editMode ? 'flex' : 'none';
+    const toolbar = $('mm-edit-toolbar');
+    if (toolbar) toolbar.style.display = editMode ? 'flex' : 'none';
 
-  const mask = $('mm-drag-mask');
-  if (mask) mask.style.cursor = editMode ? 'crosshair' : 'grab';
+    const mask = $('mm-drag-mask');
+    if (mask) mask.style.cursor = editMode ? 'crosshair' : 'grab';
 }
 
 function removeEditPopups() {
-  ['mm-node-info-popup', 'mm-export-panel'].forEach(id => { const el = $(id); if (el) el.remove(); });
+    ['mm-node-info-popup', 'mm-export-panel'].forEach(id => { const el = $(id); if (el) el.remove(); });
 }
 
 function highlightEdgeSource(nodeId) {
-  const dot = $(`mm-dot-${nodeId}`);
-  if (dot) { dot.setAttribute('stroke', '#55ff7f'); dot.setAttribute('stroke-width', '5'); }
+    const dot = $(`mm-dot-${nodeId}`);
+    if (dot) { dot.setAttribute('stroke', '#55ff7f'); dot.setAttribute('stroke-width', '5'); }
 }
 
 function clearEdgeSourceHighlight() {
-  if (!edgeSourceId) return;
-  const dot = $(`mm-dot-${edgeSourceId}`);
-  if (dot) {
-    const isDraft = dot.dataset.draft === '1';
-    dot.setAttribute('stroke', isDraft ? '#ffa726' : 'rgba(90, 127, 255, 0.6)');
-    dot.setAttribute('stroke-width', '3');
-  }
+    if (!edgeSourceId) return;
+    const dot = $(`mm-dot-${edgeSourceId}`);
+    if (dot) {
+        const isDraft = dot.dataset.draft === '1';
+        dot.setAttribute('stroke', isDraft ? '#ffa726' : 'rgba(90, 127, 255, 0.6)');
+        dot.setAttribute('stroke-width', '3');
+    }
 }
 
 function removeDraftLink(fromId, toId) {
@@ -914,14 +914,14 @@ function handleEditModeClick(clientX, clientY) {
 
 // 編集モード中の右クリック：既存ノード上→座標情報、空白→新規下書きノード作成
 function handleEditModeContextMenu(clientX, clientY) {
-  const svg = minimapClientToSvg(clientX, clientY);
-  const hitId = findClosestNodeOnFloor(svg.x, svg.y, 20);
+    const svg = minimapClientToSvg(clientX, clientY);
+    const hitId = findClosestNodeOnFloor(svg.x, svg.y, 20);
 
-  if (hitId) {
-    showNodeInfoPopup(hitId);
-  } else {
-    createDraftNodeAt(svg.x, svg.y);
-  }
+    if (hitId) {
+        showNodeInfoPopup(hitId);
+    } else {
+        createDraftNodeAt(svg.x, svg.y);
+    }
 }
 
 // ミニマップ上の指定座標から、テレポート確認モーダルを表示する
@@ -1018,33 +1018,33 @@ function handleMinimapTeleport(clientX, clientY) {
 
 
 function showNodeInfoPopup(nodeId) {
-  const node = getNodeAnyPool(nodeId);
-  if (!node) return;
-  removeEditPopups();
+    const node = getNodeAnyPool(nodeId);
+    if (!node) return;
+    removeEditPopups();
 
-  const bMap = { 'North': '北館', 'Main': '本館', 'South': '南館' };
-  // 英語変換
-  // let buildingEN = null;
-  //   if (node.building === "本館") {
-  //       buildingEN = "Main";
-  //   } else if (node.building === "北館") {
-  //       buildingEN = "North";
-  //   } else if (node.building === "南館") {
-  //       buildingEN = "South";
-  //   }
-  const buildingLabel = bMap[node.building] || node.building || '-';
-  const [px, py, pz] = node.pos3D;
-  const coordText = `[${px}, ${py}, ${pz}]`;
+    const bMap = { 'North': '北館', 'Main': '本館', 'South': '南館' };
+    // 英語変換
+    // let buildingEN = null;
+    //   if (node.building === "本館") {
+    //       buildingEN = "Main";
+    //   } else if (node.building === "北館") {
+    //       buildingEN = "North";
+    //   } else if (node.building === "南館") {
+    //       buildingEN = "South";
+    //   }
+    const buildingLabel = bMap[node.building] || node.building || '-';
+    const [px, py, pz] = node.pos3D;
+    const coordText = `[${px}, ${py}, ${pz}]`;
 
-  const modal = document.createElement('div');
-  modal.id = 'mm-node-info-popup';
-  modal.style.cssText = `
+    const modal = document.createElement('div');
+    modal.id = 'mm-node-info-popup';
+    modal.style.cssText = `
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
     background:#121c38; border:1.5px solid #3a4e78; border-radius:0px; padding:16px;
     color:#e9edf7; font-family:'Noto Sans JP',sans-serif; font-size:12px; text-align:left;
     box-shadow:0 4px 20px rgba(0,0,0,0.5); z-index:10000; min-width:220px;
   `;
-  modal.innerHTML = `
+    modal.innerHTML = `
     <div style="font-weight:bold; margin-bottom:8px; letter-spacing:0.04em; color:#55ff7f;">${node.isDraft ? '（下書き）' : ''}${node.name || nodeId}</div>
     <div style="line-height:1.9; color:#c7d2f0;">
       <div>ID: <code style="color:#fff;">${nodeId}</code></div>
@@ -1063,56 +1063,56 @@ function showNodeInfoPopup(nodeId) {
     </div>
   `;
 
-  const targetContainer = $('hud-minimap-container') || document.body;
-  targetContainer.appendChild(modal);
+    const targetContainer = $('hud-minimap-container') || document.body;
+    targetContainer.appendChild(modal);
 
-$('mm-info-copy').addEventListener('click', ev => {
-    ev.stopPropagation();
-
-    // const text = `[${px}, ${py}, ${pz}]`;
-    const text = `${node.id}`
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => {});
-    }
-
-    const btn = $('mm-info-copy');
-
-    if (btn) {
-        const orig = btn.textContent;
-        btn.textContent = 'コピーしました';
-
-        setTimeout(() => {
-            const b = $('mm-info-copy');
-
-            if (b) {
-                b.textContent = orig;
-            }
-        }, 1200);
-    }
-});
-
-const deleteBtn = $('mm-info-delete');
-
-if (deleteBtn) {
-    deleteBtn.addEventListener('click', ev => {
+    $('mm-info-copy').addEventListener('click', ev => {
         ev.stopPropagation();
 
-        const ok = window.confirm(
-            'この頂点を削除しますか？\n接続している辺も削除されます。'
-        );
+        // const text = `[${px}, ${py}, ${pz}]`;
+        const text = `${node.id}`
 
-        if (!ok) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(() => { });
+        }
 
-        deleteDraftNode(nodeId);
+        const btn = $('mm-info-copy');
+
+        if (btn) {
+            const orig = btn.textContent;
+            btn.textContent = 'コピーしました';
+
+            setTimeout(() => {
+                const b = $('mm-info-copy');
+
+                if (b) {
+                    b.textContent = orig;
+                }
+            }, 1200);
+        }
+    });
+
+    const deleteBtn = $('mm-info-delete');
+
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', ev => {
+            ev.stopPropagation();
+
+            const ok = window.confirm(
+                'この頂点を削除しますか？\n接続している辺も削除されます。'
+            );
+
+            if (!ok) return;
+
+            deleteDraftNode(nodeId);
+            modal.remove();
+        });
+    }
+
+    $('mm-info-close').addEventListener('click', ev => {
+        ev.stopPropagation();
         modal.remove();
     });
-}
-
-$('mm-info-close').addEventListener('click', ev => {
-    ev.stopPropagation();
-    modal.remove();
-});
 }
 
 function deleteDraftNode(nodeId) {
@@ -1231,21 +1231,21 @@ function createDraftNodeAt(svgX, svgY) {
 }
 
 function addDraftNodeVisual(node) {
-  const nodesGroup = $('mm-nodes-group');
-  if (!nodesGroup) return;
-  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  circle.setAttribute('id', `mm-dot-${node.id}`);
-  circle.setAttribute('cx', node.mmX + 25);
-  circle.setAttribute('cy', node.mmY + 25);
-  circle.setAttribute('r', '14');
-  circle.setAttribute('fill', 'rgba(255,167,38,0.35)');
-  circle.setAttribute('stroke', '#ffa726');
-  circle.setAttribute('stroke-width', '3');
-  circle.setAttribute('stroke-dasharray', '3,2');
-  circle.dataset.floor = node.floor;
-  circle.dataset.draft = '1';
-  circle.style.display = (node.floor === currentMinimapFloor) ? 'block' : 'none';
-  nodesGroup.appendChild(circle);
+    const nodesGroup = $('mm-nodes-group');
+    if (!nodesGroup) return;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('id', `mm-dot-${node.id}`);
+    circle.setAttribute('cx', node.mmX + 25);
+    circle.setAttribute('cy', node.mmY + 25);
+    circle.setAttribute('r', '14');
+    circle.setAttribute('fill', 'rgba(255,167,38,0.35)');
+    circle.setAttribute('stroke', '#ffa726');
+    circle.setAttribute('stroke-width', '3');
+    circle.setAttribute('stroke-dasharray', '3,2');
+    circle.dataset.floor = node.floor;
+    circle.dataset.draft = '1';
+    circle.style.display = (node.floor === currentMinimapFloor) ? 'block' : 'none';
+    nodesGroup.appendChild(circle);
 }
 
 function removeDraftLink(fromId, toId) {
@@ -1428,25 +1428,25 @@ function createDraftLink(fromId, toId) {
 }
 
 function addDraftLinkVisual(fromId, toId, index) {
-  const edgesGroup = $('mm-edges-group');
-  const fromNode = getNodeAnyPool(fromId);
-  const toNode = getNodeAnyPool(toId);
-  if (!edgesGroup || !fromNode || !toNode) return;
+    const edgesGroup = $('mm-edges-group');
+    const fromNode = getNodeAnyPool(fromId);
+    const toNode = getNodeAnyPool(toId);
+    if (!edgesGroup || !fromNode || !toNode) return;
 
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('id', `mm-draft-edge-${index}`);
-  line.setAttribute('x1', fromNode.mmX + 25);
-  line.setAttribute('y1', fromNode.mmY + 25);
-  line.setAttribute('x2', toNode.mmX + 25);
-  line.setAttribute('y2', toNode.mmY + 25);
-  line.setAttribute('stroke', '#ffa726');
-  line.setAttribute('stroke-width', '3');
-  line.setAttribute('stroke-dasharray', '5,3');
-  const floor = Math.min(fromNode.floor, toNode.floor);
-  line.dataset.floor = floor;
-  line.dataset.draft = '1';
-  line.style.display = (floor === currentMinimapFloor) ? 'block' : 'none';
-  edgesGroup.appendChild(line);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('id', `mm-draft-edge-${index}`);
+    line.setAttribute('x1', fromNode.mmX + 25);
+    line.setAttribute('y1', fromNode.mmY + 25);
+    line.setAttribute('x2', toNode.mmX + 25);
+    line.setAttribute('y2', toNode.mmY + 25);
+    line.setAttribute('stroke', '#ffa726');
+    line.setAttribute('stroke-width', '3');
+    line.setAttribute('stroke-dasharray', '5,3');
+    const floor = Math.min(fromNode.floor, toNode.floor);
+    line.dataset.floor = floor;
+    line.dataset.draft = '1';
+    line.style.display = (floor === currentMinimapFloor) ? 'block' : 'none';
+    edgesGroup.appendChild(line);
 }
 
 function clearDrafts() {
@@ -1601,18 +1601,18 @@ function buildExportText() {
 }
 
 function toggleExportPanel() {
-  const existing = $('mm-export-panel');
-  if (existing) { existing.remove(); return; }
+    const existing = $('mm-export-panel');
+    if (existing) { existing.remove(); return; }
 
-  const panel = document.createElement('div');
-  panel.id = 'mm-export-panel';
-  panel.style.cssText = `
+    const panel = document.createElement('div');
+    panel.id = 'mm-export-panel';
+    panel.style.cssText = `
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
     background:#121c38; border:1.5px solid #3a4e78; border-radius:8px; padding:16px;
     color:#e9edf7; font-family:'Noto Sans JP',sans-serif; font-size:11px;
     box-shadow:0 4px 20px rgba(0,0,0,0.5); z-index:10000; width:360px; max-width:88%;
   `;
-  panel.innerHTML = `
+    panel.innerHTML = `
     <div style="font-weight:bold; margin-bottom:8px; color:#55ff7f;">下書きの書き出し</div>
     <textarea id="mm-export-text" readonly style="width:100%; height:220px; background:#0a0f24; color:#c7d2f0; border:1px solid #3a4e78; border-radius:6px; padding:8px; font-family:monospace; font-size:10px; resize:vertical;"></textarea>
     <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px;">
@@ -1621,389 +1621,389 @@ function toggleExportPanel() {
     </div>
   `;
 
-  const targetContainer = $('hud-minimap-container') || document.body;
-  targetContainer.appendChild(panel);
+    const targetContainer = $('hud-minimap-container') || document.body;
+    targetContainer.appendChild(panel);
 
-  $('mm-export-text').value = buildExportText();
+    $('mm-export-text').value = buildExportText();
 
-  $('mm-export-copy').addEventListener('click', ev => {
-    ev.stopPropagation();
-    const ta = $('mm-export-text');
-    ta.select();
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(ta.value).catch(() => {});
-    }
-    const btn = $('mm-export-copy');
-    const orig = btn.textContent;
-    btn.textContent = 'コピーしました';
-    setTimeout(() => { const b = $('mm-export-copy'); if (b) b.textContent = orig; }, 1200);
-  });
-  $('mm-export-close').addEventListener('click', ev => { ev.stopPropagation(); panel.remove(); });
+    $('mm-export-copy').addEventListener('click', ev => {
+        ev.stopPropagation();
+        const ta = $('mm-export-text');
+        ta.select();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(ta.value).catch(() => { });
+        }
+        const btn = $('mm-export-copy');
+        const orig = btn.textContent;
+        btn.textContent = 'コピーしました';
+        setTimeout(() => { const b = $('mm-export-copy'); if (b) b.textContent = orig; }, 1200);
+    });
+    $('mm-export-close').addEventListener('click', ev => { ev.stopPropagation(); panel.remove(); });
 }
 
 function updateExportPanelIfOpen() {
-  const ta = $('mm-export-text');
-  if (ta) ta.value = buildExportText();
+    const ta = $('mm-export-text');
+    if (ta) ta.value = buildExportText();
 }
 
 function setupEditToolbar() {
-  const exportBtn = $('mm-edit-export');
-  if (exportBtn) exportBtn.addEventListener('click', e => { e.stopPropagation(); toggleExportPanel(); });
-  const clearBtn = $('mm-edit-clear');
-  if (clearBtn) clearBtn.addEventListener('click', e => { e.stopPropagation(); clearDrafts(); });
+    const exportBtn = $('mm-edit-export');
+    if (exportBtn) exportBtn.addEventListener('click', e => { e.stopPropagation(); toggleExportPanel(); });
+    const clearBtn = $('mm-edit-clear');
+    if (clearBtn) clearBtn.addEventListener('click', e => { e.stopPropagation(); clearDrafts(); });
 }
 
 /* --- ミニマップ内操作イベント --- */
 function setupMinimapInteractions() {
-  const mmMask = $('mm-drag-mask');
-  if (!mmMask) return;
+    const mmMask = $('mm-drag-mask');
+    if (!mmMask) return;
 
-  mmMask.addEventListener('pointerdown', e => {
-    const rect = $('hud-minimap-svg').getBoundingClientRect();
-    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+    mmMask.addEventListener('pointerdown', e => {
+        const rect = $('hud-minimap-svg').getBoundingClientRect();
+        const viewBox = $('hud-minimap-svg').viewBox.baseVal;
 
-    mmDragScaleX = rect.width / viewBox.width;
-    mmDragScaleY = rect.height / viewBox.height;
+        mmDragScaleX = rect.width / viewBox.width;
+        mmDragScaleY = rect.height / viewBox.height;
 
-    mmMask.setPointerCapture(e.pointerId);
-    mmActivePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        mmMask.setPointerCapture(e.pointerId);
+        mmActivePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-    // 💡 修正: 2本指が触れた時点でピンチズームモードへ移行する。
-    //    Pointer Eventsは指ごとに別のpointerIdで発火するため、touchイベントの
-    //    e.touchesのように自動でまとめて渡ってこない → 自前でMapに集計する必要がある。
-    if (mmActivePointers.size === 2) {
-      isMMDragging = false; // パン中だった場合は解除し、ピンチへ切り替える
-      isMMPinching = true;
-      mmDragMoved = true;   // ピンチ操作の指離しをダブルタップ等と誤認しないようにする
+        // 💡 修正: 2本指が触れた時点でピンチズームモードへ移行する。
+        //    Pointer Eventsは指ごとに別のpointerIdで発火するため、touchイベントの
+        //    e.touchesのように自動でまとめて渡ってこない → 自前でMapに集計する必要がある。
+        if (mmActivePointers.size === 2) {
+            isMMDragging = false; // パン中だった場合は解除し、ピンチへ切り替える
+            isMMPinching = true;
+            mmDragMoved = true;   // ピンチ操作の指離しをダブルタップ等と誤認しないようにする
 
-      const pts = Array.from(mmActivePointers.values());
-      mmPinchStartDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
-      mmPinchStartScale = mmScale;
-      mmPinchStartPanX = mmPanX;
-      mmPinchStartPanY = mmPanY;
+            const pts = Array.from(mmActivePointers.values());
+            mmPinchStartDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+            mmPinchStartScale = mmScale;
+            mmPinchStartPanX = mmPanX;
+            mmPinchStartPanY = mmPanY;
 
-      const midClientX = (pts[0].x + pts[1].x) / 2;
-      const midClientY = (pts[0].y + pts[1].y) / 2;
-      // 💡 修正: wheelハンドラと同様に、rect.left/topを引いてSVG要素のローカル座標系に
-      //    変換してから割る必要がある。ここが漏れていたため、ミニマップが画面の
-      //    左上から離れた位置（右下コーナー配置など）にあるほどズーム中心が
-      //    無関係な場所にズレていた。
-      mmPinchStartMidX = (midClientX - rect.left) / mmDragScaleX;
-      mmPinchStartMidY = (midClientY - rect.top) / mmDragScaleY;
+            const midClientX = (pts[0].x + pts[1].x) / 2;
+            const midClientY = (pts[0].y + pts[1].y) / 2;
+            // 💡 修正: wheelハンドラと同様に、rect.left/topを引いてSVG要素のローカル座標系に
+            //    変換してから割る必要がある。ここが漏れていたため、ミニマップが画面の
+            //    左上から離れた位置（右下コーナー配置など）にあるほどズーム中心が
+            //    無関係な場所にズレていた。
+            mmPinchStartMidX = (midClientX - rect.left) / mmDragScaleX;
+            mmPinchStartMidY = (midClientY - rect.top) / mmDragScaleY;
 
-      mmMask.style.cursor = 'zoom-in';
-      e.stopPropagation();
-      return;
-    }
+            mmMask.style.cursor = 'zoom-in';
+            e.stopPropagation();
+            return;
+        }
 
-    if (mmActivePointers.size > 2) {
-      // 3本目以降の指は無視（ピンチ状態を保つ）
-      e.stopPropagation();
-      return;
-    }
+        if (mmActivePointers.size > 2) {
+            // 3本目以降の指は無視（ピンチ状態を保つ）
+            e.stopPropagation();
+            return;
+        }
 
-    // ここに来るのは1本指の場合のみ：従来通りパン／クリック判定
-    isMMDragging = true;
-    mmDragMoved = false;
-    mmStartX = (e.clientX / mmDragScaleX) - mmPanX;
-    mmStartY = (e.clientY / mmDragScaleY) - mmPanY;
-    mmMask.style.cursor = editMode ? 'crosshair' : 'grabbing';
-    e.stopPropagation(); 
-  });
-  mmMask.addEventListener('pointermove', e => {
-    if (mmActivePointers.has(e.pointerId)) {
-      mmActivePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    }
+        // ここに来るのは1本指の場合のみ：従来通りパン／クリック判定
+        isMMDragging = true;
+        mmDragMoved = false;
+        mmStartX = (e.clientX / mmDragScaleX) - mmPanX;
+        mmStartY = (e.clientY / mmDragScaleY) - mmPanY;
+        mmMask.style.cursor = editMode ? 'crosshair' : 'grabbing';
+        e.stopPropagation();
+    });
+    mmMask.addEventListener('pointermove', e => {
+        if (mmActivePointers.has(e.pointerId)) {
+            mmActivePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        }
 
-    if (isMMPinching) {
-      if (mmActivePointers.size < 2) return; // 片方が既に離れているがpointerup未処理の一瞬など
-      const pts = Array.from(mmActivePointers.values()).slice(0, 2);
-      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
-      const ratio = dist / mmPinchStartDist;
+        if (isMMPinching) {
+            if (mmActivePointers.size < 2) return; // 片方が既に離れているがpointerup未処理の一瞬など
+            const pts = Array.from(mmActivePointers.values()).slice(0, 2);
+            const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+            const ratio = dist / mmPinchStartDist;
 
-      // ピンチ開始時のスケール・パンを起点に毎回計算し直すことで、
-      // フレームごとの誤差が積み重なって指の動きとズレていくのを防ぐ
-      mmScale = Math.max(0.02, Math.min(2.0, mmPinchStartScale * ratio));
-      mmPanX = mmPinchStartMidX - (mmPinchStartMidX - mmPinchStartPanX) * (mmScale / mmPinchStartScale);
-      mmPanY = mmPinchStartMidY - (mmPinchStartMidY - mmPinchStartPanY) * (mmScale / mmPinchStartScale);
+            // ピンチ開始時のスケール・パンを起点に毎回計算し直すことで、
+            // フレームごとの誤差が積み重なって指の動きとズレていくのを防ぐ
+            mmScale = Math.max(0.02, Math.min(2.0, mmPinchStartScale * ratio));
+            mmPanX = mmPinchStartMidX - (mmPinchStartMidX - mmPinchStartPanX) * (mmScale / mmPinchStartScale);
+            mmPanY = mmPinchStartMidY - (mmPinchStartMidY - mmPinchStartPanY) * (mmScale / mmPinchStartScale);
 
-      applyMinimapTransform();
-      e.stopPropagation();
-      return;
-    }
+            applyMinimapTransform();
+            e.stopPropagation();
+            return;
+        }
 
-    if (!isMMDragging) return;
-    const newPanX = (e.clientX / mmDragScaleX) - mmStartX;
-    const newPanY = (e.clientY / mmDragScaleY) - mmStartY;
-    if (Math.abs(newPanX - mmPanX) + Math.abs(newPanY - mmPanY) > 2) mmDragMoved = true;
-    mmPanX = newPanX;
-    mmPanY = newPanY;
-    applyMinimapTransform();
-    e.stopPropagation();
-  });
-  mmMask.addEventListener('pointerup', e => {
+        if (!isMMDragging) return;
+        const newPanX = (e.clientX / mmDragScaleX) - mmStartX;
+        const newPanY = (e.clientY / mmDragScaleY) - mmStartY;
+        if (Math.abs(newPanX - mmPanX) + Math.abs(newPanY - mmPanY) > 2) mmDragMoved = true;
+        mmPanX = newPanX;
+        mmPanY = newPanY;
+        applyMinimapTransform();
+        e.stopPropagation();
+    });
+    mmMask.addEventListener('pointerup', e => {
 
-    mmActivePointers.delete(e.pointerId);
+        mmActivePointers.delete(e.pointerId);
 
-    if (isMMPinching) {
-      if (mmActivePointers.size < 2) {
-        // 💡 指を1本以上離してピンチが終わったら、そのままジェスチャーを終了する
-        //    （残り1本でパンへ引き継ぐと指の位置ジャンプが起きるため、あえて終了させる）
+        if (isMMPinching) {
+            if (mmActivePointers.size < 2) {
+                // 💡 指を1本以上離してピンチが終わったら、そのままジェスチャーを終了する
+                //    （残り1本でパンへ引き継ぐと指の位置ジャンプが起きるため、あえて終了させる）
+                isMMPinching = false;
+                mmMask.style.cursor = editMode ? 'crosshair' : 'grab';
+            }
+            e.stopPropagation();
+            return;
+        }
+
+        isMMDragging = false;
+
+        mmMask.style.cursor = editMode ? 'crosshair' : 'grab';
+
+        if (editMode && !mmDragMoved) {
+
+            const now = Date.now();
+
+            const dx = e.clientX - mmLastTapX;
+            const dy = e.clientY - mmLastTapY;
+
+            const timeDiff = now - mmLastTapTime;
+            const distance = Math.hypot(dx, dy);
+
+            const isDoubleTap =
+                timeDiff < 400 &&
+                distance < 30;
+
+            if (isDoubleTap) {
+
+                // ダブルタップ成立
+                mmLastTapTime = 0;
+
+                if (mmEditClickTimer) {
+                    clearTimeout(mmEditClickTimer);
+                    mmEditClickTimer = null;
+                }
+
+                const svg = minimapClientToSvg(
+                    e.clientX,
+                    e.clientY
+                );
+
+                const hitId = findClosestNodeOnFloor(
+                    svg.x,
+                    svg.y,
+                    20
+                );
+
+                if (hitId) {
+
+                    // 頂点をダブルタップ
+                    showNodeInfoPopup(hitId);
+
+                } else {
+
+                    // 空白をダブルタップ
+                    createDraftNodeAt(
+                        svg.x,
+                        svg.y
+                    );
+                }
+
+            } else {
+
+                // 1回目のタップ
+                mmLastTapTime = now;
+                mmLastTapX = e.clientX;
+                mmLastTapY = e.clientY;
+
+                if (mmEditClickTimer) {
+                    clearTimeout(mmEditClickTimer);
+                }
+
+                mmEditClickTimer = setTimeout(() => {
+
+                    mmEditClickTimer = null;
+
+                    handleEditModeClick(
+                        e.clientX,
+                        e.clientY
+                    );
+
+                }, 250);
+            }
+        }
+
+        // 通常モードのダブルタップ判定
+        if (!editMode && walkPhase === 'idle' && !mmDragMoved) {
+
+            const now = Date.now();
+
+            const dx = e.clientX - mmLastTapX;
+            const dy = e.clientY - mmLastTapY;
+
+            const timeDiff = now - mmLastTapTime;
+
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (timeDiff < 400 && distance < 30) {
+
+                mmLastTapTime = 0;
+
+                handleMinimapTeleport(
+                    e.clientX,
+                    e.clientY
+                );
+
+            } else {
+
+                mmLastTapTime = now;
+
+                mmLastTapX = e.clientX;
+                mmLastTapY = e.clientY;
+
+            }
+
+        }
+
+        e.stopPropagation();
+
+    });
+
+    // 💡 追加: OS側のジェスチャー割り込みやポインタ消失時に isMMDragging / isMMPinching が
+    //    trueのまま固まって操作不能になるのを防ぐ（pointerupが来ないケースへの保険）
+    mmMask.addEventListener('pointercancel', e => {
+        mmActivePointers.delete(e.pointerId);
+        isMMDragging = false;
         isMMPinching = false;
         mmMask.style.cursor = editMode ? 'crosshair' : 'grab';
-      }
-      e.stopPropagation();
-      return;
-    }
-
-    isMMDragging = false;
-
-    mmMask.style.cursor = editMode ? 'crosshair' : 'grab';
-
-    if (editMode && !mmDragMoved) {
-
-    const now = Date.now();
-
-    const dx = e.clientX - mmLastTapX;
-    const dy = e.clientY - mmLastTapY;
-
-    const timeDiff = now - mmLastTapTime;
-    const distance = Math.hypot(dx, dy);
-
-    const isDoubleTap =
-        timeDiff < 400 &&
-        distance < 30;
-
-    if (isDoubleTap) {
-
-        // ダブルタップ成立
-        mmLastTapTime = 0;
-
-        if (mmEditClickTimer) {
-            clearTimeout(mmEditClickTimer);
-            mmEditClickTimer = null;
-        }
-
-        const svg = minimapClientToSvg(
-            e.clientX,
-            e.clientY
-        );
-
-        const hitId = findClosestNodeOnFloor(
-            svg.x,
-            svg.y,
-            20
-        );
-
-        if (hitId) {
-
-            // 頂点をダブルタップ
-            showNodeInfoPopup(hitId);
-
-        } else {
-
-            // 空白をダブルタップ
-            createDraftNodeAt(
-                svg.x,
-                svg.y
-            );
-        }
-
-    } else {
-
-        // 1回目のタップ
-        mmLastTapTime = now;
-        mmLastTapX = e.clientX;
-        mmLastTapY = e.clientY;
-
-        if (mmEditClickTimer) {
-            clearTimeout(mmEditClickTimer);
-        }
-
-        mmEditClickTimer = setTimeout(() => {
-
-            mmEditClickTimer = null;
-
-            handleEditModeClick(
-                e.clientX,
-                e.clientY
-            );
-
-        }, 250);
-    }
-}
-
-    // 通常モードのダブルタップ判定
-    if (!editMode && walkPhase === 'idle' && !mmDragMoved) {
-
-        const now = Date.now();
-
-        const dx = e.clientX - mmLastTapX;
-        const dy = e.clientY - mmLastTapY;
-
-        const timeDiff = now - mmLastTapTime;
-
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (timeDiff < 400 && distance < 30) {
-
-            mmLastTapTime = 0;
-
-            handleMinimapTeleport(
-                e.clientX,
-                e.clientY
-            );
-
-        } else {
-
-            mmLastTapTime = now;
-
-            mmLastTapX = e.clientX;
-            mmLastTapY = e.clientY;
-
-        }
-
-    }
-
-    e.stopPropagation();
-
-});
-
-  // 💡 追加: OS側のジェスチャー割り込みやポインタ消失時に isMMDragging / isMMPinching が
-  //    trueのまま固まって操作不能になるのを防ぐ（pointerupが来ないケースへの保険）
-  mmMask.addEventListener('pointercancel', e => {
-    mmActivePointers.delete(e.pointerId);
-    isMMDragging = false;
-    isMMPinching = false;
-    mmMask.style.cursor = editMode ? 'crosshair' : 'grab';
-  });
-
-  mmMask.addEventListener('contextmenu', e => {
-    if (!editMode) return;
-    e.preventDefault();
-    e.stopPropagation();
-    handleEditModeContextMenu(e.clientX, e.clientY);
-  });
-
-  [1, 2, 3, 4].forEach(f => {
-    $(`mm-btn-f${f}`).addEventListener('click', e => {
-      e.stopPropagation();
-      updateMinimapFloor(f);
     });
-  });
 
-  // anchorX/Y（SVG描画座標系）を中心に、mmScaleをfactor倍する共通ズーム処理。
-  // ホイール／ピンチ／ズームボタンの全てがこの1つを通ることで、アンカー計算のズレを防ぐ。
-  function zoomMinimapBy(factor, anchorX, anchorY) {
-    const oldScale = mmScale;
-    mmScale = Math.max(0.02, Math.min(2.0, mmScale * factor));
-    mmPanX = anchorX - (anchorX - mmPanX) * (mmScale / oldScale);
-    mmPanY = anchorY - (anchorY - mmPanY) * (mmScale / oldScale);
-    applyMinimapTransform();
-  }
-
-  // +/-ボタン用：固定ステップ(20%)でズーム
-  function changeMMZoom(zoomIn, anchorX, anchorY) {
-    zoomMinimapBy(zoomIn ? 1.2 : 1 / 1.2, anchorX, anchorY);
-  }
-
-  /* --- ホイール入力の種類判定（マウスホイール / トラックパッド） ---
-   * 💡 注意: ブラウザには両者を確実に見分ける公式APIが無いため、あくまでヒューリスティックです。
-   * - Firefoxは物理マウスホイールを deltaMode=1（行単位）、トラックパッドを deltaMode=0（ピクセル単位）
-   *   ではっきり区別して送ってくるため、ここは確実に判定できる。
-   * - Chrome/Safari/Edgeはどちらも常に deltaMode=0 なので、deltaYの値の特徴から推測する：
-   *   ノッチ付きマウスホイールは「大きくキリのいい値が、間隔をあけて飛び飛びに」来るのに対し、
-   *   トラックパッドは「小さい値が高頻度で連続的に」来る。
-   */
-  let mmLastWheelTs = 0;
-  function classifyWheelInput(e) {
-    if (e.deltaMode === 1) return 'wheel'; // Firefox: 行単位 = 物理マウスホイール確定
-
-    const now = performance.now();
-    const msSinceLast = now - mmLastWheelTs;
-    mmLastWheelTs = now;
-
-    const absDelta = Math.abs(e.deltaY);
-    const looksLikeNotchedWheel =
-      absDelta >= 40 &&                 // マウスホイール1ノッチは大きめの値になりやすい
-      Number.isInteger(absDelta) &&     // トラックパッドの慣性スクロールは非整数になりやすい
-      msSinceLast > 45;                 // ノッチ付きホイールはイベント間隔が空きやすい
-
-    return looksLikeNotchedWheel ? 'wheel' : 'trackpad';
-  }
-
-  // 💡 修正: sv-canvas側のFOVホイールズーム（tFov += deltaY*0.05、可動域30〜110の80幅）は
-  //    マウス1ノッチ(deltaY≈100)あたり可動域の約6.25%しか動かない。またミニマップ自身の
-  //    +/-ボタン(changeMMZoom)も1クリック20%(1.2倍)というステップになっている。
-  //    このアプリ内での「ズーム操作1回分」の体感を揃えるため、ミニマップのホイールズームも
-  //    同程度（最大でもボタン1クリック分=1.2倍）に収める。
-  const WHEEL_ZOOM_BASE_MOUSE    = 1.0018; // マウスホイール1ノッチ(deltaY≈100)で約1.20倍（≒ズームボタン1回分）
-  const WHEEL_ZOOM_BASE_TRACKPAD = 1.02;   // トラックパッドでの操作感を優先した値
-  const WHEEL_ZOOM_MAX_STEP      = 1.2;    // 1イベントの変化量上限。sv-canvasの1ノッチ分／ミニマップの
-                                            // +/-ボタン1回分と同じ大きさに揃えた（判定ミス時の暴走防止も兼ねる）
-
-  $('hud-minimap-svg').addEventListener('wheel', e => {
-    e.preventDefault();
-    e.stopPropagation(); 
-    const rect = $('hud-minimap-svg').getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    
-    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
-
-    const scaleX = rect.width / viewBox.width;
-    const scaleY = rect.height / viewBox.height;
-
-    const inputType = classifyWheelInput(e);
-    const base = (inputType === 'trackpad') ? WHEEL_ZOOM_BASE_TRACKPAD : WHEEL_ZOOM_BASE_MOUSE;
-
-    const clampedDelta = Math.max(-100, Math.min(100, e.deltaY));
-    let factor = Math.pow(base, -clampedDelta);
-    // 判定ミス（例:notchなしの高速マウスホイールをtrackpad判定してしまう等）が起きても
-    // 一気に最大/最小ズームへ飛ばないよう、1イベントあたりの変化量に上限をかけておく
-    factor = Math.max(1 / WHEEL_ZOOM_MAX_STEP, Math.min(WHEEL_ZOOM_MAX_STEP, factor));
-
-
-    zoomMinimapBy(factor, mouseX / scaleX, mouseY / scaleY);
-  }, { passive: false });
-
-  $('mm-btn-zoom-in').addEventListener('click', e => {
-    e.stopPropagation();
-    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
-    changeMMZoom(
-        true,
-        viewBox.width / 2 - 38,
-        viewBox.height / 2
-    );
-  });
-
-  $('mm-btn-zoom-out').addEventListener('click', e => {
-    e.stopPropagation();
-    const viewBox = $('hud-minimap-svg').viewBox.baseVal;
-    changeMMZoom(
-        false,
-        viewBox.width / 2 - 38,
-        viewBox.height / 2
-    );
-  });
-
-  // UIサイズ設定ボタン：クリックのたびに S→M→L→S... と巡回する
-  const uiSizeBtn = $('mm-btn-ui-size');
-  if (uiSizeBtn) {
-    uiSizeBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const idx = MM_UI_SIZE_CYCLE.indexOf(mmUiSizeLevel);
-      mmUiSizeLevel = MM_UI_SIZE_CYCLE[(idx + 1) % MM_UI_SIZE_CYCLE.length];
-
-      const label = $('mm-ui-size-label');
-      if (label) label.textContent = mmUiSizeLevel;
-
-      resizeMinimapViewport(); // 新しい段階をすぐに反映
-      if (typeof saveUserSettings === 'function') {
-        saveUserSettings({ mmUiSizeLevel });
-      }
+    mmMask.addEventListener('contextmenu', e => {
+        if (!editMode) return;
+        e.preventDefault();
+        e.stopPropagation();
+        handleEditModeContextMenu(e.clientX, e.clientY);
     });
-  }
+
+    [1, 2, 3, 4].forEach(f => {
+        $(`mm-btn-f${f}`).addEventListener('click', e => {
+            e.stopPropagation();
+            updateMinimapFloor(f);
+        });
+    });
+
+    // anchorX/Y（SVG描画座標系）を中心に、mmScaleをfactor倍する共通ズーム処理。
+    // ホイール／ピンチ／ズームボタンの全てがこの1つを通ることで、アンカー計算のズレを防ぐ。
+    function zoomMinimapBy(factor, anchorX, anchorY) {
+        const oldScale = mmScale;
+        mmScale = Math.max(0.02, Math.min(2.0, mmScale * factor));
+        mmPanX = anchorX - (anchorX - mmPanX) * (mmScale / oldScale);
+        mmPanY = anchorY - (anchorY - mmPanY) * (mmScale / oldScale);
+        applyMinimapTransform();
+    }
+
+    // +/-ボタン用：固定ステップ(20%)でズーム
+    function changeMMZoom(zoomIn, anchorX, anchorY) {
+        zoomMinimapBy(zoomIn ? 1.2 : 1 / 1.2, anchorX, anchorY);
+    }
+
+    /* --- ホイール入力の種類判定（マウスホイール / トラックパッド） ---
+     * 💡 注意: ブラウザには両者を確実に見分ける公式APIが無いため、あくまでヒューリスティックです。
+     * - Firefoxは物理マウスホイールを deltaMode=1（行単位）、トラックパッドを deltaMode=0（ピクセル単位）
+     *   ではっきり区別して送ってくるため、ここは確実に判定できる。
+     * - Chrome/Safari/Edgeはどちらも常に deltaMode=0 なので、deltaYの値の特徴から推測する：
+     *   ノッチ付きマウスホイールは「大きくキリのいい値が、間隔をあけて飛び飛びに」来るのに対し、
+     *   トラックパッドは「小さい値が高頻度で連続的に」来る。
+     */
+    let mmLastWheelTs = 0;
+    function classifyWheelInput(e) {
+        if (e.deltaMode === 1) return 'wheel'; // Firefox: 行単位 = 物理マウスホイール確定
+
+        const now = performance.now();
+        const msSinceLast = now - mmLastWheelTs;
+        mmLastWheelTs = now;
+
+        const absDelta = Math.abs(e.deltaY);
+        const looksLikeNotchedWheel =
+            absDelta >= 40 &&                 // マウスホイール1ノッチは大きめの値になりやすい
+            Number.isInteger(absDelta) &&     // トラックパッドの慣性スクロールは非整数になりやすい
+            msSinceLast > 45;                 // ノッチ付きホイールはイベント間隔が空きやすい
+
+        return looksLikeNotchedWheel ? 'wheel' : 'trackpad';
+    }
+
+    // 💡 修正: sv-canvas側のFOVホイールズーム（tFov += deltaY*0.05、可動域30〜110の80幅）は
+    //    マウス1ノッチ(deltaY≈100)あたり可動域の約6.25%しか動かない。またミニマップ自身の
+    //    +/-ボタン(changeMMZoom)も1クリック20%(1.2倍)というステップになっている。
+    //    このアプリ内での「ズーム操作1回分」の体感を揃えるため、ミニマップのホイールズームも
+    //    同程度（最大でもボタン1クリック分=1.2倍）に収める。
+    const WHEEL_ZOOM_BASE_MOUSE = 1.0018; // マウスホイール1ノッチ(deltaY≈100)で約1.20倍（≒ズームボタン1回分）
+    const WHEEL_ZOOM_BASE_TRACKPAD = 1.02;   // トラックパッドでの操作感を優先した値
+    const WHEEL_ZOOM_MAX_STEP = 1.2;    // 1イベントの変化量上限。sv-canvasの1ノッチ分／ミニマップの
+    // +/-ボタン1回分と同じ大きさに揃えた（判定ミス時の暴走防止も兼ねる）
+
+    $('hud-minimap-svg').addEventListener('wheel', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const rect = $('hud-minimap-svg').getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+
+        const scaleX = rect.width / viewBox.width;
+        const scaleY = rect.height / viewBox.height;
+
+        const inputType = classifyWheelInput(e);
+        const base = (inputType === 'trackpad') ? WHEEL_ZOOM_BASE_TRACKPAD : WHEEL_ZOOM_BASE_MOUSE;
+
+        const clampedDelta = Math.max(-100, Math.min(100, e.deltaY));
+        let factor = Math.pow(base, -clampedDelta);
+        // 判定ミス（例:notchなしの高速マウスホイールをtrackpad判定してしまう等）が起きても
+        // 一気に最大/最小ズームへ飛ばないよう、1イベントあたりの変化量に上限をかけておく
+        factor = Math.max(1 / WHEEL_ZOOM_MAX_STEP, Math.min(WHEEL_ZOOM_MAX_STEP, factor));
+
+
+        zoomMinimapBy(factor, mouseX / scaleX, mouseY / scaleY);
+    }, { passive: false });
+
+    $('mm-btn-zoom-in').addEventListener('click', e => {
+        e.stopPropagation();
+        const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+        changeMMZoom(
+            true,
+            viewBox.width / 2 - 38,
+            viewBox.height / 2
+        );
+    });
+
+    $('mm-btn-zoom-out').addEventListener('click', e => {
+        e.stopPropagation();
+        const viewBox = $('hud-minimap-svg').viewBox.baseVal;
+        changeMMZoom(
+            false,
+            viewBox.width / 2 - 38,
+            viewBox.height / 2
+        );
+    });
+
+    // UIサイズ設定ボタン：クリックのたびに S→M→L→S... と巡回する
+    const uiSizeBtn = $('mm-btn-ui-size');
+    if (uiSizeBtn) {
+        uiSizeBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            const idx = MM_UI_SIZE_CYCLE.indexOf(mmUiSizeLevel);
+            mmUiSizeLevel = MM_UI_SIZE_CYCLE[(idx + 1) % MM_UI_SIZE_CYCLE.length];
+
+            const label = $('mm-ui-size-label');
+            if (label) label.textContent = mmUiSizeLevel;
+
+            resizeMinimapViewport(); // 新しい段階をすぐに反映
+            if (typeof saveUserSettings === 'function') {
+                saveUserSettings({ mmUiSizeLevel });
+            }
+        });
+    }
 }
 
 /* --- 画面サイズ変更時もミニマップを追従させる --- */
@@ -2020,7 +2020,7 @@ window.addEventListener('resize', () => {
  * メインループ（animate内）から呼び出されるパルス表現用アップデート
  */
 function updateMinimapPulse(dt) {
-  // SVG内のインライン<animate>タグ要素が自動動作するため空にしています。
+    // SVG内のインライン<animate>タグ要素が自動動作するため空にしています。
 }
 
 /*

@@ -40,7 +40,9 @@
 }
 
 /* --- 基本リセット --- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -59,7 +61,8 @@ body {
 .sv-container {
   position: relative;
   width: 100%;
-  height: 100%; /* PC時は画面全体、モバイル時はメディアクエリで高さが削られます */
+  height: 100%;
+  /* PC時は画面全体、モバイル時はメディアクエリで高さが削られます */
   overflow: hidden;
 }
 
@@ -67,41 +70,44 @@ body {
 #sv-canvas {
   display: block;
   width: 100%;
-  height: 100%; /* 親コンテナのサイズに100%追従 */
+  height: 100%;
+  /* 親コンテナのサイズに100%追従 */
   cursor: grab;
   touch-action: none;
-  -webkit-user-select: none; /* iOS Safari用 */
+  -webkit-user-select: none;
+  /* iOS Safari用 */
   user-select: none;
 }
+
 #sv-canvas:active {
   cursor: grabbing;
 }
 
 @media (max-width: 780px) {
 
-    /* 左右分割 */
-    body.mm-layout-split-h .sv-container {
-        width: calc(var(--split-h-ratio, 0.5) * 100%);
-        height: 100dvh;
-    }
+  /* 左右分割 */
+  body.mm-layout-split-h .sv-container {
+    width: calc(var(--split-h-ratio, 0.5) * 100%);
+    height: 100dvh;
+  }
 
-    /* 上下分割 */
-    body.mm-layout-split-v .sv-container {
-        width: 100%;
-        height: calc(var(--split-v-ratio, 0.5) * 100dvh);
-    }
+  /* 上下分割 */
+  body.mm-layout-split-v .sv-container {
+    width: 100%;
+    height: calc(var(--split-v-ratio, 0.5) * 100dvh);
+  }
 
-    /* ミニマップ非表示 */
-    body.mm-layout-hidden .sv-container {
-        width: 100%;
-        height: 100dvh;
-    }
+  /* ミニマップ非表示 */
+  body.mm-layout-hidden .sv-container {
+    width: 100%;
+    height: 100dvh;
+  }
 
-    /* 全画面地図 */
-    body.mm-layout-fullscreen .sv-container {
-        width: 100%;
-        height: 0;
-    }
+  /* 全画面地図 */
+  body.mm-layout-fullscreen .sv-container {
+    width: 100%;
+    height: 0;
+  }
 }
 
 /* ミニマップのコンテナやSVGマスク */
@@ -126,11 +132,14 @@ body {
   z-index: 20;
   opacity: 0.35;
 }
-#crosshair::before, #crosshair::after {
+
+#crosshair::before,
+#crosshair::after {
   content: '';
   position: absolute;
   background: rgba(255, 255, 255, 0.9);
 }
+
 #crosshair::before {
   width: 1.5px;
   height: 100%;
@@ -138,6 +147,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
 }
+
 #crosshair::after {
   width: 100%;
   height: 1.5px;
@@ -156,6 +166,7 @@ body {
   pointer-events: none;
   z-index: 10;
 }
+
 .interactive {
   pointer-events: auto;
 }
@@ -168,6 +179,7 @@ body {
   z-index: 30;
   transition: opacity 0.2s;
 }
+
 #loc-badge {
   display: inline-block;
   background: var(--color-surface);
@@ -176,39 +188,41 @@ body {
   padding: 12px 20px;
   box-shadow: var(--shadow-panel);
 }
-#loc-name {
-    position: relative;
-    display: inline-grid;
 
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    line-height: 1.2;
+#loc-name {
+  position: relative;
+  display: inline-grid;
+
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
 }
 
 .loc-outline,
 .loc-fill {
-    grid-area: 1 / 1;
+  grid-area: 1 / 1;
 }
 
 .loc-outline {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 
-    color: var(--color-text);
-    -webkit-text-stroke: 1.5px var(--color-text);
+  color: var(--color-text);
+  -webkit-text-stroke: 1.5px var(--color-text);
 }
 
 .loc-fill {
-    position: relative;
-    z-index: 2;
+  position: relative;
+  z-index: 2;
 
-    background: var(--gradient-location);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  background: var(--gradient-location);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+
 #loc-sub {
   font-size: 12px;
   font-weight: 600;
@@ -229,6 +243,7 @@ body {
   opacity: 0;
   transition: opacity 0.3s;
 }
+
 #speed-inner {
   background: var(--color-surface);
   border: 1px solid var(--color-border-secondary);
@@ -253,153 +268,154 @@ body {
   gap: 12px;
   z-index: 110;
 }
+
 .top-center-box {
-    position: fixed;
-    top: 80px;
-    z-index: 30;
+  position: fixed;
+  top: 80px;
+  z-index: 30;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    pointer-events: none;
+  pointer-events: none;
 }
 
 #compass-wrapper {
-    width: 100%;
-    height: 54px;
+  width: 100%;
+  height: 54px;
 
-    overflow: hidden;
+  overflow: hidden;
 
-    /* ガラスUI */
-    background: rgba(255, 255, 255, 0.32);
+  /* ガラスUI */
+  background: rgba(255, 255, 255, 0.32);
 
-    border: 1px solid rgba(255, 255, 255, 0.62);
-    border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 12px;
 
-    box-shadow:
-        0 6px 18px rgba(79, 66, 104, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.65),
-        inset 0 -1px 0 rgba(139, 120, 181, 0.12);
+  box-shadow:
+    0 6px 18px rgba(79, 66, 104, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 0 rgba(139, 120, 181, 0.12);
 
-    backdrop-filter: blur(1px) saturate(145%);
-    -webkit-backdrop-filter: blur(1px) saturate(145%);
+  backdrop-filter: blur(1px) saturate(145%);
+  -webkit-backdrop-filter: blur(1px) saturate(145%);
 }
 
 #hud-compass {
-    display: block;
+  display: block;
 
-    width: 100%;
-    height: 60px;
+  width: 100%;
+  height: 60px;
 
-    pointer-events: none;
+  pointer-events: none;
 }
 
 @media (max-width: 480px) {
-    .top-right-box {
-        top: 105px;
-        right: 12px;
-    }
+  .top-right-box {
+    top: 105px;
+    right: 12px;
+  }
 }
 
 /* 設定ボタン：ハンバーガーメニュー */
 #btn-settings {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
 
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    color: var(--color-primary-dark);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-dark);
 
-    cursor: pointer;
+  cursor: pointer;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 
-    box-shadow: var(--shadow-panel);
-    transition:
-        background 0.2s,
-        border-color 0.2s,
-        transform 0.1s;
+  box-shadow: var(--shadow-panel);
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.1s;
 
-    pointer-events: auto;
+  pointer-events: auto;
 }
 
 /* ハンバーガーの3本線 */
 #btn-settings span {
-    display: block;
-    width: 20px;
-    height: 2px;
+  display: block;
+  width: 20px;
+  height: 2px;
 
-    background: currentColor;
-    border-radius: 2px;
+  background: currentColor;
+  border-radius: 2px;
 
-    transition:
-        transform 0.2s,
-        opacity 0.2s;
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
 }
 
 /* ホバー */
 #btn-settings:hover {
-    background: var(--color-surface-soft);
-    border-color: var(--color-border-strong);
-    color: var(--color-primary-dark);
+  background: var(--color-surface-soft);
+  border-color: var(--color-border-strong);
+  color: var(--color-primary-dark);
 }
 
 /* クリック時 */
 #btn-settings:active {
-    transform: scale(0.9);
+  transform: scale(0.9);
 }
 
 /* --- ミニマップレイアウトボタン --- */
 
 #btn-minimap-layout {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
 
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    color: var(--color-primary-dark);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-dark);
 
-    cursor: pointer;
+  cursor: pointer;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    box-shadow: var(--shadow-panel);
+  box-shadow: var(--shadow-panel);
 
-    transition:
-        background 0.2s,
-        border-color 0.2s,
-        transform 0.1s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.1s;
 
-    pointer-events: auto;
+  pointer-events: auto;
 }
 
 #btn-minimap-layout svg {
-    width: 22px;
-    height: 22px;
+  width: 22px;
+  height: 22px;
 
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 #btn-minimap-layout:hover {
-    background: var(--color-surface-soft);
-    border-color: var(--color-border-strong);
+  background: var(--color-surface-soft);
+  border-color: var(--color-border-strong);
 }
 
 #btn-minimap-layout:active {
-    transform: scale(0.9);
+  transform: scale(0.9);
 }
 
 /* ============================================================
@@ -407,142 +423,142 @@ body {
 ============================================================ */
 
 #minimap-layout-modal {
-    position: fixed;
-    inset: 0;
+  position: fixed;
+  inset: 0;
 
-    background: rgba(52, 44, 64, 0.35);
+  background: rgba(52, 44, 64, 0.35);
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    /* .hud-layer(z-index:10)がスタッキングコンテキストを作るため、
+  /* .hud-layer(z-index:10)がスタッキングコンテキストを作るため、
        内部の.top-right-box(z-index:110)は外に影響しない。100のままで最前面に来る */
-    z-index: 100;
+  z-index: 100;
 
-    opacity: 0;
-    pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
 
-    transition: opacity 0.25s ease;
+  transition: opacity 0.25s ease;
 }
 
 #minimap-layout-modal.open {
-    opacity: 1;
-    pointer-events: auto;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 #minimap-layout-content {
-    width: 340px;
+  width: 340px;
 
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
 
-    padding: 24px;
+  padding: 24px;
 
-    box-shadow:
-        0 20px 50px rgba(79, 66, 104, 0.28);
+  box-shadow:
+    0 20px 50px rgba(79, 66, 104, 0.28);
 }
 
 #minimap-layout-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 12px;
 }
 
 #minimap-layout-header h2 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
 
-    color: var(--color-primary);
-    letter-spacing: 0.08em;
+  color: var(--color-primary);
+  letter-spacing: 0.08em;
 }
 
 #btn-close-minimap-layout {
-    background: none;
-    border: none;
+  background: none;
+  border: none;
 
-    color: var(--color-text-muted);
+  color: var(--color-text-muted);
 
-    font-size: 20px;
+  font-size: 20px;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 #btn-close-minimap-layout:hover {
-    color: var(--color-text);
+  color: var(--color-text);
 }
 
 /* レイアウト選択 */
 
 #minimap-layout-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
 
 .minimap-layout-option {
-    min-height: 92px;
+  min-height: 92px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-    gap: 7px;
+  gap: 7px;
 
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
 
-    color: var(--color-text-muted);
+  color: var(--color-text-muted);
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition:
-        background 0.15s,
-        border-color 0.15s,
-        color 0.15s,
-        transform 0.1s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s,
+    transform 0.1s;
 }
 
 .minimap-layout-option:hover {
-    background: var(--color-surface-soft);
-    border-color: var(--color-border-strong);
-    color: var(--color-primary);
+  background: var(--color-surface-soft);
+  border-color: var(--color-border-strong);
+  color: var(--color-primary);
 }
 
 .minimap-layout-option:active {
-    transform: scale(0.96);
+  transform: scale(0.96);
 }
 
 .minimap-layout-option.is-active {
-    background: var(--color-primary-pale);
-    border-color: var(--color-primary);
-    color: var(--color-primary-dark);
+  background: var(--color-primary-pale);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
 }
 
 .minimap-layout-option svg {
-    width: 40px;
-    height: 40px;
+  width: 40px;
+  height: 40px;
 
-    fill: none;
-    stroke: currentColor;
+  fill: none;
+  stroke: currentColor;
 
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .minimap-layout-option span {
-    font-size: 11px;
-    font-weight: 600;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 /* --- 右上2段目：TPS デバッグモニター --- */
@@ -560,6 +576,7 @@ body {
   box-shadow: var(--shadow-panel);
   transition: opacity 0.2s;
 }
+
 #debug-title {
   font-family: 'Rajdhani', sans-serif;
   font-size: 11px;
@@ -570,6 +587,7 @@ body {
   background: var(--color-surface-soft);
   border-bottom: 1px solid var(--color-border);
 }
+
 #debug-canvas {
   width: 100%;
   height: calc(100% - 25px);
@@ -587,10 +605,12 @@ body {
   transition: all 0.3s ease;
   pointer-events: auto;
 }
+
 #hud-minimap-container {
   width: 100%;
   height: auto;
 }
+
 #hud-minimap-svg {
   width: 100%;
   height: auto;
@@ -605,6 +625,7 @@ body {
 body.mm-layout-split-v .sv-container {
   height: calc(var(--split-v-ratio, 0.5) * 100%);
 }
+
 body.mm-layout-split-v #hud-minimap {
   position: fixed;
   top: calc(var(--split-v-ratio, 0.5) * 100%);
@@ -614,6 +635,7 @@ body.mm-layout-split-v #hud-minimap {
   width: 100%;
   height: calc((1 - var(--split-v-ratio, 0.5)) * 100%);
 }
+
 body.mm-layout-split-v #hud-minimap-container,
 body.mm-layout-split-v #hud-minimap-svg {
   width: 100%;
@@ -625,6 +647,7 @@ body.mm-layout-split-v #hud-minimap-svg {
 body.mm-layout-split-h .sv-container {
   width: calc(var(--split-h-ratio, 0.5) * 100%);
 }
+
 body.mm-layout-split-h #hud-minimap {
   position: fixed;
   top: 0;
@@ -634,6 +657,7 @@ body.mm-layout-split-h #hud-minimap {
   width: calc((1 - var(--split-h-ratio, 0.5)) * 100%);
   height: 100%;
 }
+
 body.mm-layout-split-h #hud-minimap-container,
 body.mm-layout-split-h #hud-minimap-svg {
   width: 100%;
@@ -645,15 +669,18 @@ body.mm-layout-split-h #hud-minimap-svg {
 #split-divider {
   display: none;
   position: fixed;
-  z-index: 35; /* .hud-layer内で#hud-minimap(30)より上 */
+  z-index: 35;
+  /* .hud-layer内で#hud-minimap(30)より上 */
   background: transparent;
   touch-action: none;
 }
+
 #split-divider::before {
   content: '';
   position: absolute;
   background: var(--color-border-strong, var(--color-border));
 }
+
 #split-divider::after {
   content: '';
   position: absolute;
@@ -662,6 +689,7 @@ body.mm-layout-split-h #hud-minimap-svg {
   opacity: 0.85;
   transition: opacity 0.15s, background 0.15s;
 }
+
 #split-divider:hover::after,
 body.split-dragging #split-divider::after {
   opacity: 1;
@@ -677,6 +705,7 @@ body.mm-layout-split-v #split-divider {
   transform: translateY(-50%);
   cursor: row-resize;
 }
+
 body.mm-layout-split-v #split-divider::before {
   left: 0;
   right: 0;
@@ -684,6 +713,7 @@ body.mm-layout-split-v #split-divider::before {
   height: 1px;
   transform: translateY(-50%);
 }
+
 body.mm-layout-split-v #split-divider::after {
   left: 50%;
   top: 50%;
@@ -701,6 +731,7 @@ body.mm-layout-split-h #split-divider {
   transform: translateX(-50%);
   cursor: col-resize;
 }
+
 body.mm-layout-split-h #split-divider::before {
   top: 0;
   bottom: 0;
@@ -708,6 +739,7 @@ body.mm-layout-split-h #split-divider::before {
   width: 1px;
   transform: translateX(-50%);
 }
+
 body.mm-layout-split-h #split-divider::after {
   top: 50%;
   left: 50%;
@@ -726,7 +758,8 @@ body.split-dragging {
 #split-edge-handle {
   display: none;
   position: fixed;
-  z-index: 36; /* #split-divider(35)/#hud-minimap(30)より上 */
+  z-index: 36;
+  /* #split-divider(35)/#hud-minimap(30)より上 */
   align-items: center;
   justify-content: center;
   background: var(--color-surface);
@@ -735,22 +768,27 @@ body.split-dragging {
   box-shadow: var(--shadow-panel);
   padding: 0;
   cursor: pointer;
-  touch-action: manipulation; /* タップの反応を軽くする */
+  touch-action: manipulation;
+  /* タップの反応を軽くする */
 }
+
 #split-edge-handle::after {
   content: '';
   background: var(--color-border-strong, var(--color-border));
   border-radius: 3px;
   transition: background 0.15s;
 }
+
 #split-edge-handle.is-horizontal-grip::after {
   width: 22px;
   height: 3px;
 }
+
 #split-edge-handle.is-vertical-grip::after {
   width: 3px;
   height: 22px;
 }
+
 #split-edge-handle:hover::after,
 #split-edge-handle:active::after {
   background: var(--color-primary);
@@ -766,6 +804,7 @@ body.mm-layout-fullscreen #hud-minimap {
   z-index: 90;
   border: none;
 }
+
 body.mm-layout-fullscreen #hud-minimap-container,
 body.mm-layout-fullscreen #hud-minimap-svg {
   width: 100%;
@@ -790,6 +829,7 @@ body.mm-layout-hidden #hud-minimap {
   transition: all 0.3s ease;
   pointer-events: auto;
 }
+
 #ctrl-panel {
   display: flex;
   align-items: center;
@@ -803,43 +843,43 @@ body.mm-layout-hidden #hud-minimap {
 
 @media (max-width: 780px) {
 
-    /* 通常の右下表示 */
-    body:not(.mm-layout-split-h):not(.mm-layout-split-v):not(.mm-layout-fullscreen):not(.mm-layout-hidden) #hud-minimap {
-        right: 24px;
-        left: auto;
-        bottom: 24px;
-        width: 260px;
-    }
+  /* 通常の右下表示 */
+  body:not(.mm-layout-split-h):not(.mm-layout-split-v):not(.mm-layout-fullscreen):not(.mm-layout-hidden) #hud-minimap {
+    right: 24px;
+    left: auto;
+    bottom: 24px;
+    width: 260px;
+  }
 
-    /* 右下表示時の操作パネル */
-    body:not(.mm-layout-split-h):not(.mm-layout-split-v):not(.mm-layout-fullscreen):not(.mm-layout-hidden) #hud-controls {
-        left: 24px;
-        bottom: calc(24px + (260px * 160 / 260) + 16px);
-    }
+  /* 右下表示時の操作パネル */
+  body:not(.mm-layout-split-h):not(.mm-layout-split-v):not(.mm-layout-fullscreen):not(.mm-layout-hidden) #hud-controls {
+    left: 24px;
+    bottom: calc(24px + (260px * 160 / 260) + 16px);
+  }
 
-    /* 左右分割 */
-    body.mm-layout-split-h .sv-container {
-        width: calc(var(--split-h-ratio, 0.5) * 100%);
-        height: 100dvh;
-    }
+  /* 左右分割 */
+  body.mm-layout-split-h .sv-container {
+    width: calc(var(--split-h-ratio, 0.5) * 100%);
+    height: 100dvh;
+  }
 
-    /* 上下分割 */
-    body.mm-layout-split-v .sv-container {
-        width: 100%;
-        height: calc(var(--split-v-ratio, 0.5) * 100dvh);
-    }
+  /* 上下分割 */
+  body.mm-layout-split-v .sv-container {
+    width: 100%;
+    height: calc(var(--split-v-ratio, 0.5) * 100dvh);
+  }
 
-    /* ミニマップ非表示 */
-    body.mm-layout-hidden .sv-container {
-        width: 100%;
-        height: 100dvh;
-    }
+  /* ミニマップ非表示 */
+  body.mm-layout-hidden .sv-container {
+    width: 100%;
+    height: 100dvh;
+  }
 
-    /* 全画面地図 */
-    body.mm-layout-fullscreen .sv-container {
-        width: 100%;
-        height: 0;
-    }
+  /* 全画面地図 */
+  body.mm-layout-fullscreen .sv-container {
+    width: 100%;
+    height: 0;
+  }
 }
 
 /* --- コントロール群のボタン装飾 --- */
@@ -860,19 +900,23 @@ body.mm-layout-hidden #hud-minimap {
   user-select: none;
   box-shadow: var(--shadow-panel);
 }
+
 .hud-btn:hover {
   color: var(--color-primary-dark);
   background: var(--color-surface-soft);
   border-color: var(--color-border-strong);
 }
+
 .hud-btn:active {
   transform: scale(0.9);
 }
+
 .hud-btn.active {
   color: #FFFFFF;
   background: var(--color-primary);
   border-color: var(--color-primary-hover);
 }
+
 #fov-readout {
   font-family: 'Rajdhani', sans-serif;
   font-size: 13px;
@@ -894,6 +938,7 @@ body.mm-layout-hidden #hud-minimap {
   outline: none;
   cursor: pointer;
 }
+
 #fov-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -906,6 +951,7 @@ body.mm-layout-hidden #hud-minimap {
   transition: transform 0.1s;
   box-shadow: var(--shadow-panel);
 }
+
 #fov-slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
 }
@@ -920,6 +966,7 @@ body.mm-layout-hidden #hud-minimap {
   z-index: 60;
   background: var(--color-border);
 }
+
 #load-bar {
   height: 100%;
   width: 0%;
@@ -970,10 +1017,12 @@ body.mm-layout-hidden #hud-minimap {
   pointer-events: none;
   transition: opacity 0.25s ease;
 }
+
 #settings-modal.open {
   opacity: 1;
   pointer-events: auto;
 }
+
 #modal-content {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -982,6 +1031,7 @@ body.mm-layout-hidden #hud-minimap {
   padding: 24px;
   box-shadow: 0 20px 50px rgba(79, 66, 104, 0.28);
 }
+
 #modal-header {
   display: flex;
   justify-content: space-between;
@@ -990,6 +1040,7 @@ body.mm-layout-hidden #hud-minimap {
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 12px;
 }
+
 #modal-title {
   font-family: 'Rajdhani', sans-serif;
   font-size: 20px;
@@ -997,6 +1048,7 @@ body.mm-layout-hidden #hud-minimap {
   color: var(--color-primary);
   letter-spacing: 0.08em;
 }
+
 #btn-close-modal {
   background: none;
   border: none;
@@ -1005,6 +1057,7 @@ body.mm-layout-hidden #hud-minimap {
   cursor: pointer;
   transition: color 0.15s;
 }
+
 #btn-close-modal:hover {
   color: var(--color-text);
 }
@@ -1019,6 +1072,7 @@ body.mm-layout-hidden #hud-minimap {
   border: 1px solid var(--color-border);
   border-radius: 8px;
 }
+
 .mode-tab-btn {
   flex: 1;
   background: transparent;
@@ -1033,9 +1087,11 @@ body.mm-layout-hidden #hud-minimap {
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
+
 .mode-tab-btn:hover {
   color: var(--color-text);
 }
+
 .mode-tab-btn.is-active {
   background: var(--color-surface);
   color: var(--color-primary);
@@ -1048,14 +1104,17 @@ body.mm-layout-hidden #hud-minimap {
   align-items: center;
   margin-bottom: 16px;
 }
+
 .setting-row:last-child {
   margin-bottom: 0;
 }
+
 .setting-label {
   font-size: 13px;
   color: var(--color-text);
   font-weight: 500;
 }
+
 .setting-sub {
   font-size: 10px;
   color: var(--color-text-muted);
@@ -1076,11 +1135,13 @@ body.mm-layout-hidden #hud-minimap {
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
+
 .setting-row select:hover,
 .setting-row button:hover {
   background: var(--color-surface-soft);
   border-color: var(--color-border-strong);
 }
+
 #btn-text-size-mode {
   color: var(--color-primary-dark);
   font-weight: bold;
@@ -1094,11 +1155,13 @@ body.mm-layout-hidden #hud-minimap {
   width: 40px;
   height: 22px;
 }
+
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
+
 .slider {
   position: absolute;
   cursor: pointer;
@@ -1108,6 +1171,7 @@ body.mm-layout-hidden #hud-minimap {
   border-radius: 22px;
   border: 1px solid var(--color-border-strong);
 }
+
 .slider:before {
   position: absolute;
   content: "";
@@ -1120,11 +1184,13 @@ body.mm-layout-hidden #hud-minimap {
   border-radius: 50%;
   box-shadow: var(--shadow-panel);
 }
-input:checked + .slider {
+
+input:checked+.slider {
   background-color: var(--color-primary);
   border-color: var(--color-primary-hover);
 }
-input:checked + .slider:before {
+
+input:checked+.slider:before {
   transform: translateX(18px);
   background-color: #FFFFFF;
 }

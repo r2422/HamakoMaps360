@@ -6,7 +6,7 @@
    ミニマップ座標変換の定数（順変換はcalcMinimapCoords、逆変換はminimap.jsの
    編集モードで使用。両者が同じ値を参照できるようモジュールスコープに置く）
 ============================================================ */
-const MINIMAP_SCALE   = 3.0; // 3D空間の1単位 = ミニマップSVG上の何px か
+const MINIMAP_SCALE = 3.0; // 3D空間の1単位 = ミニマップSVG上の何px か
 const MINIMAP_OFFSET_X = 0;  // ミニマップSVG原点(0,0)に対する3D空間原点のズレ補正
 const MINIMAP_OFFSET_Y = 0;
 
@@ -14,7 +14,7 @@ class PanoramaAsset {
   // コンストラクタに nodeInfo を渡せるように変更
   constructor(fileName, nodeInfo) {
     this.folderPath = '../images/';
-    
+
     // nodeInfo があればフォルダ名を構築（例: 'North' + '3F' -> '北館3F'）
     // ※ フォルダ名が「北館3F」などの日本語名であることを前提としています
     if (nodeInfo && nodeInfo.building && nodeInfo.floor) {
@@ -32,13 +32,13 @@ class MapNode {
     this.id = id;
     this.name = data.name;
     this.sub = data.sub;
-    
+
     // 第2引数として建物・階数情報を渡す
     this.asset = new PanoramaAsset(data.imageFile, {
       building: data.building,
       floor: data.floor
     });
-    
+
     this.initYaw = data.initYaw; // TPしたときに向いている方向
     this.mmIdx = data.mmIdx;
     this.pos3D = data.pos3D; // [x, y, z] 絶対空間座標
@@ -47,14 +47,14 @@ class MapNode {
     // 巨大地図用2D座標（calcMinimapCoordsでSVG座標系へ固定マッピング）
     this.mmX = 0;
     this.mmY = 0;
-    
+
     this.links = data.links || [];
   }
 }
 
 class MapGraph {
   constructor() { this.nodes = {}; }
-  
+
   getNode(id) { return this.nodes[id]; }
 
   // 複数のJSONデータ（配列）をまとめて取り込むメソッド
@@ -104,12 +104,12 @@ class MapGraph {
 const mapGraph = new MapGraph();
 
 // 各階の基準高（JSON読み込み後の計算用として定数だけ残しておく）
-const Y_BASE_1 = 0; 
-const Y_BASE_2 = 80; 
-const Y_BASE_3 = 160; 
+const Y_BASE_1 = 0;
+const Y_BASE_2 = 80;
+const Y_BASE_3 = 160;
 const Y_BASE_4 = 240;
 
-  
+
 // window.NODES = mapGraph.nodes;
 
 /*
