@@ -1,3 +1,4 @@
+{
 "22_stairs_0990,0560": {
   "name": "",
   "sub": "",
@@ -42,4 +43,5 @@
   "floor": 2,
   "building": "Main",
   "links": []
-},
+}
+}

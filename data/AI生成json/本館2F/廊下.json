@@ -1,3 +1,4 @@
+{
 "22_corrider_0390,0680": {
   "name": "",
   "sub": "",
@@ -72,4 +73,5 @@
   "floor": 2,
   "building": "Main",
   "links": []
-},
+}
+}

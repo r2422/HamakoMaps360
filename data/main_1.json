@@ -477,6 +477,81 @@
           "hint": ""
         }
       ]
+    },
+    "21_corridor_0330,0450_渡り廊下": {
+      "name": "",
+      "sub": "",
+      "imageFile": "21_corridor_0330,0450_渡り廊下.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        450
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corridor_1380,0720_食堂前": {
+      "name": "",
+      "sub": "",
+      "imageFile": "21_corridor_1380,0720_食堂前.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        1380,
+        0,
+        720
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corridor_1390,0560_食堂前": {
+      "name": "",
+      "sub": "",
+      "imageFile": "21_corridor_1390,0560_食堂前.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        1390,
+        0,
+        560
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
+    },
+    "21_corrider_0980,0560": {
+      "name": "",
+      "sub": "",
+      "imageFile": "21_corrider_0980,0560.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        980,
+        0,
+        560
+      ],
+      "floor": 2,
+      "building": "Main",
+      "links": []
+    },
+    "21_stairs_1370,0590_食堂前": {
+      "name": "",
+      "sub": "",
+      "imageFile": "21_stairs_1370,0590_食堂前.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        1370,
+        0,
+        590
+      ],
+      "floor": 1,
+      "building": "Main",
+      "links": []
     }
   }
 }

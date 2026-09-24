@@ -1,4 +1,5 @@
- "23_stairs_0330,0560": {
+{
+  "23_stairs_0330,0560": {
     "name": "本館 3階 階段",
     "sub": "",
     "imageFile": "23_stairs_0330,0560.jpg",
@@ -57,4 +58,5 @@
     "floor": 3,
     "building": "Main",
     "links": []
-  },
+  }
+}

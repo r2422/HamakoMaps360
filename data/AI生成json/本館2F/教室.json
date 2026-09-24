@@ -1,3 +1,4 @@
+{
 "22_classroom_0430,0760_小会議室": {
   "name": "",
   "sub": "",
@@ -27,4 +28,5 @@
   "floor": 2,
   "building": "Main",
   "links": []
-},
+}
+}

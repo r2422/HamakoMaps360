@@ -1,4 +1,5 @@
-  "23_corrider_0240,0680": {
+{
+"23_corrider_0240,0680": {
     "name": "本館 3階 廊下",
     "sub": "",
     "imageFile": "23_corrider_0240,0680.jpg",
@@ -72,5 +73,5 @@
     "floor": 3,
     "building": "Main",
     "links": []
-  },
-
+  }
+}

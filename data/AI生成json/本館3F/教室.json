@@ -1,3 +1,4 @@
+{
 "23_classroom_0520,0620_第1製図": {
     "name": "",
     "sub": "",
@@ -42,4 +43,5 @@
     "floor": 4,
     "building": "Main",
     "links": []
-  },
+  }
+}

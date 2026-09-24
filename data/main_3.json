@@ -51,6 +51,156 @@
           "hint": "To Bridge"
         }
       ]
+    },
+    "23_stairs_0330,0680": {
+      "name": "本館 3階 階段",
+      "sub": "",
+      "imageFile": "23_stairs_0330,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        680
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
+    },
+    "23_stairs_0990,0680": {
+      "name": "本館 3階 階段",
+      "sub": "",
+      "imageFile": "23_stairs_0990,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        0,
+        680
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
+    },
+    "23_classroom_0520,0620_第1製図": {
+      "name": "",
+      "sub": "",
+      "imageFile": "23_classroom_0520,0620_第1製図.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        520,
+        0,
+        620
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
+    },
+    "23_classroom_0760,0620_第2製図": {
+      "name": "",
+      "sub": "",
+      "imageFile": "23_classroom_0760,0620_第2製図.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        760,
+        0,
+        620
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
+    },
+    "23_classroom_0920,0620_建築研究部": {
+      "name": "",
+      "sub": "",
+      "imageFile": "23_classroom_0920,0620_建築研究部.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        920,
+        0,
+        620
+      ],
+      "floor": 4,
+      "building": "Main",
+      "links": []
+    },
+    "23_corrider_0240,0680": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_corrider_0240,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        240,
+        0,
+        680
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
+    },
+    "23_corrider_0330,0680": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_corrider_0330,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        0,
+        680
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
+    },
+    "23_corrider_0390,0680": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_corrider_0390,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        390,
+        0,
+        680
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
+    },
+    "23_corrider_0520,0680": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_corrider_0520,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        520,
+        0,
+        680
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
+    },
+    "23_corrider_0760,0680": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_corrider_0760,0680.jpg",
+      "initYaw": 0,
+      "mmIdx": 0,
+      "pos3D": [
+        760,
+        0,
+        680
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": []
     }
   }
 }

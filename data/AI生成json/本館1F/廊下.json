@@ -1,3 +1,4 @@
+{
 "21_corridor_0330,0450_渡り廊下": {
   "name": "",
   "sub": "",
@@ -57,4 +58,5 @@
   "floor": 2,
   "building": "Main",
   "links": []
-},
+}
+}
