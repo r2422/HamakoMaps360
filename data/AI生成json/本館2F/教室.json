@@ -1,0 +1,30 @@
+"22_classroom_0430,0760_小会議室": {
+  "name": "",
+  "sub": "",
+  "imageFile": "22_classroom_0430,0760_小会議室.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    430,
+    0,
+    760
+  ],
+  "floor": 2,
+  "building": "Main",
+  "links": []
+},
+"22_classroom_0480,0600_大会議室": {
+  "name": "",
+  "sub": "",
+  "imageFile": "22_classroom_0480,0600_大会議室.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    480,
+    0,
+    600
+  ],
+  "floor": 2,
+  "building": "Main",
+  "links": []
+},

@@ -1,0 +1,30 @@
+"21_stairs_0990,0680": {
+  "name": "",
+  "sub": "",
+  "imageFile": "21_stairs_0990,0680.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    990,
+    0,
+    680
+  ],
+  "floor": 1,
+  "building": "Main",
+  "links": []
+},
+"21_stairs_1370,0590_食堂前": {
+  "name": "",
+  "sub": "",
+  "imageFile": "21_stairs_1370,0590_食堂前.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    1370,
+    0,
+    590
+  ],
+  "floor": 1,
+  "building": "Main",
+  "links": []
+},

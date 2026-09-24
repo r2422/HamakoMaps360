@@ -1,0 +1,30 @@
+"24_corrider_0330_0560": {
+    "name": "本館 4階 廊下",
+    "sub": "",
+    "imageFile": "24_corrider_0330_0560.jpg",
+    "initYaw": 0,
+    "mmIdx": 0,
+    "pos3D": [
+      330,
+      0,
+      560
+    ],
+    "floor": 4,
+    "building": "Main",
+    "links": []
+  },
+  "24_corrider_0990,0560": {
+    "name": "本館 4階 廊下",
+    "sub": "",
+    "imageFile": "24_corrider_0990,0560.jpg",
+    "initYaw": 0,
+    "mmIdx": 0,
+    "pos3D": [
+      990,
+      0,
+      560
+    ],
+    "floor": 4,
+    "building": "Main",
+    "links": []
+  },

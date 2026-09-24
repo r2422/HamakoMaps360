@@ -1,0 +1,75 @@
+"22_corrider_0390,0680": {
+  "name": "",
+  "sub": "",
+  "imageFile": "22_corrider_0390,0680.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    390,
+    0,
+    680
+  ],
+  "floor": 2,
+  "building": "Main",
+  "links": []
+},
+"22_corrider_0600,0680": {
+  "name": "",
+  "sub": "",
+  "imageFile": "22_corrider_0600,0680.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    600,
+    0,
+    680
+  ],
+  "floor": 2,
+  "building": "Main",
+  "links": []
+},
+"22_corrider_0720,0680": {
+  "name": "",
+  "sub": "",
+  "imageFile": "22_corrider_0720,0680.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    720,
+    0,
+    680
+  ],
+  "floor": 2,
+  "building": "Main",
+  "links": []
+},
+"22_corridor_0990,0700": {
+  "name": "",
+  "sub": "",
+  "imageFile": "22_corridor_0990,0700.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    990,
+    0,
+    700
+  ],
+  "floor": 2,
+  "building": "Main",
+  "links": []
+},
+"22_corridor_1370,0720_体育館前": {
+  "name": "",
+  "sub": "",
+  "imageFile": "22_corridor_1370,0720_体育館前.jpg",
+  "initYaw": 0,
+  "mmIdx": 0,
+  "pos3D": [
+    1370,
+    0,
+    720
+  ],
+  "floor": 2,
+  "building": "Main",
+  "links": []
+},

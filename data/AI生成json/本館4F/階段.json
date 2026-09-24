@@ -1,0 +1,61 @@
+    "24_stairs_0330,0560": {
+    "name": "本館 4階 階段",
+    "sub": "",
+    "imageFile": "24_stairs_0330,0560.jpg",
+    "initYaw": 0,
+    "mmIdx": 0,
+    "pos3D": [
+      330,
+      0,
+      560
+    ],
+    "floor": 4,
+    "building": "Main",
+    "links": []
+  },
+  "24_stairs_0330,0680": {
+    "name": "本館 4階 階段",
+    "sub": "",
+    "imageFile": "24_stairs_0330,0680.jpg",
+    "initYaw": 0,
+    "mmIdx": 0,
+    "pos3D": [
+      330,
+      0,
+      680
+    ],
+    "floor": 4,
+    "building": "Main",
+    "links": []
+  },
+  "24_stairs_0990,0680": {
+    "name": "本館 4階 階段",
+    "sub": "",
+    "imageFile": "24_stairs_0990,0680.jpg",
+    "initYaw": 0,
+    "mmIdx": 0,
+    "pos3D": [
+      990,
+      0,
+      680
+    ],
+    "floor": 4,
+    "building": "Main",
+    "links": []
+  },
+  "24_stars_0990,0560": {
+    "name": "本館 4階 階段",
+    "sub": "",
+    "imageFile": "24_stars_0990,0560.jpg",
+    "initYaw": 0,
+    "mmIdx": 0,
+    "pos3D": [
+      990,
+      0,
+      560
+    ],
+    "floor": 4,
+    "building": "Main",
+    "links": []
+  }
+}
