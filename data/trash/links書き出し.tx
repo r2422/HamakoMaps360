@@ -413,5 +413,76 @@
   }
 ]
 
+[
+  {
+    "targetId": "21_corridor_1390,0560_食堂前",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "21_corridor_1380,0720_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corridor_1390,0560_食堂前 ---
+[
+  {
+    "targetId": "21_stairs_1370,0520_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corridor_1380,0720_食堂前 ---
+[
+  {
+    "targetId": "21_stairs_1370,0520_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+
+
+// 
+
+
+
+
+// ② 既存ノードの links 配列に、それぞれ追記してください
+// --- 21_stairs_1370,0520_食堂前 ---
+[
+  {
+    "targetId": "21_corridor_1390,0560_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corridor_1390,0560_食堂前 ---
+[
+  {
+    "targetId": "21_stairs_1370,0520_食堂前",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "21_corridor_1380,0720_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corridor_1380,0720_食堂前 ---
+[
+  {
+    "targetId": "21_corridor_1390,0560_食堂前",
+    "label": "",
+    "hint": ""
+  }
+]
+
 
 

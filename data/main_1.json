@@ -597,5 +597,35 @@
         }
       ]
     }
+  },
+  "21_corrider_0070,0680": {
+    "name": "",
+    "sub": "",
+    "imageFile": "21_corrider_0070,0680.jpg",
+    "initYaw": 0,
+    "mmIdx": 0,
+    "pos3D": [
+      70,
+      0,
+      680
+    ],
+    "floor": 1,
+    "building": "Main",
+    "links": []
+  },
+  "21_corrider_0150,0680": {
+    "name": "",
+    "sub": "",
+    "imageFile": "21_corrider_0150,0680.jpg",
+    "initYaw": 0,
+    "mmIdx": 0,
+    "pos3D": [
+      150,
+      0,
+      680
+    ],
+    "floor": 1,
+    "building": "Main",
+    "links": []
   }
 }
