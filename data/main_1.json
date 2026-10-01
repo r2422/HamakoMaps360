@@ -529,7 +529,7 @@
           "hint": ""
         },
         {
-          "targetId": "21_stairs_1370,0590_食堂前",
+          "targetId": "21_corridor_1390,0560_食堂前",
           "label": "",
           "hint": ""
         }
@@ -550,7 +550,12 @@
       "building": "Main",
       "links": [
         {
-          "targetId": "21_stairs_1370,0590_食堂前",
+          "targetId": "21_stairs_1370,0520_食堂前",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_corridor_1380,0720_食堂前",
           "label": "",
           "hint": ""
         }
@@ -571,25 +576,20 @@
       "building": "Main",
       "links": []
     },
-    "21_stairs_1370,0590_食堂前": {
+    "21_stairs_1370,0520_食堂前": {
       "name": "",
       "sub": "",
-      "imageFile": "21_stairs_1370,0590_食堂前.jpg",
+      "imageFile": "21_stairs_1370,0520_食堂前.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         1370,
         0,
-        590
+        520
       ],
       "floor": 1,
       "building": "Main",
       "links": [
-        {
-          "targetId": "21_corridor_1380,0720_食堂前",
-          "label": "",
-          "hint": ""
-        },
         {
           "targetId": "21_corridor_1390,0560_食堂前",
           "label": "",
