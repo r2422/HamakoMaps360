@@ -75,6 +75,16 @@
           "targetId": "21_outside_0120,0560_職員玄関",
           "label": "外へ",
           "hint": "out"
+        },
+        {
+          "targetId": "21_corrider_0070,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_corrider_0150,0680",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -153,6 +163,11 @@
           "targetId": "21_corridor_0450,0680",
           "label": "移動",
           "hint": "移動"
+        },
+        {
+          "targetId": "21_corrider_0150,0680",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -610,7 +625,18 @@
       ],
       "floor": 1,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "21_entrance_0120,0640_職員玄関",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_corrider_0150,0680",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "21_corrider_0150,0680": {
       "name": "",
@@ -625,7 +651,23 @@
       ],
       "floor": 1,
       "building": "Main",
-      "links": []
+      "links": [
+        {
+          "targetId": "21_entrance_0120,0640_職員玄関",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_corridor_0330,0680",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "21_corrider_0070,0680",
+          "label": "",
+          "hint": ""
+        }
+      ]
     }
   }
 }
