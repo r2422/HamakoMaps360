@@ -93,6 +93,11 @@
       "sub": "",
       "imageFile": "21_entrance_0720,0640_昇降口.jpg",
       "initYaw": 0,
+      "imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
       "mmIdx": 0,
       "pos3D": [
         720,

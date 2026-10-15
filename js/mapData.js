@@ -40,6 +40,13 @@ class MapNode {
     });
 
     this.initYaw = data.initYaw; // TPしたときに向いている方向
+
+    // パノラマ画像ごとの基準回転角（度）　画像の水平垂直を補正するため。
+    this.imageRotation = {
+        x: data.imageRotation?.x ?? 0,
+        y: data.imageRotation?.y ?? 0,
+        z: data.imageRotation?.z ?? 0
+    };
     this.mmIdx = data.mmIdx;
     this.pos3D = data.pos3D; // [x, y, z] 絶対空間座標
     this.floor = data.floor || 3;

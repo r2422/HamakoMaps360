@@ -91,6 +91,47 @@ function makeSphere(radius, isB = false) {
 const sphereA = makeSphere(50, false);
 const sphereB = makeSphere(50, true);
 
+/**
+ * パノラマ画像の基準回転角をラジアンに変換する
+ * imageRotation の値は度で指定する
+ */
+function getImageRotationEuler(rotation = {}) {
+    const toRadians = degrees =>
+        THREE.MathUtils.degToRad(degrees ?? 0);
+
+    return new THREE.Euler(
+        toRadians(rotation.x),
+        toRadians(rotation.y),
+        toRadians(rotation.z),
+        'XYZ'
+    );
+}
+
+/**
+ * パノラマ球体に画像ごとの基準回転を適用する
+ */
+function applyImageRotation(sphere, rotation = {}) {
+    sphere.rotation.order = 'XYZ';
+
+    const euler = getImageRotationEuler(rotation);
+
+    sphere.rotation.set(
+        euler.x,
+        euler.y,
+        euler.z,
+        'XYZ'
+    );
+}
+
+/**
+ * アニメーション中の行列計算に使う回転行列を生成する
+ */
+function createImageRotationMatrix(rotation = {}) {
+    return new THREE.Matrix4().makeRotationFromEuler(
+        getImageRotationEuler(rotation)
+    );
+}
+
 const tLoader = new THREE.TextureLoader();
 const raycaster = new THREE.Raycaster();
 const mouse2 = new THREE.Vector2();
@@ -563,6 +604,10 @@ function buildRouteLines(node) {
 /* ---- walk-through transition ---- */
 let walkDir = new THREE.Vector3(0, 0, -1);
 
+// 移動元・移動先のパノラマ回転行列
+const walkSourceRotationMatrix = new THREE.Matrix4();
+const walkTargetRotationMatrix = new THREE.Matrix4();
+
 function startWalk(targetNodeId, hotspotPos) {
   if (walkPhase !== 'idle') return;
 
@@ -574,6 +619,15 @@ function startWalk(targetNodeId, hotspotPos) {
   walkPhase = 'walk';
   walkT = 0;
   nextTextureReady = false;
+
+  // 移動開始時点の画像ごとの回転を保持する
+  walkSourceRotationMatrix.copy(
+      createImageRotationMatrix(NODES[currentId]?.imageRotation)
+  );
+
+  walkTargetRotationMatrix.copy(
+      createImageRotationMatrix(NODES[targetNodeId]?.imageRotation)
+  );
 
   walkDir = new THREE.Vector3(...hotspotPos).normalize();
   const speedHud = $('hud-speed');
@@ -635,6 +689,10 @@ function finishWalk() {
   sphereA.quaternion.set(0, 0, 0, 1);
   sphereB.quaternion.set(0, 0, 0, 1);
 
+  // 移動先ノードの基準回転を再適用
+  applyImageRotation(sphereA, node.imageRotation);
+  applyImageRotation(sphereB, node.imageRotation);
+
   routeLinesGroup.matrixAutoUpdate = true;
   routeLinesGroup.position.set(0, 0, 0);
   routeLinesGroup.scale.set(1, 1, 1);
@@ -677,8 +735,17 @@ function loadInitial(nodeId) {
     tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false;
     tex.offset.x = 0.5;
 
-    sphereA.material.map = tex; sphereA.material.needsUpdate = true;
-    tYaw = node.initYaw; tPitch = 0; yaw = node.initYaw; pitch = 0;
+    sphereA.material.map = tex;
+    sphereA.material.needsUpdate = true;
+
+    // 初期表示する画像の基準回転を適用
+    applyImageRotation(sphereA, node.imageRotation);
+    applyImageRotation(sphereB, node.imageRotation);
+
+    tYaw = node.initYaw;
+    tPitch = 0;
+    yaw = node.initYaw;
+    pitch = 0;
     buildRouteLines(node);
     setLoadBar(100); setTimeout(() => setLoadBar(0), 400);
   });
@@ -1194,10 +1261,17 @@ function animate(now) {
     );
 
     const flipMatrix = new THREE.Matrix4().makeScale(1, 1, 1);
-    sphereA.matrix.copy(m).multiply(flipMatrix);
+
+    // 移動元の球体：既存の縮小演出に画像の基準回転を合成
+    sphereA.matrix.copy(m)
+        .multiply(flipMatrix)
+        .multiply(walkSourceRotationMatrix);
 
     sphereB.matrixAutoUpdate = false;
-    sphereB.matrix.copy(flipMatrix);
+
+    // 移動先の球体：移動先画像の基準回転を適用
+    sphereB.matrix.copy(flipMatrix)
+        .multiply(walkTargetRotationMatrix);
 
     routeLinesGroup.matrixAutoUpdate = true;
     routeLinesGroup.scale.set(1, 1, 1);
