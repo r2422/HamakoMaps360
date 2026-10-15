@@ -51,7 +51,7 @@
           "hint": "To North Bldg"
         },
         {
-          "targetId": "21_stairs_0990,0680",
+          "targetId": "21_stairs_0990,0708",
           "label": "",
           "hint": ""
         }
@@ -77,12 +77,12 @@
           "hint": "out"
         },
         {
-          "targetId": "21_corrider_0070,0680",
+          "targetId": "21_corrider_0070,0708",
           "label": "",
           "hint": ""
         },
         {
-          "targetId": "21_corrider_0150,0680",
+          "targetId": "21_corrider_0150,0708",
           "label": "",
           "hint": ""
         }
@@ -103,7 +103,7 @@
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_0720,0680",
+          "targetId": "21_corridor_0720,0708",
           "label": "移動",
           "hint": "移動"
         },
@@ -129,7 +129,7 @@
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_0330,0680",
+          "targetId": "21_corridor_0330,0708",
           "label": "移動",
           "hint": "移動"
         },
@@ -140,16 +140,16 @@
         }
       ]
     },
-    "21_corridor_0330,0680": {
+    "21_corridor_0330,0708": {
       "name": "本館 1階 廊下",
       "sub": "",
-      "imageFile": "21_corridor_0330,0680.jpg",
+      "imageFile": "21_corridor_0330,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         330,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
@@ -160,12 +160,12 @@
           "hint": "移動"
         },
         {
-          "targetId": "21_corridor_0450,0680",
+          "targetId": "21_corridor_0450,0708",
           "label": "移動",
           "hint": "移動"
         },
         {
-          "targetId": "21_corrider_0150,0680",
+          "targetId": "21_corrider_0150,0708",
           "label": "",
           "hint": ""
         }
@@ -180,106 +180,106 @@
       "pos3D": [
         330,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
       "links": []
     },
-    "21_corridor_0450,0680": {
+    "21_corridor_0450,0708": {
       "name": "本館 1階 廊下",
       "sub": "進路指導室前",
-      "imageFile": "21_corridor_0450,0680.jpg",
+      "imageFile": "21_corridor_0450,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         450,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_0330,0680",
+          "targetId": "21_corridor_0330,0708",
           "label": "移動",
           "hint": "移動"
         },
         {
-          "targetId": "21_corridor_0510,0680",
+          "targetId": "21_corridor_0510,0708",
           "label": "移動",
           "hint": "移動"
         }
       ]
     },
-    "21_corridor_0510,0680": {
+    "21_corridor_0510,0708": {
       "name": "本館 1階 廊下",
       "sub": "定時制昇降口前",
-      "imageFile": "21_corridor_0510,0680.jpg",
+      "imageFile": "21_corridor_0510,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         510,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_0450,0680",
+          "targetId": "21_corridor_0450,0708",
           "label": "移動",
           "hint": "移動"
         },
         {
-          "targetId": "21_corridor_0630,0680",
+          "targetId": "21_corridor_0630,0708",
           "label": "移動",
           "hint": "移動"
         }
       ]
     },
-    "21_corridor_0630,0680": {
+    "21_corridor_0630,0708": {
       "name": "本館 1階 廊下",
       "sub": "保健室、昇降口前",
-      "imageFile": "21_corridor_0630,0680.jpg",
+      "imageFile": "21_corridor_0630,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         630,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_0510,0680",
+          "targetId": "21_corridor_0510,0708",
           "label": "移動",
           "hint": "移動"
         },
         {
-          "targetId": "21_corridor_0720,0680",
+          "targetId": "21_corridor_0720,0708",
           "label": "移動",
           "hint": "移動"
         }
       ]
     },
-    "21_corridor_0720,0680": {
+    "21_corridor_0720,0708": {
       "name": "本館 1階 廊下",
       "sub": "昇降口前",
-      "imageFile": "21_corridor_0720,0680.jpg",
+      "imageFile": "21_corridor_0720,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         720,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_0630,0680",
+          "targetId": "21_corridor_0630,0708",
           "label": "移動",
           "hint": "移動"
         },
@@ -289,38 +289,38 @@
           "hint": "移動"
         },
         {
-          "targetId": "21_corridor_0870,0680",
+          "targetId": "21_corridor_0870,0708",
           "label": "",
           "hint": ""
         }
       ]
     },
-    "21_corridor_0870,0680": {
+    "21_corridor_0870,0708": {
       "name": "本館 1階 廊下",
       "sub": "女子更衣室前",
-      "imageFile": "21_corridor_0870,0680.jpg",
+      "imageFile": "21_corridor_0870,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         870,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_0720,0680",
+          "targetId": "21_corridor_0720,0708",
           "label": "移動",
           "hint": "移動"
         },
         {
-          "targetId": "21_corridor_0990,0680",
+          "targetId": "21_corridor_0990,0708",
           "label": "移動",
           "hint": "移動"
         },
         {
-          "targetId": "21_corridor_1020,0720",
+          "targetId": "21_corridor_1020,0730",
           "label": "",
           "hint": ""
         }
@@ -341,28 +341,28 @@
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_1020,0720",
+          "targetId": "21_corridor_1020,0730",
           "label": "",
           "hint": ""
         }
       ]
     },
-    "21_corridor_1020,0720": {
+    "21_corridor_1020,0730": {
       "name": "本館 1階 廊下",
       "sub": "購買前",
-      "imageFile": "21_corridor_1020,0720.jpg",
+      "imageFile": "21_corridor_1020,0730.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         1020,
         0,
-        720
+        730
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_0870,0680",
+          "targetId": "21_corridor_0870,0708",
           "label": "",
           "hint": ""
         },
@@ -372,33 +372,33 @@
           "hint": ""
         },
         {
-          "targetId": "21_stairs_0990,0680",
+          "targetId": "21_stairs_0990,0708",
           "label": "",
           "hint": ""
         },
         {
-          "targetId": "21_corridor_1180,0720_食堂渡り廊下",
+          "targetId": "21_corridor_1180,0730_食堂渡り廊下",
           "label": "",
           "hint": ""
         }
       ]
     },
-    "21_stairs_0990,0680": {
+    "21_stairs_0990,0708": {
       "name": "本館 1階 階段",
       "sub": "リサイクルボックス",
-      "imageFile": "21_stairs_0990,0680.jpg",
+      "imageFile": "21_stairs_0990,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         990,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_1020,0720",
+          "targetId": "21_corridor_1020,0730",
           "label": "",
           "hint": ""
         },
@@ -451,53 +451,53 @@
         }
       ]
     },
-    "21_corridor_1180,0720_食堂渡り廊下": {
+    "21_corridor_1180,0730_食堂渡り廊下": {
       "name": "本館 1階 廊下",
       "sub": "食堂渡り廊下",
-      "imageFile": "21_corridor_1180,0720_食堂渡り廊下.jpg",
+      "imageFile": "21_corridor_1180,0730_食堂渡り廊下.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         1180,
         0,
-        720
+        730
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_1020,0720",
+          "targetId": "21_corridor_1020,0730",
           "label": "",
           "hint": ""
         },
         {
-          "targetId": "21_corridor_1270,0720_食堂渡り廊下",
+          "targetId": "21_corridor_1270,0730_食堂渡り廊下",
           "label": "",
           "hint": ""
         }
       ]
     },
-    "21_corridor_1270,0720_食堂渡り廊下": {
+    "21_corridor_1270,0730_食堂渡り廊下": {
       "name": "本館 1階 廊下",
       "sub": "食堂渡り廊下",
-      "imageFile": "21_corridor_1270,0720_食堂渡り廊下.jpg",
+      "imageFile": "21_corridor_1270,0730_食堂渡り廊下.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         1270,
         0,
-        720
+        730
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_1180,0720_食堂渡り廊下",
+          "targetId": "21_corridor_1180,0730_食堂渡り廊下",
           "label": "",
           "hint": ""
         },
         {
-          "targetId": "21_corridor_1380,0720_食堂前",
+          "targetId": "21_corridor_1380,0730_食堂前",
           "label": "",
           "hint": ""
         }
@@ -524,22 +524,22 @@
         }
       ]
     },
-    "21_corridor_1380,0720_食堂前": {
+    "21_corridor_1380,0730_食堂前": {
       "name": "",
       "sub": "",
-      "imageFile": "21_corridor_1380,0720_食堂前.jpg",
+      "imageFile": "21_corridor_1380,0730_食堂前.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         1380,
         0,
-        720
+        730
       ],
       "floor": 1,
       "building": "Main",
       "links": [
         {
-          "targetId": "21_corridor_1270,0720_食堂渡り廊下",
+          "targetId": "21_corridor_1270,0730_食堂渡り廊下",
           "label": "",
           "hint": ""
         },
@@ -570,7 +570,7 @@
           "hint": ""
         },
         {
-          "targetId": "21_corridor_1380,0720_食堂前",
+          "targetId": "21_corridor_1380,0730_食堂前",
           "label": "",
           "hint": ""
         }
@@ -612,16 +612,16 @@
         }
       ]
     },
-    "21_corrider_0070,0680": {
+    "21_corrider_0070,0708": {
       "name": "",
       "sub": "",
-      "imageFile": "21_corrider_0070,0680.jpg",
+      "imageFile": "21_corrider_0070,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         70,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
@@ -632,22 +632,22 @@
           "hint": ""
         },
         {
-          "targetId": "21_corrider_0150,0680",
+          "targetId": "21_corrider_0150,0708",
           "label": "",
           "hint": ""
         }
       ]
     },
-    "21_corrider_0150,0680": {
+    "21_corrider_0150,0708": {
       "name": "",
       "sub": "",
-      "imageFile": "21_corrider_0150,0680.jpg",
+      "imageFile": "21_corrider_0150,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         150,
         0,
-        680
+        708
       ],
       "floor": 1,
       "building": "Main",
@@ -658,12 +658,12 @@
           "hint": ""
         },
         {
-          "targetId": "21_corridor_0330,0680",
+          "targetId": "21_corridor_0330,0708",
           "label": "",
           "hint": ""
         },
         {
-          "targetId": "21_corrider_0070,0680",
+          "targetId": "21_corrider_0070,0708",
           "label": "",
           "hint": ""
         }

@@ -75,36 +75,36 @@
 </mask>
 <path d="M1015 3914H1019V3698H1015H1011V3914H1015Z" fill="#715600" mask="url(#path-52-inside-4_274_2034)"/>
 <g filter="url(#filter7_i_274_2034)">
-<rect x="25" y="1765" width="360" height="360" fill="#DBDBDB"/>
+<rect x="25" y="1775" width="360" height="350" fill="#DBDBDB"/>
 </g>
-<rect x="25.5" y="1765.5" width="359" height="359" stroke="#715600"/>
+<rect x="25.5" y="1775.5" width="359" height="349" stroke="#715600"/>
 <g filter="url(#filter8_i_274_2034)">
-<rect x="1105" y="1765" width="360" height="360" fill="#DBDBDB"/>
+<rect x="1105" y="1775" width="360" height="350" fill="#DBDBDB"/>
 </g>
-<rect x="1105.5" y="1765.5" width="359" height="359" stroke="#715600"/>
+<rect x="1105.5" y="1775.5" width="359" height="349" stroke="#715600"/>
 <g filter="url(#filter9_i_274_2034)">
-<rect x="1465" y="1765" width="360" height="360" fill="#DBDBDB"/>
+<rect x="1465" y="1775" width="360" height="350" fill="#DBDBDB"/>
 </g>
-<rect x="1465.5" y="1765.5" width="359" height="359" stroke="#715600"/>
+<rect x="1465.5" y="1775.5" width="359" height="349" stroke="#715600"/>
 <g filter="url(#filter10_i_274_2034)">
-<rect x="1825" y="1765" width="360" height="360" fill="#DBDBDB"/>
+<rect x="1825" y="1775" width="360" height="350" fill="#DBDBDB"/>
 </g>
-<rect x="1825.5" y="1765.5" width="359" height="359" stroke="#715600"/>
+<rect x="1825.5" y="1775.5" width="359" height="349" stroke="#715600"/>
 <g filter="url(#filter11_i_274_2034)">
-<rect x="2185" y="1765" width="360" height="360" fill="#DBDBDB"/>
+<rect x="2185" y="1775" width="360" height="350" fill="#DBDBDB"/>
 </g>
-<rect x="2185.5" y="1765.5" width="359" height="359" stroke="#715600"/>
+<rect x="2185.5" y="1775.5" width="359" height="349" stroke="#715600"/>
 <g filter="url(#filter12_i_274_2034)">
-<rect x="2545" y="1765" width="360" height="360" fill="#DBDBDB"/>
+<rect x="2545" y="1775" width="360" height="350" fill="#DBDBDB"/>
 </g>
-<rect x="2545.5" y="1765.5" width="359" height="359" stroke="#715600"/>
+<rect x="2545.5" y="1775.5" width="359" height="349" stroke="#715600"/>
 <g filter="url(#filter13_i_274_2034)">
-<rect x="385" y="1765" width="360" height="360" fill="#DBDBDB"/>
+<rect x="385" y="1775" width="360" height="350" fill="#DBDBDB"/>
 </g>
-<rect x="385.5" y="1765.5" width="359" height="359" stroke="#715600"/>
-<rect x="25" y="1645" width="3060" height="120" fill="#F4FFDF"/>
-<rect x="745.5" y="1765.5" width="179" height="359" fill="#747474" stroke="#715600"/>
-<rect x="2905" y="1765" width="180" height="360" fill="#F4FFDF"/>
+<rect x="385.5" y="1775.5" width="359" height="349" stroke="#715600"/>
+<rect x="25" y="1645" width="3060" height="130" fill="#F4FFDF"/>
+<rect x="745.5" y="1775.5" width="179" height="349" fill="#747474" stroke="#715600"/>
+<rect x="2905" y="1775" width="180" height="350" fill="#F4FFDF"/>
 <rect x="2905" y="1837" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
 <rect x="2905" y="1873" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
 <rect x="2905" y="1909" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
@@ -125,27 +125,27 @@
 <path d="M2995 1837H3085V2053H2995V1837Z"/>
 </mask>
 <path d="M2995 2053H2999V1837H2995H2991V2053H2995Z" fill="#715600" mask="url(#path-85-inside-6_274_2034)"/>
-<rect x="925" y="1765" width="180" height="360" fill="#F4FFDF"/>
-<rect x="925" y="1837" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="925" y="1873" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="925" y="1909" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="925" y="1945" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="925" y="1981" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="925" y="2017" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="925" y="1775" width="180" height="350" fill="#F4FFDF"/>
+<rect x="925" y="1845" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="925" y="1880" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="925" y="1915" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="925" y="1950" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="925" y="1985" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="925" y="2020" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
 <mask id="path-94-inside-7_274_2034" fill="white">
-<path d="M925 1837H1015V2053H925V1837Z"/>
+<path d="M925 1845H1015V2055H925V1845Z"/>
 </mask>
-<path d="M1015 1837H1011V2053H1015H1019V1837H1015Z" fill="#715600" mask="url(#path-94-inside-7_274_2034)"/>
-<rect x="1015" y="1837" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="1015" y="1873" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="1015" y="1909" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="1015" y="1945" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="1015" y="1981" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
-<rect x="1015" y="2017" width="90" height="36" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<path d="M1015 1845H1011V2055H1015H1019V1845H1015Z" fill="#715600" mask="url(#path-94-inside-7_274_2034)"/>
+<rect x="1015" y="1845" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="1015" y="1880" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="1015" y="1915" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="1015" y="1950" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="1015" y="1985" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
+<rect x="1015" y="2020" width="90" height="35" fill="#F4FFDF" stroke="#715600" stroke-width="2"/>
 <mask id="path-102-inside-8_274_2034" fill="white">
-<path d="M1015 1837H1105V2053H1015V1837Z"/>
+<path d="M1015 1845H1105V2055H1015V1845Z"/>
 </mask>
-<path d="M1015 2053H1019V1837H1015H1011V2053H1015Z" fill="#715600" mask="url(#path-102-inside-8_274_2034)"/>
+<path d="M1015 2055H1019V1845H1015H1011V2055H1015Z" fill="#715600" mask="url(#path-102-inside-8_274_2034)"/>
 <g filter="url(#filter14_i_274_2034)">
 <rect x="25" y="145" width="360" height="360" fill="#DBDBDB"/>
 </g>
@@ -315,7 +315,7 @@
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
 <feBlend mode="normal" in2="shape" result="effect1_innerShadow_274_2034"/>
 </filter>
-<filter id="filter7_i_274_2034" x="20" y="1760" width="365" height="365" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter7_i_274_2034" x="20" y="1770" width="365" height="355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -325,7 +325,7 @@
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
 <feBlend mode="normal" in2="shape" result="effect1_innerShadow_274_2034"/>
 </filter>
-<filter id="filter8_i_274_2034" x="1100" y="1760" width="365" height="365" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter8_i_274_2034" x="1100" y="1770" width="365" height="355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -335,7 +335,7 @@
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
 <feBlend mode="normal" in2="shape" result="effect1_innerShadow_274_2034"/>
 </filter>
-<filter id="filter9_i_274_2034" x="1460" y="1760" width="365" height="365" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter9_i_274_2034" x="1460" y="1770" width="365" height="355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -345,7 +345,7 @@
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
 <feBlend mode="normal" in2="shape" result="effect1_innerShadow_274_2034"/>
 </filter>
-<filter id="filter10_i_274_2034" x="1820" y="1760" width="365" height="365" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter10_i_274_2034" x="1820" y="1770" width="365" height="355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -355,7 +355,7 @@
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
 <feBlend mode="normal" in2="shape" result="effect1_innerShadow_274_2034"/>
 </filter>
-<filter id="filter11_i_274_2034" x="2180" y="1760" width="365" height="365" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter11_i_274_2034" x="2180" y="1770" width="365" height="355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -365,7 +365,7 @@
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
 <feBlend mode="normal" in2="shape" result="effect1_innerShadow_274_2034"/>
 </filter>
-<filter id="filter12_i_274_2034" x="2540" y="1760" width="365" height="365" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter12_i_274_2034" x="2540" y="1770" width="365" height="355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
@@ -375,7 +375,7 @@
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
 <feBlend mode="normal" in2="shape" result="effect1_innerShadow_274_2034"/>
 </filter>
-<filter id="filter13_i_274_2034" x="380" y="1760" width="365" height="365" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter13_i_274_2034" x="380" y="1770" width="365" height="355" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>

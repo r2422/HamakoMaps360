@@ -75,16 +75,13 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_corrider_0720,0680",
-    "label": "",
-    "hint": ""
-  },
-  {
-    "targetId": "22_corridor_0990,0700",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corridor_0990,0708",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "22_stairs_1370,0540_体育館前": {
       "name": "",
@@ -99,11 +96,13 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_corridor_1370,0720_体育館前",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corridor_1370,0730_体育館前",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "22_classroom_0430,0760_小会議室": {
       "name": "",
@@ -118,11 +117,13 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_corrider_0390,0680",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corrider_0390,0708",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
     "22_classroom_0480,0600_大会議室": {
       "name": "",
@@ -137,136 +138,153 @@
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_corrider_0390,0680",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corrider_0390,0708",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
-    "22_corrider_0390,0680": {
+    "22_corrider_0390,0708": {
       "name": "",
       "sub": "",
-      "imageFile": "22_corrider_0390,0680.jpg",
+      "imageFile": "22_corrider_0390,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         390,
         0,
-        680
+        708
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_corrider_0600,0680",
-    "label": "",
-    "hint": ""
-  },
-  {
-    "targetId": "22_classroom_0430,0760_小会議室",
-    "label": "",
-    "hint": ""
-  },
-  {
-    "targetId": "22_classroom_0480,0600_大会議室",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corrider_0600,0708",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "22_classroom_0430,0760_小会議室",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "22_classroom_0480,0600_大会議室",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
-    "22_corrider_0600,0680": {
+    "22_corrider_0600,0708": {
       "name": "",
       "sub": "",
-      "imageFile": "22_corrider_0600,0680.jpg",
+      "imageFile": "22_corrider_0600,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         600,
         0,
-        680
+        708
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_corrider_0390,0680",
-    "label": "",
-    "hint": ""
-  },
-  {
-    "targetId": "22_corrider_0720,0680",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corrider_0390,0708",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "22_corrider_0730,0708",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
-    "22_corrider_0720,0680": {
+    "22_corrider_0730,0708": {
       "name": "",
       "sub": "",
-      "imageFile": "22_corrider_0720,0680.jpg",
+      "imageFile": "22_corrider_0730,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
-        720,
+        730,
         0,
-        680
+        708
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_corrider_0600,0680",
-    "label": "",
-    "hint": ""
-  },
-  {
-    "targetId": "22_stairs_0990,0660",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corridor_0990,0708",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "22_corrider_0600,0708",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
-    "22_corridor_0990,0700": {
+    "22_corridor_0990,0708": {
       "name": "",
       "sub": "",
-      "imageFile": "22_corridor_0990,0700.jpg",
+      "imageFile": "22_corridor_0990,0708.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         990,
         0,
-        700
+        708
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_stairs_0990,0660",
-    "label": "",
-    "hint": ""
-  },
-  {
-    "targetId": "22_corridor_1370,0720_体育館前",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corrider_0730,0708",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "22_stairs_0990,0660",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "22_corridor_1370,0730_体育館前",
+          "label": "",
+          "hint": ""
+        }
+      ]
     },
-    "22_corridor_1370,0720_体育館前": {
+    "22_corridor_1370,0730_体育館前": {
       "name": "",
       "sub": "",
-      "imageFile": "22_corridor_1370,0720_体育館前.jpg",
+      "imageFile": "22_corridor_1370,0730_体育館前.jpg",
       "initYaw": 0,
       "mmIdx": 0,
       "pos3D": [
         1370,
         0,
-        720
+        730
       ],
       "floor": 2,
       "building": "Main",
-      "links": [{
-    "targetId": "22_corridor_0990,0700",
-    "label": "",
-    "hint": ""
-  },
-  {
-    "targetId": "22_stairs_1370,0540_体育館前",
-    "label": "",
-    "hint": ""
-  }]
+      "links": [
+        {
+          "targetId": "22_corridor_0990,0708",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "22_stairs_1370,0540_体育館前",
+          "label": "",
+          "hint": ""
+        }
+      ]
     }
   }
 }

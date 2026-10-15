@@ -485,4 +485,85 @@
 ]
 
 
+//
+
+
+// ② 既存ノードの links 配列に、それぞれ追記してください
+// --- 21_entrance_0120,0640_職員玄関 ---
+[
+  {
+    "targetId": "21_corrider_0070,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "21_corrider_0150,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corrider_0070,0680 ---
+[
+  {
+    "targetId": "21_entrance_0120,0640_職員玄関",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "21_corrider_0150,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corrider_0150,0680 ---
+[
+  {
+    "targetId": "21_entrance_0120,0640_職員玄関",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "21_corridor_0330,0680",
+    "label": "",
+    "hint": ""
+  },
+  {
+    "targetId": "21_corrider_0070,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 21_corridor_0330,0680 ---
+[
+  {
+    "targetId": "21_corrider_0150,0680",
+    "label": "",
+    "hint": ""
+  }
+]
+
+
+
+
+// ② 既存ノードの links 配列に、それぞれ追記してください
+// --- 22_corrider_0720,0708 ---
+[
+  {
+    "targetId": "22_corridor_0990,0708",
+    "label": "",
+    "hint": ""
+  }
+]
+
+// --- 22_corridor_0990,0708 ---
+[
+  {
+    "targetId": "22_corrider_0720,0708",
+    "label": "",
+    "hint": ""
+  }
+]
 
