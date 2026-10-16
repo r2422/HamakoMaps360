@@ -192,7 +192,7 @@ function initMinimapLayout() {
           <rect x="0" y="0" width="260" height="160" rx="0"/>
         </clipPath>
         <pattern id="mm-grid" width="10" height="10" patternUnits="userSpaceOnUse">
-          <path d="M10 0 L0 0 0 10" fill="none" stroke="var(--color-border-secondary)" stroke-width="0.4" opacity="0.35"/>
+          <path d="M10 0 L0 0 0 10" fill="none" stroke="var(--color-border-secondary)" stroke-width="0.4" opacity="0.0"/>
         </pattern>
         <radialGradient id="mm-vignette" cx="35%" cy="35%" r="75%">
           <stop offset="0%" stop-color="var(--color-bg)"/>

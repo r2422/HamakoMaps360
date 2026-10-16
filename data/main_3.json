@@ -5,6 +5,11 @@
       "sub": "Main building - Floor 3",
       "imageFile": "23_stairs_0330,0560.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -36,6 +41,11 @@
       "sub": "Main building - Floor 3",
       "imageFile": "23_stairs_0990,0560.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -67,6 +77,11 @@
       "sub": "",
       "imageFile": "23_stairs_0330,0658.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -98,6 +113,11 @@
       "sub": "",
       "imageFile": "23_stairs_0990,0658.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -129,6 +149,11 @@
       "sub": "",
       "imageFile": "23_classroom_0520,0620_第1製図.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         520,
@@ -150,6 +175,11 @@
       "sub": "",
       "imageFile": "23_classroom_0760,0620_第2製図.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         760,
@@ -171,6 +201,11 @@
       "sub": "",
       "imageFile": "23_classroom_0920,0620_建築研究部.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         920,
@@ -197,6 +232,11 @@
       "sub": "",
       "imageFile": "23_corrider_0240,0658.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         240,
@@ -218,6 +258,11 @@
       "sub": "",
       "imageFile": "23_corrider_0330,0658.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -233,6 +278,11 @@
       "sub": "",
       "imageFile": "23_corrider_0390,0658.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         390,
@@ -259,6 +309,11 @@
       "sub": "",
       "imageFile": "23_corrider_0520,0658.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         520,
@@ -290,6 +345,11 @@
       "sub": "",
       "imageFile": "23_corrider_0760,0658.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         760,

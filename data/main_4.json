@@ -5,6 +5,11 @@
       "sub": "",
       "imageFile": "24_stairs_0330,0560.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -29,6 +34,11 @@
       "sub": "",
       "imageFile": "24_stairs_0330,0680.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -48,6 +58,11 @@
       "sub": "",
       "imageFile": "24_stairs_0990,0680.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -67,6 +82,11 @@
       "sub": "",
       "imageFile": "24_stairs_0990,0560.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -91,6 +111,11 @@
       "sub": "",
       "imageFile": "24_corrider_0330_0560.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -106,6 +131,11 @@
       "sub": "",
       "imageFile": "24_corrider_0990,0560.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,

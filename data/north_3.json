@@ -31,6 +31,11 @@
       "sub": "131, 132中間",
       "imageFile": "13_corridor_0120,0020.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         120,
@@ -67,6 +72,11 @@
       "sub": "132前",
       "imageFile": "13_corridor_0220,0020.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         220,
@@ -129,6 +139,11 @@
       "sub": "理数工学室前",
       "imageFile": "13_corridor_0380,0020.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         380,
@@ -160,6 +175,11 @@
       "sub": "理数工学室前",
       "imageFile": "13_corridor_0520,0020.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         520,
@@ -191,6 +211,11 @@
       "sub": "R科準備室前",
       "imageFile": "13_corridor_0570,0020.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         570,
@@ -217,6 +242,11 @@
       "sub": "物理準備室前",
       "imageFile": "13_corridor_0696,0020.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         696,
@@ -243,6 +273,11 @@
       "sub": "物理実験室内",
       "imageFile": "13_corridor_0870,0020.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         870,
@@ -274,6 +309,11 @@
       "sub": "物理実験室、○○実習室前",
       "imageFile": "13_corridor_0990,0020.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -300,6 +340,11 @@
       "sub": "R3",
       "imageFile": "13_classroom_0060,0100_131re.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         60,
@@ -326,6 +371,11 @@
       "sub": "R2",
       "imageFile": "13_classroom_0180,0100_132.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         180,
@@ -352,6 +402,11 @@
       "sub": "",
       "imageFile": "13_classroom_0450,0100_理数工学室.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         450,
@@ -378,6 +433,11 @@
       "sub": "",
       "imageFile": "13_classroom_0870,0100_物理実験室re.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         870,
@@ -399,6 +459,11 @@
       "sub": "",
       "imageFile": "13_stairs_0330,0140.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -430,6 +495,11 @@
       "sub": "",
       "imageFile": "13_stairs_0990,0140.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -461,6 +531,11 @@
       "sub": "Connecting Bridge 3F - Mid",
       "imageFile": "13_passageway_mid.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -487,6 +562,11 @@
       "sub": "Connecting Bridge 3F - Mid",
       "imageFile": "13_passageway_mid.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,

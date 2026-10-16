@@ -5,6 +5,11 @@
       "sub": "Main building - Floor 2",
       "imageFile": "22_stairs_0330,0560.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -36,6 +41,11 @@
       "sub": "Main building - Floor 2",
       "imageFile": "22_stairs_0990,0560.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -67,6 +77,11 @@
       "sub": "",
       "imageFile": "22_stairs_0990,0660.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -88,6 +103,11 @@
       "sub": "",
       "imageFile": "22_stairs_1370,0540_体育館前.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         1370,
@@ -109,6 +129,11 @@
       "sub": "",
       "imageFile": "22_classroom_0430,0760_小会議室.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         430,
@@ -130,6 +155,11 @@
       "sub": "",
       "imageFile": "22_classroom_0480,0600_大会議室.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         480,
@@ -151,6 +181,11 @@
       "sub": "",
       "imageFile": "22_corrider_0390,0708.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         390,
@@ -182,6 +217,11 @@
       "sub": "",
       "imageFile": "22_corrider_0600,0708.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         600,
@@ -208,6 +248,11 @@
       "sub": "",
       "imageFile": "22_corrider_0730,0708.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         730,
@@ -234,6 +279,11 @@
       "sub": "",
       "imageFile": "22_corridor_0990,0708.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -265,6 +315,11 @@
       "sub": "",
       "imageFile": "22_corridor_1370,0730_体育館前.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         1370,

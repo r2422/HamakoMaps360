@@ -5,6 +5,11 @@
       "sub": "North building - Floor 1",
       "imageFile": "11_stairs_0330,0140.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -31,6 +36,11 @@
       "sub": "North building - Floor 1",
       "imageFile": "11_stairs_0990,0140.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
@@ -57,6 +67,11 @@
       "sub": "Connecting Bridge 1F - Mid",
       "imageFile": "11_passageway_mid.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         330,
@@ -83,6 +98,11 @@
       "sub": "Connecting Bridge 1F - Mid",
       "imageFile": "11_passageway_mid.jpg",
       "initYaw": 0,
+"imageRotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+      },
       "mmIdx": 0,
       "pos3D": [
         990,
