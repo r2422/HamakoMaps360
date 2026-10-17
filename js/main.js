@@ -29,6 +29,15 @@ function updateRendererSize() {
   }
 }
 
+// 開発者用サイドパネルの開閉でcanvas幅が変わるため、実サイズを監視して描画領域を更新する。
+if (typeof ResizeObserver !== 'undefined') {
+  const canvasResizeObserver = new ResizeObserver(() => {
+    updateRendererSize();
+    if (typeof updateCompassLayout === 'function') updateCompassLayout();
+  });
+  canvasResizeObserver.observe(canvas);
+}
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 600);
 
@@ -36,6 +45,106 @@ updateRendererSize();
 
 let gridEdgesA, gridPointsA;
 let gridEdgesB, gridPointsB;
+
+const guideConfig = {
+  horizontal: false,
+  vertical: false,
+  spacing: 15
+};
+
+let alignmentPanelDismissed = false;
+
+function createGuideLineSegments(radius, spacing, horizontal, color) {
+  const points = [];
+  const pushSegment = (a, b) => points.push(a, b);
+  const toPoint = (latitude, longitude) => {
+    const lat = THREE.MathUtils.degToRad(latitude);
+    const lon = THREE.MathUtils.degToRad(longitude);
+    // SphereGeometry is mirrored on X, so the guide coordinates use the same convention.
+    return new THREE.Vector3(
+      -radius * Math.cos(lat) * Math.sin(lon),
+      radius * Math.sin(lat),
+      -radius * Math.cos(lat) * Math.cos(lon)
+    );
+  };
+
+  if (horizontal) {
+    for (let latitude = -90 + spacing; latitude < 90; latitude += spacing) {
+      for (let longitude = 0; longitude < 360; longitude += 5) {
+        pushSegment(
+          toPoint(latitude, longitude),
+          toPoint(latitude, Math.min(longitude + 5, 360))
+        );
+      }
+    }
+  } else {
+    for (let longitude = 0; longitude < 360; longitude += spacing) {
+      for (let latitude = -90; latitude < 90; latitude += 3) {
+        pushSegment(
+          toPoint(latitude, longitude),
+          toPoint(Math.min(latitude + 3, 90), longitude)
+        );
+      }
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 0.8,
+    depthTest: false,
+    depthWrite: false
+  });
+  const lines = new THREE.LineSegments(geometry, material);
+  lines.renderOrder = 5;
+  return lines;
+}
+
+function rebuildGuideLines(sphere, radius, spacing) {
+  const previous = sphere.userData.guideLineGroup;
+  if (previous) {
+    sphere.remove(previous);
+    previous.traverse(object => {
+      if (object.geometry) object.geometry.dispose();
+      if (object.material) {
+        if (Array.isArray(object.material)) object.material.forEach(material => material.dispose());
+        else object.material.dispose();
+      }
+    });
+  }
+
+  const group = new THREE.Group();
+  const horizontal = createGuideLineSegments(radius, spacing, true, 0x35c7c9);
+  const vertical = createGuideLineSegments(radius, spacing, false, 0xf0a35e);
+  horizontal.visible = false;
+  vertical.visible = false;
+  group.add(horizontal, vertical);
+  sphere.add(group);
+
+  sphere.userData.guideLineGroup = group;
+  sphere.userData.horizontalGuides = horizontal;
+  sphere.userData.verticalGuides = vertical;
+}
+
+function updateGuideVisibility() {
+  const enabled = typeof devModeUnlocked !== 'undefined' && devModeUnlocked;
+  const alignmentPanel = $('panorama-alignment-panel');
+  const svContainer = document.querySelector('.sv-container');
+  const showAlignmentPanel = enabled && !alignmentPanelDismissed;
+  if (alignmentPanel) alignmentPanel.hidden = !showAlignmentPanel;
+  if (svContainer) svContainer.classList.toggle('dev-alignment-active', showAlignmentPanel);
+  if (typeof updateCompassLayout === 'function') updateCompassLayout();
+
+  [sphereA, sphereB].forEach(sphere => {
+    if (sphere.userData.horizontalGuides) {
+      sphere.userData.horizontalGuides.visible = enabled && guideConfig.horizontal;
+    }
+    if (sphere.userData.verticalGuides) {
+      sphere.userData.verticalGuides.visible = enabled && guideConfig.vertical;
+    }
+  });
+}
 
 const routeLinesGroup = new THREE.Group();
 scene.add(routeLinesGroup);
@@ -90,46 +199,79 @@ function makeSphere(radius, isB = false) {
 
 const sphereA = makeSphere(50, false);
 const sphereB = makeSphere(50, true);
+rebuildGuideLines(sphereA, 49.7, guideConfig.spacing);
+rebuildGuideLines(sphereB, 49.7, guideConfig.spacing);
 
-/**
- * パノラマ画像の基準回転角をラジアンに変換する
- * imageRotation の値は度で指定する
- */
+function normalizeRotationValue(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
+}
+
 function getImageRotationEuler(rotation = {}) {
-    const toRadians = degrees =>
-        THREE.MathUtils.degToRad(degrees ?? 0);
-
-    return new THREE.Euler(
-        toRadians(rotation.x),
-        toRadians(rotation.y),
-        toRadians(rotation.z),
-        'XYZ'
-    );
+  return new THREE.Euler(
+    THREE.MathUtils.degToRad(normalizeRotationValue(rotation.x)),
+    THREE.MathUtils.degToRad(normalizeRotationValue(rotation.y)),
+    THREE.MathUtils.degToRad(normalizeRotationValue(rotation.z)),
+    'XYZ'
+  );
 }
 
-/**
- * パノラマ球体に画像ごとの基準回転を適用する
- */
 function applyImageRotation(sphere, rotation = {}) {
-    sphere.rotation.order = 'XYZ';
-
-    const euler = getImageRotationEuler(rotation);
-
-    sphere.rotation.set(
-        euler.x,
-        euler.y,
-        euler.z,
-        'XYZ'
-    );
+  sphere.rotation.order = 'XYZ';
+  const euler = getImageRotationEuler(rotation);
+  sphere.rotation.set(euler.x, euler.y, euler.z, 'XYZ');
 }
 
-/**
- * アニメーション中の行列計算に使う回転行列を生成する
- */
-function createImageRotationMatrix(rotation = {}) {
-    return new THREE.Matrix4().makeRotationFromEuler(
-        getImageRotationEuler(rotation)
-    );
+function getImageRotationMatrix(rotation = {}) {
+  return new THREE.Matrix4().makeRotationFromEuler(getImageRotationEuler(rotation));
+}
+
+function getRotationCode(rotation) {
+  const x = normalizeRotationValue(rotation.x);
+  const y = normalizeRotationValue(rotation.y);
+  const z = normalizeRotationValue(rotation.z);
+  return `"imageRotation": { "x": ${x}, "y": ${y}, "z": ${z} },`;
+}
+
+function updateRotationCode() {
+  const node = NODES[currentId];
+  const output = $('rotation-code');
+  const nodeLabel = $('rotation-current-node');
+
+  if (nodeLabel) {
+    nodeLabel.textContent = node
+      ? `現在の頂点：${node.name}（ID: ${currentId}）`
+      : '現在の頂点：未選択';
+  }
+  if (node && output) output.value = getRotationCode(node.imageRotation || {});
+}
+
+function syncRotationControlsFromNode() {
+  const node = NODES[currentId];
+  if (!node) return;
+  if (!node.imageRotation) node.imageRotation = { x: 0, y: 0, z: 0 };
+
+  ['x', 'y', 'z'].forEach(axis => {
+    const input = $(`rotation-${axis}`);
+    if (input) input.value = normalizeRotationValue(node.imageRotation[axis]);
+  });
+  updateRotationCode();
+}
+
+function updateCurrentImageRotation() {
+  if (walkPhase !== 'idle') return;
+  const node = NODES[currentId];
+  if (!node) return;
+
+  node.imageRotation = {
+    x: normalizeRotationValue($('rotation-x')?.value),
+    y: normalizeRotationValue($('rotation-y')?.value),
+    z: normalizeRotationValue($('rotation-z')?.value)
+  };
+
+  applyImageRotation(sphereA, node.imageRotation);
+  applyImageRotation(sphereB, node.imageRotation);
+  updateRotationCode();
 }
 
 const tLoader = new THREE.TextureLoader();
@@ -342,6 +484,7 @@ function updateSettingsModeUI() {
     userSection.style.display = '';
     devSection.style.display = 'none';
     settingsActiveTab = 'user';
+    if (typeof updateGuideVisibility === 'function') updateGuideVisibility();
     return;
   }
 
@@ -351,11 +494,13 @@ function updateSettingsModeUI() {
   devSection.style.display = (settingsActiveTab === 'dev') ? '' : 'none';
   if (tabUserBtn) tabUserBtn.classList.toggle('is-active', settingsActiveTab === 'user');
   if (tabDevBtn) tabDevBtn.classList.toggle('is-active', settingsActiveTab === 'dev');
+  if (typeof updateGuideVisibility === 'function') updateGuideVisibility();
 }
 
 function setDevModeUnlocked(on) {
   devModeUnlocked = on;
   settingsActiveTab = 'user'; // 切り替わった瞬間に開発者設定がいきなり露出しないよう、常にユーザー設定から見せる
+  if (on) alignmentPanelDismissed = false;
   updateSettingsModeUI();
 }
 
@@ -604,10 +749,6 @@ function buildRouteLines(node) {
 /* ---- walk-through transition ---- */
 let walkDir = new THREE.Vector3(0, 0, -1);
 
-// 移動元・移動先のパノラマ回転行列
-const walkSourceRotationMatrix = new THREE.Matrix4();
-const walkTargetRotationMatrix = new THREE.Matrix4();
-
 function startWalk(targetNodeId, hotspotPos) {
   if (walkPhase !== 'idle') return;
 
@@ -619,15 +760,6 @@ function startWalk(targetNodeId, hotspotPos) {
   walkPhase = 'walk';
   walkT = 0;
   nextTextureReady = false;
-
-  // 移動開始時点の画像ごとの回転を保持する
-  walkSourceRotationMatrix.copy(
-      createImageRotationMatrix(NODES[currentId]?.imageRotation)
-  );
-
-  walkTargetRotationMatrix.copy(
-      createImageRotationMatrix(NODES[targetNodeId]?.imageRotation)
-  );
 
   walkDir = new THREE.Vector3(...hotspotPos).normalize();
   const speedHud = $('hud-speed');
@@ -643,6 +775,7 @@ function startWalk(targetNodeId, hotspotPos) {
       tex.offset.x = 0.5;
 
       sphereB.material.map = tex; sphereB.material.needsUpdate = true;
+      applyImageRotation(sphereB, node.imageRotation);
       setLoadBar(80);
       nextTextureReady = true;
     },
@@ -651,6 +784,7 @@ function startWalk(targetNodeId, hotspotPos) {
       // 読み込み失敗時も演出が永久に止まってしまわないよう、
       // 古い（あるいは無い）テクスチャのままでも進行を許可する
       console.error('パノラマ画像の読み込みに失敗しました:', node.asset.url, err);
+      applyImageRotation(sphereB, node.imageRotation);
       setLoadBar(80);
       nextTextureReady = true;
     }
@@ -688,8 +822,6 @@ function finishWalk() {
   sphereB.scale.set(1, 1, 1);
   sphereA.quaternion.set(0, 0, 0, 1);
   sphereB.quaternion.set(0, 0, 0, 1);
-
-  // 移動先ノードの基準回転を再適用
   applyImageRotation(sphereA, node.imageRotation);
   applyImageRotation(sphereB, node.imageRotation);
 
@@ -703,6 +835,7 @@ function finishWalk() {
   buildRouteLines(node);
 
   currentId = nextId; nextId = null;
+  syncRotationControlsFromNode();
   setLocationName(node.name);
   $('loc-sub').textContent = node.sub;
 
@@ -725,6 +858,7 @@ function loadInitial(nodeId) {
   setLocationName(node.name);
   $('loc-sub').textContent = node.sub;
   currentId = nodeId;
+  syncRotationControlsFromNode();
 
   if (typeof updateMinimap === 'function') updateMinimap();
   if (typeof focusCurrentNodeOnMinimap === 'function') focusCurrentNodeOnMinimap();
@@ -735,17 +869,11 @@ function loadInitial(nodeId) {
     tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false;
     tex.offset.x = 0.5;
 
-    sphereA.material.map = tex;
-    sphereA.material.needsUpdate = true;
-
-    // 初期表示する画像の基準回転を適用
+    sphereA.material.map = tex; sphereA.material.needsUpdate = true;
     applyImageRotation(sphereA, node.imageRotation);
     applyImageRotation(sphereB, node.imageRotation);
-
-    tYaw = node.initYaw;
-    tPitch = 0;
-    yaw = node.initYaw;
-    pitch = 0;
+    tYaw = node.initYaw; tPitch = 0; yaw = node.initYaw; pitch = 0;
+    syncRotationControlsFromNode();
     buildRouteLines(node);
     setLoadBar(100); setTimeout(() => setLoadBar(0), 400);
   });
@@ -1261,17 +1389,10 @@ function animate(now) {
     );
 
     const flipMatrix = new THREE.Matrix4().makeScale(1, 1, 1);
-
-    // 移動元の球体：既存の縮小演出に画像の基準回転を合成
-    sphereA.matrix.copy(m)
-        .multiply(flipMatrix)
-        .multiply(walkSourceRotationMatrix);
+    sphereA.matrix.copy(m).multiply(getImageRotationMatrix(NODES[currentId]?.imageRotation));
 
     sphereB.matrixAutoUpdate = false;
-
-    // 移動先の球体：移動先画像の基準回転を適用
-    sphereB.matrix.copy(flipMatrix)
-        .multiply(walkTargetRotationMatrix);
+    sphereB.matrix.copy(flipMatrix).multiply(getImageRotationMatrix(NODES[nextId]?.imageRotation));
 
     routeLinesGroup.matrixAutoUpdate = true;
     routeLinesGroup.scale.set(1, 1, 1);
@@ -1456,6 +1577,57 @@ document.addEventListener('DOMContentLoaded', () => {
     uiConfig.points = visible;
     if (walkPhase === 'idle' && gridPointsA) gridPointsA.material.opacity = visible ? 0.25 : 0;
   });
+  setupToggle('tg-guide-horizontal', null, visible => {
+    guideConfig.horizontal = visible;
+    updateGuideVisibility();
+  });
+  setupToggle('tg-guide-vertical', null, visible => {
+    guideConfig.vertical = visible;
+    updateGuideVisibility();
+  });
+
+  const guideSpacing = $('guide-spacing');
+  if (guideSpacing) {
+    guideSpacing.value = String(guideConfig.spacing);
+    guideSpacing.addEventListener('change', () => {
+      const spacing = Number(guideSpacing.value);
+      if (![5, 10, 15, 30].includes(spacing)) return;
+      guideConfig.spacing = spacing;
+      rebuildGuideLines(sphereA, 49.7, spacing);
+      rebuildGuideLines(sphereB, 49.7, spacing);
+      updateGuideVisibility();
+    });
+  }
+
+  ['x', 'y', 'z'].forEach(axis => {
+    const input = $(`rotation-${axis}`);
+    if (input) input.addEventListener('input', updateCurrentImageRotation);
+  });
+
+  const copyRotationButton = $('btn-copy-rotation');
+  const rotationCode = $('rotation-code');
+  const rotationCopyStatus = $('rotation-copy-status');
+  if (copyRotationButton && rotationCode) {
+    copyRotationButton.addEventListener('click', async () => {
+      const code = rotationCode.value;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(code);
+        } else {
+          rotationCode.focus();
+          rotationCode.select();
+          const copied = document.execCommand('copy');
+          if (!copied) throw new Error('copy command failed');
+        }
+        if (rotationCopyStatus) rotationCopyStatus.textContent = 'コピーしました。地点データの nodes 内に貼り付けてください。';
+      } catch (error) {
+        rotationCode.focus();
+        rotationCode.select();
+        if (rotationCopyStatus) rotationCopyStatus.textContent = '自動コピーできませんでした。選択されたコードを手動でコピーしてください。';
+      }
+    });
+  }
+
   setupToggle('tg-grid-routes', null, (visible) => {
     uiConfig.routes = visible;
     buildRouteLines(NODES[currentId]);
@@ -1492,8 +1664,19 @@ document.addEventListener('DOMContentLoaded', () => {
   //    一般ユーザーの目には触れない。
   const tabUserBtn = $('tab-btn-user');
   const tabDevBtn = $('tab-btn-dev');
+  const closeAlignmentPanel = $('btn-hide-panorama-alignment');
+  if (closeAlignmentPanel) closeAlignmentPanel.addEventListener('click', () => {
+    alignmentPanelDismissed = true;
+    updateGuideVisibility();
+  });
   if (tabUserBtn) tabUserBtn.addEventListener('click', () => { settingsActiveTab = 'user'; updateSettingsModeUI(); });
-  if (tabDevBtn) tabDevBtn.addEventListener('click', () => { settingsActiveTab = 'dev'; updateSettingsModeUI(); });
+  if (tabDevBtn) tabDevBtn.addEventListener('click', () => {
+    settingsActiveTab = 'dev';
+    alignmentPanelDismissed = false;
+    syncRotationControlsFromNode();
+    updateSettingsModeUI();
+  });
+  syncRotationControlsFromNode();
   updateSettingsModeUI(); // ?dev=1 付きでアクセスされていた場合、初期表示から開発者タブを見せる
 });
 

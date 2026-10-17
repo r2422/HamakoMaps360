@@ -20,6 +20,61 @@
   <div class="sv-container">
     <canvas id="sv-canvas"></canvas>
     <div id="crosshair"></div>
+    <section id="panorama-alignment-panel" class="panorama-alignment-panel" hidden aria-label="パノラマ位置合わせデバッグUI">
+      <div class="dev-panel-topline">
+        <span class="dev-panel-kicker">DEBUG TOOL</span>
+        <button id="btn-hide-panorama-alignment" type="button" aria-label="位置合わせパネルを閉じる">閉じる</button>
+      </div>
+        <hr class="dev-tool-divider">
+
+        <div class="dev-panel-header"><h3 class="dev-tool-heading">パノラマ位置合わせ</h3></div>
+        <p class="dev-tool-description">現在の地点の画像回転を調整します。値は度数で、変更はこの画面上で即時反映されます。</p>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">水平線（緯線）</span>
+            <span class="setting-sub">水平・平行なガイド線を表示</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-guide-horizontal"><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">垂直線（経線）</span>
+            <span class="setting-sub">縦方向のガイド線を表示</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-guide-vertical"><span class="slider"></span></label>
+        </div>
+
+        <div class="dev-tool-field">
+          <label for="guide-spacing">ガイド線の間隔</label>
+          <select id="guide-spacing">
+            <option value="5">5°（細かい）</option>
+            <option value="10">10°</option>
+            <option value="15" selected>15°</option>
+            <option value="30">30°（粗い）</option>
+          </select>
+        </div>
+
+        <div class="dev-rotation-grid">
+          <label for="rotation-x">X 回転（上下）</label>
+          <input id="rotation-x" type="number" step="1" value="0">
+          <label for="rotation-y">Y 回転（左右）</label>
+          <input id="rotation-y" type="number" step="1" value="0">
+          <label for="rotation-z">Z 回転（傾き）</label>
+          <input id="rotation-z" type="number" step="1" value="0">
+        </div>
+
+        <p id="rotation-current-node" class="dev-current-node">現在の頂点：読み込み中</p>
+        <div class="dev-code-header">
+          <label for="rotation-code">データに貼り付けるコード</label>
+          <button id="btn-copy-rotation" type="button">コードをコピー</button>
+        </div>
+        <textarea id="rotation-code" rows="3" readonly spellcheck="false"></textarea>
+        <p id="rotation-copy-status" class="dev-tool-description" aria-live="polite">コードは地点データの imageRotation として使用します。</p>
+
+    </section>
+
   </div>
 
   <div id="step-flash"></div>
@@ -185,6 +240,7 @@
           </div>
           <label class="switch"><input type="checkbox" id="tg-grid-points"><span class="slider"></span></label>
         </div>
+
       </div>
     </div>
   </div>
