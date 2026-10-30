@@ -456,7 +456,7 @@
       "building": "本館",
       "floor": 2,
       "initYaw": 0,
-      "imageRotation": { "x": -0.8, "y": 178.5, "z": -2.5 },
+      "imageRotation": { "x": -0.8, "y": -1.5, "z": -2.5 },
       "mmIdx": null,
       "pos3D": [
         209.34,
@@ -510,6 +510,7 @@
       "building": "本館",
       "floor": 2,
       "initYaw": 0,
+      "imageRotation": { "x": -1, "y": 178.5, "z": 0 },
       "mmIdx": null,
       "pos3D": [
         147.84,
