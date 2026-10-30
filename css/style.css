@@ -975,25 +975,6 @@ body.mm-layout-hidden #hud-minimap {
   border-radius: 0 1px 1px 0;
 }
 
-/* --- トゥールチップ --- */
-#tooltip {
-  position: fixed;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-strong);
-  color: var(--color-text);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  padding: 5px 14px;
-  border-radius: 20px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  transform: translate(-50%, -160%);
-  z-index: 40;
-  white-space: nowrap;
-  box-shadow: var(--shadow-panel);
-}
-
 /* --- フラッシュオーバーレイ --- */
 #step-flash {
   position: fixed;

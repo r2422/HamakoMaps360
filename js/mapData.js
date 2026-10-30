@@ -40,6 +40,12 @@ class MapNode {
     });
 
     this.initYaw = data.initYaw; // TPしたときに向いている方向
+    // パノラマ画像の基準回転角（度）。データに未指定の場合は回転なし。
+    this.imageRotation = {
+      x: Number(data.imageRotation?.x) || 0,
+      y: Number(data.imageRotation?.y) || 0,
+      z: Number(data.imageRotation?.z) || 0
+    };
     this.mmIdx = data.mmIdx;
     this.pos3D = data.pos3D; // [x, y, z] 絶対空間座標
     this.floor = data.floor || 3;
@@ -58,18 +64,31 @@ class MapGraph {
   getNode(id) { return this.nodes[id]; }
 
   // 複数のJSONデータ（配列）をまとめて取り込むメソッド
-  loadFromMultipleJSON(jsonArray) {
+  // 複数のJSONデータ（配列）をまとめて取り込むメソッド
+loadFromMultipleJSON(jsonArray) {
     jsonArray.forEach(jsonData => {
-      for (let id in jsonData.nodes) {
-        this.nodes[id] = new MapNode(id, jsonData.nodes[id]);
-      }
+        for (let id in jsonData.nodes) {
+            const nodeData = jsonData.nodes[id];
+
+            // ラベルが空文字なら「移動」を設定
+            if (Array.isArray(nodeData.links)) {
+                nodeData.links.forEach(link => {
+                    if (link.label === '') {
+                        link.label = '移動';
+                    }
+                });
+            }
+
+            this.nodes[id] = new MapNode(id, nodeData);
+        }
     });
+
     // 全データロード後にリンク計算と座標計算を実行
     this.calcMinimapCoords();
     this.buildAllLinks();
 
     window.NODES = this.nodes;
-  }
+}
 
   // ミニマップ座標の計算
   calcMinimapCoords() {

@@ -13,7 +13,7 @@
       "mmIdx": 0,
       "pos3D": [
         330,
-        160,
+        80,
         560
       ],
       "floor": 3,
@@ -33,6 +33,11 @@
           "targetId": "23_stairs_0330,0658",
           "label": "",
           "hint": ""
+        },
+        {
+          "targetId": "22_corridor_006",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -49,7 +54,7 @@
       "mmIdx": 0,
       "pos3D": [
         990,
-        160,
+        80,
         560
       ],
       "floor": 3,
@@ -69,6 +74,11 @@
           "targetId": "23_stairs_0990,0658",
           "label": "",
           "hint": ""
+        },
+        {
+          "targetId": "22_stairs_002",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -85,7 +95,7 @@
       "mmIdx": 0,
       "pos3D": [
         330,
-        0,
+        120,
         658
       ],
       "floor": 3,
@@ -105,6 +115,16 @@
           "targetId": "23_stairs_0330,0560",
           "label": "",
           "hint": ""
+        },
+        {
+          "targetId": "23_outside_0330,0750_空中廊下",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "24_stairs_0330,0560",
+          "label": "",
+          "hint": ""
         }
       ]
     },
@@ -115,13 +135,13 @@
       "initYaw": 0,
       "imageRotation": {
         "x": 0,
-        "y": 0,
-        "z": 0
+        "y": 181,
+        "z": -2.5
       },
       "mmIdx": 0,
       "pos3D": [
         990,
-        0,
+        120,
         658
       ],
       "floor": 3,
@@ -141,12 +161,22 @@
           "targetId": "23_classroom_0920,0620_建築研究部",
           "label": "",
           "hint": ""
+        },
+        {
+          "targetId": "23_outside_0990,0750_空中廊下",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "24_stairs_0990,0560",
+          "label": "",
+          "hint": ""
         }
       ]
     },
     "23_classroom_0520,0620_第1製図": {
-      "name": "",
-      "sub": "",
+      "name": "第１製図室",
+      "sub": "第１製図室",
       "imageFile": "23_classroom_0520,0620_第1製図.jpg",
       "initYaw": 0,
       "imageRotation": {
@@ -157,7 +187,7 @@
       "mmIdx": 0,
       "pos3D": [
         520,
-        0,
+        120,
         620
       ],
       "floor": 3,
@@ -171,8 +201,8 @@
       ]
     },
     "23_classroom_0760,0620_第2製図": {
-      "name": "",
-      "sub": "",
+      "name": "第２製図室",
+      "sub": "第２製図室",
       "imageFile": "23_classroom_0760,0620_第2製図.jpg",
       "initYaw": 0,
       "imageRotation": {
@@ -183,7 +213,7 @@
       "mmIdx": 0,
       "pos3D": [
         760,
-        0,
+        120,
         620
       ],
       "floor": 3,
@@ -197,8 +227,8 @@
       ]
     },
     "23_classroom_0920,0620_建築研究部": {
-      "name": "",
-      "sub": "",
+      "name": "建築研究部",
+      "sub": "建築研究部",
       "imageFile": "23_classroom_0920,0620_建築研究部.jpg",
       "initYaw": 0,
       "imageRotation": {
@@ -209,7 +239,7 @@
       "mmIdx": 0,
       "pos3D": [
         920,
-        0,
+        120,
         620
       ],
       "floor": 3,
@@ -240,7 +270,7 @@
       "mmIdx": 0,
       "pos3D": [
         240,
-        0,
+        120,
         658
       ],
       "floor": 3,
@@ -250,7 +280,12 @@
           "targetId": "23_stairs_0330,0658",
           "label": "",
           "hint": ""
-        }
+        },
+        {
+    "targetId": "node_main_3_mvu9num9_1",
+    "label": "",
+    "hint": ""
+  }
       ]
     },
     "23_corrider_0330,0658": {
@@ -266,7 +301,7 @@
       "mmIdx": 0,
       "pos3D": [
         330,
-        0,
+        120,
         658
       ],
       "floor": 3,
@@ -286,7 +321,7 @@
       "mmIdx": 0,
       "pos3D": [
         390,
-        0,
+        120,
         658
       ],
       "floor": 3,
@@ -306,7 +341,7 @@
     },
     "23_corrider_0520,0658": {
       "name": "本館 3階 廊下",
-      "sub": "",
+      "sub": "第１製図室",
       "imageFile": "23_corrider_0520,0658.jpg",
       "initYaw": 0,
       "imageRotation": {
@@ -317,7 +352,7 @@
       "mmIdx": 0,
       "pos3D": [
         520,
-        0,
+        120,
         658
       ],
       "floor": 3,
@@ -342,7 +377,7 @@
     },
     "23_corrider_0760,0658": {
       "name": "本館 3階 廊下",
-      "sub": "",
+      "sub": "第２製図室",
       "imageFile": "23_corrider_0760,0658.jpg",
       "initYaw": 0,
       "imageRotation": {
@@ -353,7 +388,7 @@
       "mmIdx": 0,
       "pos3D": [
         760,
-        0,
+        120,
         658
       ],
       "floor": 3,
@@ -380,6 +415,239 @@
           "hint": ""
         }
       ]
-    }
+    },
+    "23_outside_0330,0750_空中廊下": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_outside_0330,0750_空中廊下.jpg",
+      "initYaw": 0,
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": -2.5
+      },
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        120,
+        750
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "23_stairs_0330,0658",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_outside_0660,0750_空中廊下",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_outside_0330,0990_空中廊下",
+          "label": "",
+          "hint": ""
+        }
+      ]
+    },
+    "23_outside_0330,0990_空中廊下": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_outside_0330,0990_空中廊下.jpg",
+      "initYaw": 0,
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": -2.5
+      },
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        120,
+        990
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "23_outside_0330,0750_空中廊下",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "33_outside_0330,1220_空中廊下",
+          "label": "",
+          "hint": ""
+        }
+      ]
+    },
+    "23_outside_0660,0750_空中廊下": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_outside_0660,0750_空中廊下.jpg",
+      "initYaw": 0,
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": -2.5
+      },
+      "mmIdx": 0,
+      "pos3D": [
+        660,
+        120,
+        750
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "23_outside_0330,0750_空中廊下",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_outside_0990,0750_空中廊下",
+          "label": "",
+          "hint": ""
+        }
+      ]
+    },
+    "23_outside_0990,0750_空中廊下": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "23_outside_0990,0750_空中廊下.jpg",
+      "initYaw": 0,
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": -2.5
+      },
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        120,
+        750
+      ],
+      "floor": 3,
+      "building": "Main",
+      "links": [
+        {
+          "targetId": "23_outside_0660,0750_空中廊下",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "23_stairs_0990,0658",
+          "label": "",
+          "hint": ""
+        },
+        {
+          "targetId": "33_outside_0990,1220_空中廊下",
+          "label": "",
+          "hint": ""
+        }
+      ]
+    },
+  "node_main_3_mvu9num9_1": {
+    "name": "図書室_1",
+    "sub": "",
+    "imageFile": "図書室_1.jpg",
+    "building": "本館",
+    "floor": 3,
+    "initYaw": 0,
+    "mmIdx": null,
+    "pos3D": [
+      196.43,
+      160,
+      657.15
+    ],
+    "links": [
+      {
+        "targetId": "23_corrider_0240,0658",
+        "label": "",
+        "hint": ""
+      },
+      {
+        "targetId": "node_main_3_mvu9uzhn_2",
+        "label": "",
+        "hint": ""
+      }
+    ]
+  },
+  "node_main_3_mvu9t8b1_1": {
+    "name": "図書室_4",
+    "sub": "",
+    "imageFile": "図書室_4.jpg",
+    "building": "本館",
+    "floor": 3,
+    "initYaw": 0,
+    "mmIdx": null,
+    "pos3D": [
+      76.91,
+      160,
+      752.26
+    ],
+    "links": [
+      {
+        "targetId": "node_main_3_mvu9uzhn_2",
+        "label": "",
+        "hint": ""
+      }
+    ]
+  },
+  "node_main_3_mvu9uzhn_2": {
+    "name": "図書室_2",
+    "sub": "",
+    "imageFile": "図書室_2.jpg",
+    "building": "本館",
+    "floor": 3,
+    "initYaw": 0,
+    "mmIdx": null,
+    "pos3D": [
+      147.32,
+      160,
+      676.08
+    ],
+    "links": [
+      {
+        "targetId": "node_main_3_mvu9vcc8_3",
+        "label": "",
+        "hint": ""
+      },
+      {
+        "targetId": "node_main_3_mvu9num9_1",
+        "label": "",
+        "hint": ""
+      },
+      {
+        "targetId": "node_main_3_mvu9t8b1_1",
+        "label": "",
+        "hint": ""
+      }
+    ]
+  },
+  "node_main_3_mvu9vcc8_3": {
+    "name": "図書室_3",
+    "sub": "",
+    "imageFile": "図書室_3.jpg",
+    "building": "本館",
+    "floor": 3,
+    "initYaw": 0,
+    "mmIdx": null,
+    "pos3D": [
+      143.19,
+      160,
+      576.63
+    ],
+    "links": [
+      {
+        "targetId": "node_main_3_mvu9uzhn_2",
+        "label": "",
+        "hint": ""
+      }
+    ]
+  }
   }
 }

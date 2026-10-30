@@ -1,0 +1,550 @@
+{
+    "nodes": {
+        "todo_149.79,558.47": {
+            "name": "新規ノード1",
+            "sub": "",
+            "imageFile": "todo_149.79,558.47.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                149.79,
+                0,
+                558.47
+            ],
+            "links": [
+                {
+                    "targetId": "todo_147.56,627.71",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_147.56,627.71": {
+            "name": "新規ノード2",
+            "sub": "",
+            "imageFile": "todo_147.56,627.71.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                147.56,
+                0,
+                627.71
+            ],
+            "links": [
+                {
+                    "targetId": "todo_149.79,558.47",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_92.38,675.65",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_166.53,676.12",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_92.38,675.65": {
+            "name": "新規ノード3",
+            "sub": "",
+            "imageFile": "todo_92.38,675.65.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                92.38,
+                0,
+                675.65
+            ],
+            "links": [
+                {
+                    "targetId": "todo_147.56,627.71",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_166.53,676.12",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_346.95,675.15": {
+            "name": "新規ノード5",
+            "sub": "",
+            "imageFile": "todo_346.95,675.15.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                346.95,
+                0,
+                675.15
+            ],
+            "links": [
+                {
+                    "targetId": "todo_166.53,676.12",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_347.09,542.66",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_459.41,675.1",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_166.53,676.12": {
+            "name": "新規ノード7",
+            "sub": "",
+            "imageFile": "todo_166.53,676.12.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                166.53,
+                0,
+                676.12
+            ],
+            "links": [
+                {
+                    "targetId": "todo_92.38,675.65",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_147.56,627.71",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_346.95,675.15",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_347.09,542.66": {
+            "name": "階段下",
+            "sub": "",
+            "imageFile": "todo_347.09,542.66.jpg",
+            "building": "連絡通路",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                347.09,
+                0,
+                542.66
+            ],
+            "links": [
+                {
+                    "targetId": "todo_346.95,675.15",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_459.41,675.1": {
+            "name": "進路指導室前",
+            "sub": "",
+            "imageFile": "todo_459.41,675.1.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                459.41,
+                0,
+                675.1
+            ],
+            "links": [
+                {
+                    "targetId": "todo_346.95,675.15",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_517.45,675.1",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_517.45,675.1": {
+            "name": "定時制昇降口前",
+            "sub": "",
+            "imageFile": "todo_517.45,675.1.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                517.45,
+                0,
+                675.1
+            ],
+            "links": [
+                {
+                    "targetId": "todo_459.41,675.1",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_627.2,675.2",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_627.2,675.2": {
+            "name": "保健室前",
+            "sub": "",
+            "imageFile": "todo_627.2,675.2.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                627.2,
+                0,
+                675.2
+            ],
+            "links": [
+                {
+                    "targetId": "todo_517.45,675.1",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_715.31,675.31",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_715.31,675.31": {
+            "name": "昇降口前",
+            "sub": "",
+            "imageFile": "todo_715.31,675.31.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                715.31,
+                0,
+                675.31
+            ],
+            "links": [
+                {
+                    "targetId": "todo_627.2,675.2",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_715.84,618.36",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_856.09,674.49",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_715.84,618.36": {
+            "name": "昇降口",
+            "sub": "",
+            "imageFile": "todo_715.84,618.36.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                715.84,
+                0,
+                618.36
+            ],
+            "links": [
+                {
+                    "targetId": "todo_715.31,675.31",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_717.95,502.35",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_717.95,502.35": {
+            "name": "昇降口外",
+            "sub": "",
+            "imageFile": "todo_717.95,502.35.jpg",
+            "building": "外",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                717.95,
+                0,
+                502.35
+            ],
+            "links": [
+                {
+                    "targetId": "todo_715.84,618.36",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_856.09,674.49": {
+            "name": "女子更衣室前",
+            "sub": "",
+            "imageFile": "todo_856.09,674.49.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                856.09,
+                0,
+                674.49
+            ],
+            "links": [
+                {
+                    "targetId": "todo_715.31,675.31",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_989.82,698.23",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_989.82,698.23": {
+            "name": "本館体育館通路",
+            "sub": "",
+            "imageFile": "todo_989.82,698.23.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                989.82,
+                0,
+                698.23
+            ],
+            "links": [
+                {
+                    "targetId": "todo_972.52,774.04",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_856.09,674.49",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_972.15,637.14",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_1164.1,697.62",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_972.52,774.04": {
+            "name": "本館南館通路",
+            "sub": "",
+            "imageFile": "todo_972.52,774.04.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                972.52,
+                0,
+                774.04
+            ],
+            "links": [
+                {
+                    "targetId": "todo_989.82,698.23",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_972.15,637.14": {
+            "name": "階段前",
+            "sub": "",
+            "imageFile": "todo_972.15,637.14.jpg",
+            "building": "本館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                972.15,
+                0,
+                637.14
+            ],
+            "links": [
+                {
+                    "targetId": "todo_989.82,698.23",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_1164.1,697.62": {
+            "name": "新規ノード20",
+            "sub": "",
+            "imageFile": "todo_1164.1,697.62.jpg",
+            "building": "外",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                1164.1,
+                0,
+                697.62
+            ],
+            "links": [
+                {
+                    "targetId": "todo_989.82,698.23",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_1250.67,697.74",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_1250.67,697.74": {
+            "name": "新規ノード22",
+            "sub": "",
+            "imageFile": "todo_1250.67,697.74.jpg",
+            "building": "外",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                1250.67,
+                0,
+                697.74
+            ],
+            "links": [
+                {
+                    "targetId": "todo_1164.1,697.62",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_1358.58,698.38",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_1358.58,698.38": {
+            "name": "新規ノード23",
+            "sub": "",
+            "imageFile": "todo_1358.58,698.38.jpg",
+            "building": "体育館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                1358.58,
+                0,
+                698.38
+            ],
+            "links": [
+                {
+                    "targetId": "todo_1250.67,697.74",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_1383.46,577.47",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_1383.46,577.47": {
+            "name": "新規ノード24",
+            "sub": "",
+            "imageFile": "todo_1383.46,577.47.jpg",
+            "building": "体育館",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                1383.46,
+                0,
+                577.47
+            ],
+            "links": [
+                {
+                    "targetId": "todo_1358.58,698.38",
+                    "label": "",
+                    "hint": ""
+                },
+                {
+                    "targetId": "todo_1343.35,501.56",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        },
+        "todo_1343.35,501.56": {
+            "name": "新規ノード25",
+            "sub": "",
+            "imageFile": "todo_1343.35,501.56.jpg",
+            "building": "外",
+            "floor": 1,
+            "initYaw": 0,
+            "mmIdx": null,
+            "pos3D": [
+                1343.35,
+                0,
+                501.56
+            ],
+            "links": [
+                {
+                    "targetId": "todo_1383.46,577.47",
+                    "label": "",
+                    "hint": ""
+                }
+            ]
+        }
+    }
+}

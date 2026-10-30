@@ -1,4 +1,56 @@
 {
   "nodes": {
+    "33_outside_0330,1220_空中廊下": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "33_outside_0330,1220_空中廊下.jpg",
+      "initYaw": 0,
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": -2.5
+      },
+      "mmIdx": 0,
+      "pos3D": [
+        330,
+        120,
+        1220
+      ],
+      "floor": 3,
+      "building": "South",
+      "links": [
+        {
+    "targetId": "23_outside_0330,0990_空中廊下",
+    "label": "",
+    "hint": ""
+  }
+      ]
+    },
+    "33_outside_0990,1220_空中廊下": {
+      "name": "本館 3階 廊下",
+      "sub": "",
+      "imageFile": "33_outside_0990,1220_空中廊下.jpg",
+      "initYaw": 0,
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": -2.5
+      },
+      "mmIdx": 0,
+      "pos3D": [
+        990,
+        120,
+        1220
+      ],
+      "floor": 3,
+      "building": "South",
+      "links": [
+        {
+    "targetId": "23_outside_0990,0750_空中廊下",
+    "label": "",
+    "hint": ""
+  }
+      ]
+    }
   }
 }

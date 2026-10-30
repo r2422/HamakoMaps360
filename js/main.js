@@ -157,8 +157,8 @@ function makeSphere(radius, isB = false) {
     transparent: true,
     opacity: isB ? 0 : 1,
     depthTest: true,
-    depthWrite: true
-  });
+    depthWrite: false
+});
   const s = new THREE.Mesh(g, m);
 
   s.renderOrder = isB ? 2 : 1;
@@ -296,7 +296,7 @@ cameraHelper.material.depthWrite = false;
 scene.add(cameraHelper);
 
 /* ---- state ---- */
-let currentId = '21_entrance_0720,0640_昇降口';
+let currentId = '21_corridor_008';
 let nextId = null;
 let yaw = 0, pitch = 0, tYaw = 0, tPitch = 0;
 let fov = 75, tFov = 75;
@@ -625,7 +625,7 @@ function buildRouteLines(node) {
     const targetZ = lk.pos[2] / 4;
 
     const startPoint = new THREE.Vector3(0, yOffset, 0);
-    const endPoint = new THREE.Vector3(targetX, yOffset, targetZ);
+const endPoint = new THREE.Vector3(targetX, yOffset + targetY, targetZ);
     const distance = startPoint.distanceTo(endPoint);
     const direction = new THREE.Vector3().subVectors(endPoint, startPoint).normalize();
 
@@ -686,8 +686,9 @@ function buildRouteLines(node) {
       depthTest: false,
       depthWrite: false
     });
+    // 円形マーカ
     const discMesh = new THREE.Mesh(discGeo, discMat);
-    discMesh.position.set(targetX, yOffset + 0.02, targetZ);
+    discMesh.position.set(targetX, yOffset + targetY + 0.02, targetZ);
     discMesh.rotation.y = chevronAngle;
     discMesh.renderOrder = 20;
     discMesh.userData = { isRoute: true, link: lk, isDisc: true };
@@ -705,7 +706,7 @@ function buildRouteLines(node) {
       depthWrite: false
     });
     const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
-    pulseMesh.position.set(targetX, yOffset + 0.015, targetZ);
+    pulseMesh.position.set(targetX, yOffset + targetY + 0.015, targetZ);
     pulseMesh.renderOrder = 19;
     pulseMesh.raycast = () => { }; // クリック判定は本体のディスクにのみ発生させる
     pulseMesh.userData = { isRoute: true, link: lk, isPulse: true };
@@ -737,7 +738,14 @@ function buildRouteLines(node) {
     spriteMat.center = new THREE.Vector2(0.5, 0.0);
 
     const textSprite = new THREE.Sprite(spriteMat);
-    textSprite.position.set(targetX, yOffset + 1.0, targetZ);
+    // ラベルを円形マーカーより上に配置する高さ
+    const labelHeight = 1.0;
+
+    textSprite.position.set(
+        targetX,
+        discMesh.position.y + labelHeight + 5,
+        targetZ
+    );
     textSprite.renderOrder = 22;
     textSprite.scale.set(4, 1, 1);
 
@@ -1192,17 +1200,12 @@ canvas.addEventListener('pointermove', e => {
     raycaster.setFromCamera(mouse2, camera);
 
     const hits = raycaster.intersectObjects(routeLinesGroup.children);
-    const tip = $('tooltip');
-
     const hitObj = hits.length ? hits[0].object : null;
     if (hitObj && hitObj.userData && hitObj.userData.isRoute && (hitObj.userData.isText || hitObj.userData.isDisc)) {
       const lk = hitObj.userData.link;
       canvas.style.cursor = 'pointer';
-      tip.textContent = lk.hint || lk.label || "移動する";
-      tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px';
-      tip.style.opacity = '1';
     } else {
-      canvas.style.cursor = 'grab'; tip.style.opacity = '0';
+      canvas.style.cursor = 'grab';
     }
     return;
   }
@@ -1242,7 +1245,13 @@ function tryTeleportAt(clientX, clientY) {
     if (hitObj.userData && hitObj.userData.isRoute && hitObj.userData.link) {
       if (hitObj.userData.isText || hitObj.userData.isDisc) {
         const lk = hitObj.userData.link;
-        const targetPos = lk.pos ? [lk.pos[0] / 4, -3.8 + 1.0, lk.pos[2] / 4] : [0, 0, 0];
+        const targetPos = lk.pos
+    ? [
+        lk.pos[0] / 4,
+        -3.8 + 1.0 + lk.pos[1] / 4,
+        lk.pos[2] / 4
+    ]
+    : [0, 0, 0];
         startWalk(lk.targetId, targetPos);
       }
     }
@@ -1485,8 +1494,7 @@ function animate(now) {
         let scaleFactor = (uiConfig.textSizeMode === 'constant') ? distToCamera * 0.12 : 1.0;
 
         if (l.userData.isText) {
-          l.scale.set(4 * scaleFactor, 1 * scaleFactor, 1);
-          l.position.y = (yOffset + 0.5) + (1.0 * scaleFactor) + 0.1;
+            l.scale.set(4 * scaleFactor, 1 * scaleFactor, 1);
         }
       }
     });
@@ -1560,7 +1568,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   setupToggle('tg-hud-debug', $('debug-container'), (visible) => {
     isDebugMonitorOn = visible;
-    // FOVスライダー等のコントロールパネルは、通常時は非表示にし、デバッグ時のみ表示する
+
+    // カメラの画角ガイドもモニターの表示状態に連動させる
+    cameraHelper.visible = visible;
+
+    // FOVスライダー等のコントロールパネルは、デバッグ時のみ表示する
     const ctrlPanel = $('hud-controls');
     if (ctrlPanel) ctrlPanel.style.display = visible ? '' : 'none';
   });
@@ -1820,6 +1832,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
   }
 
-  loadInitial('21_entrance_0720,0640_昇降口');
+  loadInitial('21_corridor_008');
   requestAnimationFrame(animate);
 });

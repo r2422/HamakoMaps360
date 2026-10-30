@@ -192,7 +192,7 @@ function initMinimapLayout() {
           <rect x="0" y="0" width="260" height="160" rx="0"/>
         </clipPath>
         <pattern id="mm-grid" width="10" height="10" patternUnits="userSpaceOnUse">
-          <path d="M10 0 L0 0 0 10" fill="none" stroke="var(--color-border-secondary)" stroke-width="0.4" opacity="0.0"/>
+          <path d="M10 0 L0 0 0 10" fill="none" stroke="var(--color-border-secondary)" stroke-width="0.4" opacity="0.35"/>
         </pattern>
         <radialGradient id="mm-vignette" cx="35%" cy="35%" r="75%">
           <stop offset="0%" stop-color="var(--color-bg)"/>
@@ -1201,15 +1201,39 @@ function createDraftNodeAt(svgX, svgY) {
 
     if (inputName === null) return;
 
-    const id =
-        `draft_${currentMinimapFloor}_${draftNodeSeq}`;
+    // 画像ファイル名は座標やノードIDから独立して指定する。
+    // 既存画像をそのまま使う場合は、既存のファイル名を入力する。
+    const defaultImageFile = `panorama_${Date.now().toString(36)}.jpg`;
+    const inputImageFile = window.prompt(
+        '画像ファイル名を入力してください（拡張子を含む。画像は校舎・階数のフォルダに配置）',
+        defaultImageFile
+    );
 
-    draftNodeSeq++;
+    if (inputImageFile === null) return;
+
+    const imageFile = inputImageFile.trim() || defaultImageFile;
+
+    // ノードIDは座標を含めず、位置変更後も維持できる識別子にする。
+    const buildingCodeMap = {
+        '北館': 'north',
+        '本館': 'main',
+        '南館': 'south',
+        '体育館': 'gym',
+        '連絡通路': 'passage',
+        '外': 'outside'
+    };
+    const buildingCode = buildingCodeMap[building] || 'other';
+    let id;
+    do {
+        id = `node_${buildingCode}_${currentMinimapFloor}_${Date.now().toString(36)}_${draftNodeSeq}`;
+        draftNodeSeq++;
+    } while (NODES[id] || draftNodes[id]);
 
     const node = {
         id,
         name: inputName || defaultName,
         sub: '',
+        imageFile,
         building,
         floor: currentMinimapFloor,
         pos3D: [
@@ -1503,14 +1527,12 @@ function buildExportText() {
         }
     });
 
-    // 内部ID → 書き出し用ID の対応表
+    // ノードIDは座標から生成しない。
+    // 位置を変更してもIDとlinks.targetIdが変わらないよう、下書きIDをそのまま使用する。
     const exportIdMap = {};
 
     Object.values(draftNodes).forEach(n => {
-        const x = n.pos3D[0];
-        const y = n.pos3D[2];
-
-        exportIdMap[n.id] = `todo_${x},${y}`;
+        exportIdMap[n.id] = n.id;
     });
 
     const newNodesObj = {};
@@ -1521,7 +1543,9 @@ function buildExportText() {
         newNodesObj[exportId] = {
             name: n.name,
             sub: n.sub || '',
-            imageFile: `${exportId}.jpg`,
+            // 画像名は座標・ノードIDとは独立した値として書き出す。
+            // 旧形式の下書きにimageFileがない場合のみ、移行用の仮名を使う。
+            imageFile: n.imageFile || `panorama_${n.id}.jpg`,
             building: n.building,
             floor: n.floor,
             initYaw: 0,

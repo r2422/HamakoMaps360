@@ -5,10 +5,10 @@
       "sub": "North building - Floor 2",
       "imageFile": "12_stairs_0330,0140.jpg",
       "initYaw": 0,
-"imageRotation": {
-            "x": 0,
-            "y": 0,
-            "z": 0
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "mmIdx": 0,
       "pos3D": [
@@ -31,7 +31,7 @@
         },
         {
           "targetId": "12_passageway_mid_0330,0350",
-          "label": "空中廊下(本館方面)",
+          "label": "侵入不可",
           "hint": "To Bridge"
         }
       ]
@@ -41,10 +41,10 @@
       "sub": "North building - Floor 2",
       "imageFile": "12_stairs_0990,0140.jpg",
       "initYaw": 0,
-"imageRotation": {
-            "x": 0,
-            "y": 0,
-            "z": 0
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "mmIdx": 0,
       "pos3D": [
@@ -77,10 +77,10 @@
       "sub": "Connecting Bridge 2F - Mid",
       "imageFile": "12_passageway_mid.jpg",
       "initYaw": 0,
-"imageRotation": {
-            "x": 0,
-            "y": 0,
-            "z": 0
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "mmIdx": 0,
       "pos3D": [
@@ -108,10 +108,10 @@
       "sub": "Connecting Bridge 2F - Mid",
       "imageFile": "12_passageway_mid_0990,0350.jpg",
       "initYaw": 0,
-"imageRotation": {
-            "x": 0,
-            "y": 0,
-            "z": 0
+      "imageRotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "mmIdx": 0,
       "pos3D": [
@@ -131,8 +131,13 @@
           "targetId": "22_stairs_0990,0560",
           "label": "本館へ",
           "hint": "Enter Main Bldg"
+        },
+        {
+          "targetId": "22_stairs_n02",
+          "label": "",
+          "hint": ""
         }
       ]
     }
-    }
+  }
 }
