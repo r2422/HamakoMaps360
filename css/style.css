@@ -1436,3 +1436,428 @@ input:checked+.slider:before {
     gap: 7px 9px;
   }
 }
+
+
+/* ============================================================
+   使い方チュートリアル
+============================================================ */
+#btn-tutorial {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-dark);
+  box-shadow: var(--shadow-panel);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rajdhani', 'Noto Sans JP', sans-serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  pointer-events: auto;
+}
+
+#btn-tutorial:hover {
+  background: var(--color-surface-soft);
+  border-color: var(--color-border-strong);
+}
+
+#btn-tutorial:active {
+  transform: scale(0.9);
+}
+
+#tutorial-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(52, 44, 64, 0.48);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+#tutorial-modal.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+#tutorial-content {
+  width: min(520px, 100%);
+  max-height: min(720px, calc(100dvh - 36px));
+  overflow-y: auto;
+  padding: 22px 24px 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(52, 44, 64, 0.28);
+  transform: translateY(8px);
+  transition: transform 0.22s ease;
+}
+
+#tutorial-modal.open #tutorial-content {
+  transform: translateY(0);
+}
+
+#tutorial-header,
+#tutorial-footer,
+#tutorial-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#tutorial-header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tutorial-kicker,
+.tutorial-step {
+  color: var(--color-secondary-dark);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+#tutorial-title {
+  margin-top: 3px;
+  color: var(--color-primary-dark);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+#btn-close-tutorial {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 17px;
+  cursor: pointer;
+}
+
+#btn-close-tutorial:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+#tutorial-slide-region {
+  min-height: 340px;
+}
+
+.tutorial-slide {
+  padding: 18px 0 16px;
+  animation: tutorial-slide-in 0.2s ease;
+}
+
+.tutorial-slide[hidden] {
+  display: none;
+}
+
+@keyframes tutorial-slide-in {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.tutorial-visual {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 17px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-surface-soft), #f8f6fb);
+  color: var(--color-primary);
+}
+
+.tutorial-slide h3 {
+  margin: 5px 0 9px;
+  color: var(--color-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.tutorial-slide > p:last-child {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.tutorial-orbit {
+  width: 104px;
+  height: 104px;
+  border: 2px solid rgba(139, 120, 181, 0.45);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 15px rgba(99, 166, 160, 0.08), inset 0 0 0 32px rgba(139, 120, 181, 0.08);
+}
+
+.tutorial-direction {
+  position: absolute;
+  color: var(--color-secondary-dark);
+  font-size: 48px;
+  font-weight: 400;
+}
+
+.tutorial-node {
+  position: relative;
+  z-index: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-primary-dark);
+  font-size: 12px;
+}
+
+.tutorial-node-next {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.tutorial-route-line {
+  width: 70px;
+  border-top: 2px dashed var(--color-secondary);
+}
+
+.tutorial-map-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(139,120,181,.15) 1px, transparent 1px), linear-gradient(90deg, rgba(139,120,181,.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.tutorial-map-pin {
+  position: absolute;
+  z-index: 1;
+  top: 43px;
+  left: 53%;
+  color: var(--color-primary);
+  font-size: 34px;
+  text-shadow: 0 2px 0 #fff;
+}
+
+.tutorial-map-path {
+  position: absolute;
+  width: 130px;
+  height: 70px;
+  border-top: 3px solid var(--color-secondary);
+  border-right: 3px solid var(--color-secondary);
+  border-radius: 0 18px 0 0;
+  transform: rotate(-18deg);
+}
+
+.tutorial-layout-block {
+  position: absolute;
+  border: 2px solid var(--color-primary);
+  border-radius: 6px;
+  background: rgba(139, 120, 181, 0.12);
+}
+
+.layout-large {
+  inset: 22px 100px 22px 22px;
+}
+
+.layout-small {
+  right: 22px;
+  bottom: 22px;
+  width: 72px;
+  height: 56px;
+  border-color: var(--color-secondary);
+  background: rgba(99, 166, 160, 0.2);
+}
+
+.tutorial-layout-label {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font: 700 10px 'Rajdhani', sans-serif;
+  letter-spacing: .12em;
+}
+
+.tutorial-setting-line {
+  width: 65%;
+  height: 1px;
+  margin: 18px 0;
+  background: var(--color-border-strong);
+}
+
+.tutorial-setting-toggle {
+  position: absolute;
+  right: 18%;
+  width: 38px;
+  height: 22px;
+  border-radius: 12px;
+  background: var(--color-secondary);
+}
+
+.tutorial-setting-toggle::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+}
+
+#tutorial-footer {
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+#tutorial-progress {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.tutorial-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+  cursor: pointer;
+}
+
+.tutorial-dot.is-active {
+  width: 21px;
+  border-radius: 5px;
+  background: var(--color-primary);
+}
+
+#tutorial-page-count {
+  color: var(--color-text-muted);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+#tutorial-navigation button {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  font: 600 12px 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#tutorial-navigation #btn-tutorial-next {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+#tutorial-navigation button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  #tutorial-modal { padding: 12px; }
+  #tutorial-content {
+    max-height: calc(100dvh - 24px);
+    padding: 17px 16px 14px;
+  }
+  #tutorial-slide-region { min-height: 320px; }
+  .tutorial-visual { height: 125px; }
+  .tutorial-slide h3 { font-size: 16px; }
+  .tutorial-slide > p:last-child { font-size: 12px; }
+  #tutorial-footer { align-items: flex-start; flex-direction: column; }
+  #tutorial-navigation { width: 100%; }
+}
+
+
+/* ---- チュートリアル内の操作映像・アンケートQR ---- */
+#tutorial-content {
+  width: min(900px, 96vw);
+}
+
+#tutorial-slide-region {
+  min-height: 0;
+}
+
+.tutorial-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.tutorial-slide h3 {
+  margin: 0;
+}
+
+.tutorial-slide > p:not(.tutorial-step) {
+  margin: 0;
+  line-height: 1.75;
+}
+
+.tutorial-video {
+  display: block;
+  width: 100%;
+  max-height: min(48vh, 430px);
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #17171b;
+  border-radius: 10px;
+  margin: 4px auto 0;
+}
+
+.tutorial-qr {
+  display: block;
+  width: min(230px, 48vw);
+  height: auto;
+  max-height: 31vh;
+  object-fit: contain;
+  align-self: center;
+  margin: 4px auto 0;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.tutorial-survey-note {
+  text-align: center;
+  color: #5e6473;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  #tutorial-content {
+    width: 100%;
+    max-height: 94vh;
+    overflow-y: auto;
+  }
+
+  .tutorial-video {
+    max-height: 38vh;
+    border-radius: 7px;
+  }
+
+  .tutorial-qr {
+    width: min(190px, 52vw);
+    max-height: 25vh;
+  }
+}

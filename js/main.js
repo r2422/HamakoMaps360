@@ -1835,3 +1835,91 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadInitial('21_corridor_008');
   requestAnimationFrame(animate);
 });
+
+/* ---- 使い方チュートリアル ---- */
+(() => {
+  const modal = $('tutorial-modal');
+  const openButton = $('btn-tutorial');
+  const closeButton = $('btn-close-tutorial');
+  const prevButton = $('btn-tutorial-prev');
+  const nextButton = $('btn-tutorial-next');
+  const pageCount = $('tutorial-page-count');
+  const slides = Array.from(document.querySelectorAll('.tutorial-slide'));
+  const dots = Array.from(document.querySelectorAll('.tutorial-dot'));
+  let currentSlide = 0;
+
+  if (!modal || !openButton || slides.length === 0) return;
+
+  function showTutorialSlide(index) {
+    currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+
+    // スライドを切り替えたら、前のスライドの動画を停止する。
+    slides.forEach(slide => {
+      const video = slide.querySelector('video');
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
+    });
+
+    slides.forEach((slide, i) => {
+      const active = i === currentSlide;
+      slide.hidden = !active;
+      slide.classList.toggle('is-active', active);
+    });
+
+    dots.forEach((dot, i) => {
+      const active = i === currentSlide;
+      dot.classList.toggle('is-active', active);
+      dot.setAttribute('aria-current', active ? 'step' : 'false');
+    });
+
+    if (pageCount) pageCount.textContent = `${currentSlide + 1} / ${slides.length}`;
+    if (prevButton) prevButton.disabled = currentSlide === 0;
+    if (nextButton) nextButton.textContent = currentSlide === slides.length - 1 ? '閉じる' : '次へ →';
+  }
+
+  function openTutorial() {
+    showTutorialSlide(0);
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    if (closeButton) closeButton.focus();
+  }
+
+  function closeTutorial() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    openButton.focus();
+  }
+
+  openButton.addEventListener('click', openTutorial);
+  if (closeButton) closeButton.addEventListener('click', closeTutorial);
+  if (prevButton) prevButton.addEventListener('click', () => showTutorialSlide(currentSlide - 1));
+  if (nextButton) {
+    nextButton.addEventListener('click', () => {
+      if (currentSlide === slides.length - 1) closeTutorial();
+      else showTutorialSlide(currentSlide + 1);
+    });
+  }
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => showTutorialSlide(Number(dot.dataset.goSlide)));
+  });
+
+  modal.addEventListener('click', event => {
+    if (event.target === modal) closeTutorial();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (!modal.classList.contains('open')) return;
+    if (event.key === 'Escape') {
+      closeTutorial();
+    } else if (event.key === 'ArrowRight') {
+      if (currentSlide < slides.length - 1) showTutorialSlide(currentSlide + 1);
+    } else if (event.key === 'ArrowLeft') {
+      if (currentSlide > 0) showTutorialSlide(currentSlide - 1);
+    }
+  });
+
+  showTutorialSlide(0);
+})();

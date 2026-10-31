@@ -117,6 +117,9 @@
         </svg>
       </button>
 
+      <!-- 使い方チュートリアル -->
+      <button id="btn-tutorial" type="button" aria-label="使い方" title="使い方">?</button>
+
       <!-- 設定 -->
       <button id="btn-settings" type="button" aria-label="設定">
         ...
@@ -296,6 +299,84 @@
 
       </div>
     </div>
+  </div>
+
+  <!-- 使い方チュートリアルモーダル -->
+  <div id="tutorial-modal" aria-hidden="true">
+    <section id="tutorial-content" role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+      <header id="tutorial-header">
+        <div>
+          <p class="tutorial-kicker">HAMAKO MAPS 360 / GUIDE</p>
+          <h2 id="tutorial-title">使い方ガイド</h2>
+        </div>
+        <button id="btn-close-tutorial" type="button" aria-label="チュートリアルを閉じる">✕</button>
+      </header>
+
+      <div id="tutorial-slide-region" aria-live="polite">
+        <article class="tutorial-slide is-active" data-slide="0">
+          <p class="tutorial-step">01 / VIEW & MOVE</p>
+          <h3>画面を見回す・別の場所へ移動する</h3>
+          <p>画面をドラッグすると、周囲を見渡せます。緑色の文字をダブルクリックすると、その場所へ移動します。</p>
+          <video class="tutorial-video" controls playsinline preload="metadata" aria-label="画面を見回し、緑の文字から移動する操作映像">
+            <source src="../videos/tutorial-view-move.mp4" type="video/mp4">
+            お使いのブラウザは動画再生に対応していません。
+          </video>
+        </article>
+
+        <article class="tutorial-slide" data-slide="1" hidden>
+          <p class="tutorial-step">02 / LAYOUT</p>
+          <h3>マップと3Dビューのレイアウトを変える</h3>
+          <p>左上のボタンからマップと3Dビューのレイアウトを切り替えられます。境界をドラッグすると、それぞれの表示比率を調整できます。</p>
+          <video class="tutorial-video" controls playsinline preload="metadata" aria-label="レイアウトと表示比率を変更する操作映像">
+            <source src="../videos/tutorial-layout.mp4" type="video/mp4">
+            お使いのブラウザは動画再生に対応していません。
+          </video>
+        </article>
+
+        <article class="tutorial-slide" data-slide="2" hidden>
+          <p class="tutorial-step">03 / MINIMAP</p>
+          <h3>ミニマップから目的地へ移動する</h3>
+          <p>ミニマップ上の青い頂点をダブルクリックすると、その頂点の場所へワープできます。</p>
+          <video class="tutorial-video" controls playsinline preload="metadata" aria-label="ミニマップの青い頂点から移動する操作映像">
+            <source src="../videos/tutorial-vertex-warp.mp4" type="video/mp4">
+            お使いのブラウザは動画再生に対応していません。
+          </video>
+        </article>
+
+        <article class="tutorial-slide" data-slide="3" hidden>
+          <p class="tutorial-step">04 / MAP CONTROLS</p>
+          <h3>ミニマップの大きさや階を選ぶ</h3>
+          <p>ボタンからミニマップの大きさを変更したり、表示する階を選んだりできます。</p>
+          <video class="tutorial-video" controls playsinline preload="metadata" aria-label="ミニマップの大きさと階を切り替える操作映像">
+            <source src="../videos/tutorial-map-size-floor.mp4" type="video/mp4">
+            お使いのブラウザは動画再生に対応していません。
+          </video>
+        </article>
+
+        <article class="tutorial-slide tutorial-survey-slide" data-slide="4" hidden>
+          <p class="tutorial-step">05 / FEEDBACK</p>
+          <h3>アンケートにご協力ください</h3>
+          <p>使い終わったら、QRコードからアンケートへの回答をお願いします。いただいたご意見は、HamakoMaps360の改善に活用します。</p>
+          <img class="tutorial-qr" src="../images/tutorial-survey-qr.png" alt="アンケート回答用QRコード">
+          <p class="tutorial-survey-note">スマートフォンのカメラで読み取ってください。</p>
+        </article>
+      </div>
+
+      <footer id="tutorial-footer">
+        <div id="tutorial-progress" aria-label="スライドの進行状況">
+          <button class="tutorial-dot is-active" type="button" data-go-slide="0" aria-label="1枚目"></button>
+          <button class="tutorial-dot" type="button" data-go-slide="1" aria-label="2枚目"></button>
+          <button class="tutorial-dot" type="button" data-go-slide="2" aria-label="3枚目"></button>
+          <button class="tutorial-dot" type="button" data-go-slide="3" aria-label="4枚目"></button>
+          <button class="tutorial-dot" type="button" data-go-slide="4" aria-label="5枚目"></button>
+        </div>
+        <div id="tutorial-navigation">
+          <span id="tutorial-page-count">1 / 5</span>
+          <button id="btn-tutorial-prev" type="button" disabled>戻る</button>
+          <button id="btn-tutorial-next" type="button">次へ →</button>
+        </div>
+      </footer>
+    </section>
   </div>
 
   <!-- スクリプト -->

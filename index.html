@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- TODOなぜこのcontentなのか　説明を追加 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>浜工ストリートビュー360</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <!-- three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../pwa/manifest.json">
+  <link rel="icon" href="../pwa/favicon256.ico" type="image/x-icon">
+</head>
+
+<body>
+
+  <!-- ストリートビュー コンテナ -->
+  <div class="sv-container">
+    <canvas id="sv-canvas"></canvas>
+    <div id="crosshair"></div>
+    <section id="panorama-alignment-panel" class="panorama-alignment-panel" hidden aria-label="パノラマ位置合わせデバッグUI">
+      <div class="dev-panel-topline">
+        <span class="dev-panel-kicker">DEBUG TOOL</span>
+        <button id="btn-hide-panorama-alignment" type="button" aria-label="位置合わせパネルを閉じる">閉じる</button>
+      </div>
+        <hr class="dev-tool-divider">
+
+        <div class="dev-panel-header"><h3 class="dev-tool-heading">パノラマ位置合わせ</h3></div>
+        <p class="dev-tool-description">現在の地点の画像回転を調整します。値は度数で、変更はこの画面上で即時反映されます。</p>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">水平線（緯線）</span>
+            <span class="setting-sub">水平・平行なガイド線を表示</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-guide-horizontal"><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">垂直線（経線）</span>
+            <span class="setting-sub">縦方向のガイド線を表示</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-guide-vertical"><span class="slider"></span></label>
+        </div>
+
+        <div class="dev-tool-field">
+          <label for="guide-spacing">ガイド線の間隔</label>
+          <select id="guide-spacing">
+            <option value="5">5°（細かい）</option>
+            <option value="10">10°</option>
+            <option value="15" selected>15°</option>
+            <option value="30">30°（粗い）</option>
+          </select>
+        </div>
+
+        <div class="dev-rotation-grid">
+          <label for="rotation-x">X 回転（上下）</label>
+          <input id="rotation-x" type="number" step="1" value="0">
+          <label for="rotation-y">Y 回転（左右）</label>
+          <input id="rotation-y" type="number" step="1" value="0">
+          <label for="rotation-z">Z 回転（傾き）</label>
+          <input id="rotation-z" type="number" step="1" value="0">
+        </div>
+
+        <p id="rotation-current-node" class="dev-current-node">現在の頂点：読み込み中</p>
+        <div class="dev-code-header">
+          <label for="rotation-code">データに貼り付けるコード</label>
+          <button id="btn-copy-rotation" type="button">コードをコピー</button>
+        </div>
+        <textarea id="rotation-code" rows="3" readonly spellcheck="false"></textarea>
+        <p id="rotation-copy-status" class="dev-tool-description" aria-live="polite">コードは地点データの imageRotation として使用します。</p>
+
+    </section>
+
+  </div>
+
+  <div id="step-flash"></div>
+
+  <!-- HUD レイヤー -->
+  <div class="hud-layer">
+    <div id="load-container">
+      <div id="load-bar"></div>
+    </div>
+
+    <div id="hud-location">
+      <div id="loc-badge">
+        <span id="loc-name">
+          <span class="loc-outline">loading</span>
+          <span class="loc-fill">loading</span>
+        </span>
+        <p id="loc-sub">SYSTEM INITIALIZING</p>
+      </div>
+    </div>
+
+    <!-- 速度表示 -->
+    <div id="hud-speed">
+      <div id="speed-inner">WARPING</div>
+    </div>
+
+    <!-- コンパス -->
+    <div class="top-center-box">
+      <div id="compass-wrapper">
+        <canvas id="hud-compass" width="640" height="72"></canvas>
+      </div>
+    </div>
+
+    <div class="top-right-box">
+      <!-- ミニマップレイアウト -->
+      <button id="btn-minimap-layout" type="button" aria-label="ミニマップレイアウト">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+          <line x1="10" y1="10" x2="10" y2="21"></line>
+        </svg>
+      </button>
+
+      <!-- 使い方チュートリアル -->
+      <button id="btn-tutorial" type="button" aria-label="使い方" title="使い方">?</button>
+
+      <!-- 設定 -->
+      <button id="btn-settings" type="button" aria-label="設定">
+        ...
+      </button>
+    </div>
+
+    <!-- デバッグコンテナ -->
+    <div id="debug-container">
+      <div id="debug-title">ORBITAL MONITOR (TPS)</div>
+      <canvas id="debug-canvas"></canvas>
+    </div>
+
+    <!-- ミニマップ -->
+    <div id="hud-minimap" class="interactive">
+      <div id="hud-minimap-container"></div>
+    </div>
+
+    <!-- コントロールパネル -->
+    <div id="hud-controls" class="interactive">
+      <div id="ctrl-panel">
+        <button id="btn-zm" class="hud-btn">+</button>
+        <input type="range" id="fov-slider" min="30" max="110" value="75">
+        <button id="btn-zp" class="hud-btn">-</button>
+        <span id="fov-readout">75°</span>
+      </div>
+    </div>
+
+    <!-- 上下/左右分割レイアウトの境界線（ドラッグでsv-canvas:hud-minimapの比率を変更） -->
+    <div id="split-divider" class="interactive" role="separator" tabindex="0" aria-label="ストリートビューとミニマップの分割比率"></div>
+
+    <!-- 比率が0:1/1:0（端まで到達）のときだけ、境界線の代わりに表示するドロワー風ボタン。
+         端ぴったりにドラッグ用UIを置くと、モバイルの戻る/進む/ホームのスワイプ操作と
+         衝突するため、少し内側に離した独立ボタンにしている -->
+    <button type="button" id="split-edge-handle" class="interactive" aria-label="表示を戻す"></button>
+  </div>
+
+  <!-- 設定モーダル -->
+  <div id="settings-modal">
+    <div id="modal-content">
+      <div id="modal-header">
+        <h2 id="modal-title">SYSTEM CONFIG</h2>
+        <button id="btn-close-modal">✕</button>
+      </div>
+
+      <div id="settings-mode-tabs" class="mode-tabs" style="display:none;">
+        <button type="button" id="tab-btn-user" class="mode-tab-btn is-active">ユーザー設定</button>
+        <button type="button" id="tab-btn-dev" class="mode-tab-btn">開発者モード設定</button>
+      </div>
+
+      <div id="settings-user-section">
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Location Title HUD</span>
+            <span class="setting-sub">位置情報の表示・非表示</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-hud-loc" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Digital Compass</span>
+            <span class="setting-sub">コンパスの表示・非表示</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-hud-compass" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Show Route Lines</span>
+            <span class="setting-sub">空間内の移動経路ガイドの描画</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-grid-routes" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row ui-row">
+          <div>
+            <span class="setting-label">Route Text Size Mode</span>
+            <span class="setting-sub">案内文字の大きさを設定（一定 / 距離依存）</span>
+          </div>
+          <button id="btn-text-size-mode"
+            style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #55ff7f; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 95px; transition: all 0.2s; font-family: sans-serif;">
+            Constant
+          </button>
+        </div>
+      </div>
+
+      <div id="settings-dev-section" style="display:none;">
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Orbital Debug Monitor</span>
+            <span class="setting-sub">TPSデバッグモニターの切り替え</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-hud-debug"><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Map Edit Mode</span>
+            <span class="setting-sub">ミニマップ上での頂点・辺の追加を有効化</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-edit-mode"><span class="slider"></span></label>
+        </div>
+
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:14px 0;">
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Show Sphere Wireframe</span>
+            <span class="setting-sub">全球ワイヤーフレームの描画</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-grid-edges"><span class="slider"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-label">Show Vertex Points</span>
+            <span class="setting-sub">全球頂点粒子の描画</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="tg-grid-points"><span class="slider"></span></label>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ミニマップレイアウトモーダル -->
+  <div id="minimap-layout-modal">
+    <div id="minimap-layout-content">
+
+      <div id="minimap-layout-header">
+        <h2>MINIMAP LAYOUT</h2>
+        <button id="btn-close-minimap-layout" type="button">✕</button>
+      </div>
+
+      <div id="minimap-layout-options">
+
+        <button class="minimap-layout-option" data-layout="corner" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="4" y="4" width="40" height="40" rx="3"></rect>
+            <rect x="28" y="28" width="12" height="12" rx="1"></rect>
+          </svg>
+          <span>右下</span>
+        </button>
+
+        <button class="minimap-layout-option" data-layout="split-v" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="4" y="4" width="40" height="40" rx="3"></rect>
+            <line x1="4" y1="24" x2="44" y2="24"></line>
+          </svg>
+          <span>上下</span>
+        </button>
+
+        <button class="minimap-layout-option" data-layout="split-h" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="4" y="4" width="40" height="40" rx="3"></rect>
+            <line x1="24" y1="4" x2="24" y2="44"></line>
+          </svg>
+          <span>左右</span>
+        </button>
+
+        <button class="minimap-layout-option" data-layout="fullscreen" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="5" y="5" width="38" height="38" rx="3"></rect>
+            <polyline points="18,5 5,5 5,18"></polyline>
+            <polyline points="30,43 43,43 43,30"></polyline>
+          </svg>
+          <span>全画面</span>
+        </button>
+
+        <button class="minimap-layout-option" data-layout="hidden" type="button">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="5" y="5" width="38" height="38" rx="3"></rect>
+            <line x1="8" y1="8" x2="40" y2="40"></line>
+          </svg>
+          <span>非表示</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 使い方チュートリアルモーダル -->
+  <div id="tutorial-modal" aria-hidden="true">
+    <section id="tutorial-content" role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+      <header id="tutorial-header">
+        <div>
+          <p class="tutorial-kicker">HAMAKO MAPS 360 / GUIDE</p>
+          <h2 id="tutorial-title">使い方ガイド</h2>
+        </div>
+        <button id="btn-close-tutorial" type="button" aria-label="チュートリアルを閉じる">✕</button>
+      </header>
+
+      <div id="tutorial-slide-region" aria-live="polite">
+        <article class="tutorial-slide is-active" data-slide="0">
+          <div class="tutorial-visual tutorial-visual-look" aria-hidden="true">
+            <span class="tutorial-orbit"></span><span class="tutorial-direction">↔</span>
+          </div>
+          <p class="tutorial-step">01 / VIEW</p>
+          <h3>周囲を見回す</h3>
+          <p>ストリートビューの画面をドラッグすると、視点を上下左右に動かせます。スマートフォンでは画面をスワイプして操作します。</p>
+        </article>
+
+        <article class="tutorial-slide" data-slide="1" hidden>
+          <div class="tutorial-visual tutorial-visual-move" aria-hidden="true">
+            <span class="tutorial-node">現在地</span><span class="tutorial-route-line"></span><span class="tutorial-node tutorial-node-next">移動先</span>
+          </div>
+          <p class="tutorial-step">02 / MOVE</p>
+          <h3>別の場所へ移動する</h3>
+          <p>画面内に表示される移動先の案内を選ぶと、その地点へ移動できます。接続されている地点をたどって校内を巡ります。</p>
+        </article>
+
+        <article class="tutorial-slide" data-slide="2" hidden>
+          <div class="tutorial-visual tutorial-visual-map" aria-hidden="true">
+            <span class="tutorial-map-grid"></span><span class="tutorial-map-pin">●</span><span class="tutorial-map-path"></span>
+          </div>
+          <p class="tutorial-step">03 / MINIMAP</p>
+          <h3>ミニマップで位置を把握する</h3>
+          <p>画面内のミニマップで校内の位置関係を確認できます。ミニマップの表示範囲や配置を変えたいときは、右上のレイアウトボタンを使います。</p>
+        </article>
+
+        <article class="tutorial-slide" data-slide="3" hidden>
+          <div class="tutorial-visual tutorial-visual-layout" aria-hidden="true">
+            <span class="tutorial-layout-block layout-large"></span><span class="tutorial-layout-block layout-small"></span><span class="tutorial-layout-label">LAYOUT</span>
+          </div>
+          <p class="tutorial-step">04 / LAYOUT</p>
+          <h3>画面レイアウトを切り替える</h3>
+          <p>右上のミニマップレイアウトボタンを押すと、ミニマップの配置を選べます。画面に合わせて、右下・上下分割・全画面・非表示などを切り替えられます。</p>
+        </article>
+
+        <article class="tutorial-slide" data-slide="4" hidden>
+          <div class="tutorial-visual tutorial-visual-settings" aria-hidden="true">
+            <span class="tutorial-setting-line"></span><span class="tutorial-setting-line"></span><span class="tutorial-setting-toggle"></span>
+          </div>
+          <p class="tutorial-step">05 / SETTINGS</p>
+          <h3>表示を自分好みに調整する</h3>
+          <p>右上の設定ボタンから、位置情報・コンパス・移動経路の表示などを変更できます。画面下部のスライダーや＋／−ボタンでは、視野角を調整できます。</p>
+        </article>
+      </div>
+
+      <footer id="tutorial-footer">
+        <div id="tutorial-progress" aria-label="スライドの進行状況">
+          <button class="tutorial-dot is-active" type="button" data-go-slide="0" aria-label="1枚目"></button>
+          <button class="tutorial-dot" type="button" data-go-slide="1" aria-label="2枚目"></button>
+          <button class="tutorial-dot" type="button" data-go-slide="2" aria-label="3枚目"></button>
+          <button class="tutorial-dot" type="button" data-go-slide="3" aria-label="4枚目"></button>
+          <button class="tutorial-dot" type="button" data-go-slide="4" aria-label="5枚目"></button>
+        </div>
+        <div id="tutorial-navigation">
+          <span id="tutorial-page-count">1 / 5</span>
+          <button id="btn-tutorial-prev" type="button" disabled>戻る</button>
+          <button id="btn-tutorial-next" type="button">次へ →</button>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <!-- スクリプト -->
+  <script src="../js/mapData.js"></script>
+  <script src="../js/minimap.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+
+</html>
